@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Incision Hero Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@600;800&family=Hind+Siliguri:wght@400;600&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--white:#fff;--tint:#EEF7F6;--aqua:#2BB3B1;--teal:#0B6E73;--ink:#062F31;--blood:#5E0B10}
+*{box-sizing:border-box}html,body{margin:0;background:#fff;color:var(--ink);font-family:Inter,'Hind Siliguri',sans-serif}
+.scroller{height:320vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fff}
+.frame{position:relative;width:100vw;aspect-ratio:16/9;max-height:100vh}
+.hand{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:multiply;filter:brightness(1.07) contrast(1.06);
+ -webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%,#000 90%,transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 30%,#000 90%,transparent 100%);z-index:3;will-change:transform;pointer-events:none}
+.gap{position:absolute;top:var(--y);height:0;transform:translateY(-50%);z-index:2;overflow:hidden;border-radius:50%/50%;
+ background:linear-gradient(180deg,#d9ecea 0%,var(--tint) 18%,var(--tint) 82%,#d9ecea 100%);
+ box-shadow:inset 0 10px 14px -10px rgba(6,47,49,.35),inset 0 -10px 14px -10px rgba(6,47,49,.35)}
+.gap h1{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;white-space:nowrap;font:700 clamp(18px,3.2vw,56px)/1.05 Fraunces,serif;color:var(--ink)}
+.bn .gap h1{font-family:'Anek Bangla';font-weight:800}
+.gap h1 em{font-style:normal;color:var(--teal)}
+.line{position:absolute;top:var(--y);height:2px;background:linear-gradient(90deg,var(--blood),#8a1a20);transform:translateY(-50%);z-index:2;border-radius:2px}
+svg.beads{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.copy{position:absolute;left:4vw;top:9%;z-index:4;max-width:40vw}
+.copy .eyebrow{font:600 clamp(10px,.95vw,14px) Inter;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.bn .copy .eyebrow{font-family:'Hind Siliguri';letter-spacing:0;text-transform:none}
+.copy h2{margin:.4em 0 .3em;font:700 clamp(18px,2.6vw,44px)/1.1 Fraunces,serif}
+.bn .copy h2{font-family:'Anek Bangla';font-weight:800}
+.copy p{margin:0 0 1.1em;font-size:clamp(12px,1.1vw,17px);line-height:1.6;color:#2c5557}
+.btn{display:inline-block;background:var(--teal);color:#fff;padding:.8em 1.5em;border-radius:999px;font:600 clamp(12px,1vw,16px) 'Anek Bangla',Inter;text-decoration:none}
+.copy>*{opacity:0;transform:translateY(24px)}
+.lang{position:fixed;top:14px;right:14px;z-index:10;display:flex;gap:6px}
+.lang button{border:1px solid var(--aqua);background:#fff;color:var(--teal);border-radius:999px;padding:6px 14px;font:600 13px Inter;cursor:pointer}
+.lang button.on{background:var(--teal);color:#fff}
+.hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font:12px Inter;color:#6a8c8d;z-index:10}
+.after{height:60vh;display:grid;place-items:center;background:var(--tint);font:600 18px Inter;color:var(--teal)}
+</style></head>
+<body>
+<div class="lang"><button id="en" class="on">EN</button><button id="bn">বাংলা</button></div>
+<div class="hint">Scroll ↓</div>
+<div class="scroller"><div class="stage"><div class="frame" style="--y:80%">
+  <div class="gap" id="gap"><h1 id="cutText"></h1></div>
+  <div class="line" id="line"></div>
+  <svg class="beads" id="beads" viewBox="0 0 1000 1000" preserveAspectRatio="none"></svg>
+  <img class="hand" id="hand" src="hero-desktop.webp" alt="Surgeon's gloved hands holding a scalpel"
+       onerror="this.onerror=null;this.src='file:///C:/Users/SHADLY/AppData/Local/Temp/claude/E--My-Business-Benzadid-Intelligence-Agent-Builder-Antigravity/a1074ac0-fbe4-4872-a3c5-b3fdd2c0d638/images/8.webp'">
+  <div class="copy" id="copy"><div class="eyebrow" id="eb"></div><h2 id="nm"></h2><p id="tt"></p><a class="btn" id="cta" href="#"></a></div>
+</div></div></div>
+<div class="after">Rest of the website continues here</div>
+<script>
+const T={en:{cut:'Precision in <em>every</em> incision.',eb:'General · Laparoscopic · Breast · Colorectal',nm:'Dr. Fahim Foysal Kollol',tt:'FCPS (Surgery), MACS (USA) · Assistant Professor, Mymensingh Medical College Hospital · 10,000+ surgeries',cta:'Book a serial'},
+ bn:{cut:'প্রতিটি কাটায় <em>নিখুঁত</em> হাত।',eb:'জেনারেল · ল্যাপারোস্কপিক · ব্রেস্ট · কলোরেক্টাল',nm:'ডাঃ ফাহিম ফয়সাল কল্লোল',tt:'এফসিপিএস (সার্জারি), এমএসিএস (আমেরিকা) · সহকারী অধ্যাপক, ময়মনসিংহ মেডিকেল কলেজ হাসপাতাল · ১০,০০০+ অপারেশন',cta:'সিরিয়াল নিন'}};
+function setLang(l){document.body.className=l;for(const[k,id]of[['cut','cutText'],['eb','eb'],['nm','nm'],['tt','tt'],['cta','cta']])document.getElementById(id).innerHTML=T[l][k];
+ document.getElementById('en').classList.toggle('on',l==='en');document.getElementById('bn').classList.toggle('on',l==='bn');try{localStorage.setItem('lang',l)}catch(e){}}
+document.getElementById('en').onclick=()=>setLang('en');document.getElementById('bn').onclick=()=>setLang('bn');
+let L='en';try{L=localStorage.getItem('lang')||'en'}catch(e){}setLang(L);
+
+/* Geometry in % of the 16:9 frame. Blade tip in source image ~ x 43%, y 80%. */
+const TIP_X=43, START=6, END=64, Y=80;
+const hand=document.getElementById('hand'),gap=document.getElementById('gap'),line=document.getElementById('line'),beads=document.getElementById('beads'),copy=[...document.getElementById('copy').children];
+const B=[[12,.9],[19,.6],[27,1.1],[34,.7],[43,.8],[51,1.2],[58,.6]].map(([x,r])=>{const c=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+ c.setAttribute('cx',x*10);c.setAttribute('cy',Y*10+(x%3)-1);c.setAttribute('fill','#5E0B10');c.setAttribute('rx',0);c.setAttribute('ry',0);beads.appendChild(c);return{c,x,r}});
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2, clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)), seg=(p,a,b)=>clamp((p-a)/(b-a));
+function frame(){
+ const s=document.querySelector('.scroller'),r=s.getBoundingClientRect(),p=clamp(-r.top/(s.offsetHeight-innerHeight));
+ const cut=ease(seg(p,.05,.55)), tip=START+(END-START)*cut;
+ hand.style.transform=`translate(${tip-TIP_X}%,${-Math.sin(cut*Math.PI)*0.6}%) rotate(${(cut-.5)*1.2}deg)`;
+ const w=Math.max(0,tip-START-.3);
+ line.style.left=gap.style.left=START+'%'; line.style.width=gap.style.width=w+'%';
+ const open=ease(seg(p,.45,.8));
+ gap.style.height=(open*16)+'%'; line.style.opacity=1-open*.9;
+ document.getElementById('cutText').style.opacity=seg(p,.5,.75);
+ B.forEach(b=>{const t=seg(tip,b.x+1.5,b.x+8)*(1-open*.7);b.c.setAttribute('rx',b.r*6*t);b.c.setAttribute('ry',b.r*4.5*t)});
+ copy.forEach((el,i)=>{const t=ease(seg(p,.7+i*.05,.85+i*.05));el.style.opacity=t;el.style.transform=`translateY(${(1-t)*24}px)`});
+ document.querySelector('.hint').style.opacity=1-seg(p,0,.1);
+}
+addEventListener('scroll',()=>requestAnimationFrame(frame),{passive:true});addEventListener('resize',frame);frame();
+</script>
+</body></html>

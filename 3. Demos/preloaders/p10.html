@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preloader 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,800&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:Inter,system-ui,sans-serif;background:linear-gradient(180deg,#fff,#EEF7F6);color:#062F31;overflow:hidden}
+.site{height:100%;display:grid;place-content:center;text-align:center;gap:10px;padding:16px}
+.site .eb{margin:0;font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase;color:#2BB3B1}
+.site h1{margin:0;font:800 clamp(30px,6vw,64px)/1.05 Fraunces,serif;letter-spacing:-.03em;background:linear-gradient(180deg,#0B6E73,rgba(43,179,177,.55));-webkit-background-clip:text;background-clip:text;color:transparent}
+.site p{margin:0;color:#3f6668;font-size:14px}
+.site button{justify-self:center;margin-top:8px;padding:10px 18px;border-radius:999px;border:0;background:#0B6E73;color:#fff;font:600 14px Inter;cursor:pointer}
+#pl{position:fixed;inset:0;z-index:9;display:grid;place-items:center;pointer-events:none}
+.nm{font:800 clamp(18px,5.6vw,64px)/1.05 Fraunces,serif;letter-spacing:-.025em;white-space:nowrap;background:linear-gradient(180deg,#0B6E73 15%,#2BB3B1 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sb{font:600 clamp(11px,1.6vw,15px) Inter;letter-spacing:.14em;text-transform:uppercase;color:#2BB3B1;text-align:center}
+.scal{width:clamp(70px,11vw,120px);height:auto;filter:drop-shadow(0 6px 8px rgba(6,47,49,.25))}
+@media (prefers-reduced-motion:reduce){#pl{display:none}}
+
+#pl{background:linear-gradient(135deg,#0a5f63,#0B6E73);animation:flood .35s 1.45s forwards}@keyframes flood{60%{background:#fff}100%{background:#fff;opacity:0;visibility:hidden}}
+.w{display:grid;gap:10px;justify-items:center;position:relative}
+.lamp{width:clamp(56px,8vw,80px);margin-bottom:6px;animation:sw .9s cubic-bezier(.5,0,.3,1) forwards}
+@keyframes sw{0%{transform:translateX(-30vw) rotate(-20deg)}100%{transform:none}}
+.nm{background:radial-gradient(circle at var(--x,-30%) 50%,#fff 0,#7fe3df 18%,rgba(43,179,177,.18) 34%) no-repeat;background-size:100% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:beam .9s cubic-bezier(.5,0,.3,1) forwards}
+@property --x{syntax:'<percentage>';inherits:false;initial-value:-30%}
+@keyframes beam{to{--x:130%}}
+.w>.lamp{grid-row:1}.w>.nm{grid-row:2;grid-column:1}.w>.sb{grid-row:3}.nm2{background:linear-gradient(180deg,#fff,#bdeeed);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;animation:fi .3s .85s forwards}
+.sb{color:#9fdcda;opacity:0;animation:fi .3s .95s forwards}@keyframes fi{to{opacity:1}}
+</style></head><body>
+<!-- PRELOADER 10 — OT light sweep. Idea: A surgical lamp swings across a calm teal screen; its beam lights up the name; then the light floods the screen white. Total ≤ 1.9 s, CSS/SVG only (no images, no libraries). -->
+<main class="site"><p class="eb">Preloader 10 · OT light sweep</p><h1>Every incision has a reason.</h1><p>A surgical lamp swings across a calm teal screen; its beam lights up the name; then the light floods the screen white.</p><button onclick="replay()">↻ Replay</button></main>
+<div id="pl"><div class="w"><svg class="lamp" viewBox="0 0 80 60"><rect x="36" y="0" width="8" height="18" rx="3" fill="#2BB3B1"/><path d="M8 40 Q40 6 72 40 Z" fill="#e6f1f0"/><ellipse cx="40" cy="40" rx="32" ry="6" fill="#fff"/><path d="M14 44 L2 60 H78 L66 44 Z" fill="rgba(255,255,255,.18)"/></svg><div class="nm">Dr. Fahim Foysal Kollol</div><div class="nm nm2">Dr. Fahim Foysal Kollol</div><div class="sb">General, Laparoscopic, Breast &amp; Colorectal Surgeon</div></div></div>
+<script>function replay(){const p=document.getElementById('pl'),c=p.cloneNode(true);p.replaceWith(c);}</script>
+</body></html>

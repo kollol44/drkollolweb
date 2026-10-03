@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Conditions & Treatments — Dr. Fahim Foysal Kollol</title>
+<meta name="description" content="Piles, fistula, fissure, gallstones, hernia, breast lumps, kidney stones and more — conditions treated by Dr. Fahim Foysal Kollol in Sherpur and Mymensingh.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;700;800&family=Hind+Siliguri:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=16">
+<link rel="stylesheet" href="../assets/preloader.css?v=1">
+<script>/* OT-light preloader: once per session */try{if(sessionStorage.getItem('kpl'))document.documentElement.classList.add('pl-skip');else sessionStorage.setItem('kpl','1')}catch(e){}</script>
+</head>
+<!-- HUB: pinned showcase (doctor fixed left on laptop / centre on phone) walking through EVERY condition in category order,
+     then a quick-browse grid of all 7 categories. Every card opens its own condition page. -->
+<body data-root="../" data-page="ct">
+<!-- OT-light preloader (assets/preloader.css). Name text must come from the admin panel in the final build. -->
+<div id="pl" role="presentation" aria-hidden="true"><div class="pl-stage"><div class="pl-mv"><svg class="pl-lamp" viewBox="0 0 120 70" aria-hidden="true"><rect x="56" y="0" width="8" height="16" rx="3" fill="#2BB3B1"/><path d="M10 50 Q60 6 110 50 Z" fill="#dfeeed"/><path d="M10 50 Q60 6 110 50" fill="none" stroke="#9fc9c7" stroke-width="2"/><ellipse cx="60" cy="50" rx="50" ry="8" fill="#fff"/><circle cx="40" cy="50" r="4" fill="#fffbe6"/><circle cx="60" cy="51" r="4.5" fill="#fffbe6"/><circle cx="80" cy="50" r="4" fill="#fffbe6"/></svg><div class="pl-beam"></div></div><div class="pl-name">Dr. Fahim Foysal Kollol</div><div class="pl-sub">General, Laparoscopic, Breast &amp; Colorectal Surgeon</div></div></div>
+<script>(function(){var p=document.getElementById('pl');if(!p)return;try{if(localStorage.getItem('kollol-lang')==='bn'){p.querySelector('.pl-name').textContent='ডাঃ ফাহিম ফয়সাল কল্লোল';p.querySelector('.pl-name').style.fontFamily="'Anek Bangla',sans-serif";p.querySelector('.pl-sub').textContent='জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন';p.querySelector('.pl-sub').style.letterSpacing='0'}}catch(e){}var k=function(){p.remove()};p.addEventListener('click',k);p.addEventListener('animationend',function(e){if(e.animationName==='plFlood')k()})})();</script>
+
+<header class="nav" id="nav"></header><div class="sheet" id="sheet"></div>
+
+<section id="show"></section>
+
+<div class="chipbar"><div class="wrap"><div class="chips" id="chips"></div></div></div>
+<main id="cats"></main>
+<div id="cta"></div>
+<footer class="sitefoot" id="foot"></footer>
+<div class="mbar" id="mbar"></div>
+
+<script src="../assets/conditions-data.js?v=16"></script>
+<script src="../assets/site.js?v=16"></script>
+<script>
+const T={en:{crumb:'Treatments by Dr. Kollol',giant:'Conditions & Treatments',introEy:'Find your problem',introT:'Every condition, explained simply.',
+  introP:'Scroll to see the conditions Dr. Kollol treats — or jump to an area below. Each page explains the problem in simple words and how he treats it.',
+  browse:'Browse by area',n:'conditions'},
+ bn:{crumb:'ডাঃ কল্লোলের চিকিৎসা',giant:'রোগ ও চিকিৎসা',introEy:'আপনার সমস্যা খুঁজুন',introT:'প্রতিটা রোগ, সহজ ভাষায়।',
+  introP:'স্ক্রল করে দেখুন ডাঃ কল্লোল কোন কোন রোগের চিকিৎসা করেন, অথবা নিচে ক্ষেত্র অনুযায়ী খুঁজুন। প্রতিটা পেজে রোগটা আর তার চিকিৎসা সহজ ভাষায় বোঝানো আছে।',
+  browse:'ক্ষেত্র অনুযায়ী খুঁজুন',n:'টি রোগ'}};
+window.renderPage=l=>{const t=T[l],D=K.D,catName=s=>K.cat(s)[l].name;
+ document.title=t.giant+' — '+(l==='bn'?'ডাঃ ফাহিম ফয়সাল কল্লোল':'Dr. Fahim Foysal Kollol');
+ const list=D.categories.flatMap(c=>K.list(c.slug));
+ const steps=[{word:t.giant,ey:t.introEy,title:t.introT,body:`<p>${t.introP}</p><div class="row"><a class="btn btn-p" href="tel:${K.SERIAL}">${K.t('book')}</a><a class="btn btn-g" href="#cats">${t.browse}</a></div>`},
+  ...list.map((c,i)=>({word:(c.home&&c.home[l])||c[l].name,cat:c.cat,ey:catName(c.cat),title:c[l].name,img:{src:K.condImg(c),alt:c[l].name},
+   body:`<p>${c[l].short}</p><div class="meta">${c.lap?`<span class="badge lap">${K.t('lap')}</span>`:'<span></span>'}<a class="go" href="${K.condUrl(c.slug)}">${K.t('more')} →</a></div>`}))];
+ K.showcase(document.getElementById('show'),steps,{crumb:t.crumb,chips:D.categories.map(c=>({slug:c.slug,name:c[l].name,href:K.catUrl(c.slug)}))});
+ chips.innerHTML=D.categories.map(c=>`<a class="chip" href="#${c.slug}">${c[l].name}</a>`).join('');
+ cats.innerHTML=D.categories.map((c,i)=>{const items=K.list(c.slug),num=l==='bn'?String(items.length).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]):items.length;
+  return `<section class="sec ${i%2?'tint':''}" id="${c.slug}"><div class="wrap">
+   <div style="overflow:hidden"><p class="sword" data-drift=".18">${c[l].name}</p></div>
+   <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap">
+    <p class="sub rv" style="margin:0">${c[l].desc}</p><a class="chip rv" href="${K.catUrl(c.slug)}">${num} ${t.n} →</a></div>
+   <div class="cards">${items.map(K.card).join('')}</div></div></section>`}).join('');
+ cta.innerHTML=K.ctaBand();
+ const sp=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)chips.querySelectorAll('.chip').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
+ document.querySelectorAll('#cats section').forEach(s=>sp.observe(s))};
+window.fitPage=()=>{K.fitShow();document.querySelectorAll('.sword').forEach(s=>K.fit(s,innerWidth<860?.9:.88))};
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OT Light E</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,800&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:Inter,system-ui,sans-serif;background:linear-gradient(180deg,#fff,#EEF7F6);color:#062F31;overflow:hidden}
+.site{height:100%;display:grid;place-content:center;text-align:center;gap:10px;padding:16px}
+.site .eb{margin:0;font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase;color:#2BB3B1}
+.site h1{margin:0;font:800 clamp(30px,6vw,64px)/1.05 Fraunces,serif;letter-spacing:-.03em;background:linear-gradient(180deg,#0B6E73,rgba(43,179,177,.55));-webkit-background-clip:text;background-clip:text;color:transparent}
+.site p{margin:0;color:#3f6668;font-size:14px;max-width:560px}
+.site button{justify-self:center;margin-top:8px;padding:10px 18px;border-radius:999px;border:0;background:#0B6E73;color:#fff;font:600 14px Inter;cursor:pointer}
+/* ---- OT-light preloader core: ONE text layer (no doubled fonts). Dark until the light reaches it, lit after. ---- */
+@property --x{syntax:'<percentage>';inherits:true;initial-value:-25%}
+@property --r{syntax:'<percentage>';inherits:true;initial-value:-25%}
+#pl{position:fixed;inset:0;z-index:9;display:grid;place-items:center;pointer-events:none;overflow:hidden;
+ background:radial-gradient(ellipse 80% 70% at 50% 45%,#0d5a5e,#06393c 70%,#042c2e)}
+.stage{position:relative;display:grid;justify-items:center;gap:12px;padding-top:clamp(70px,11vw,110px)}
+.nm{position:relative;font:800 clamp(22px,5.8vw,68px)/1.08 Fraunces,serif;letter-spacing:-.02em;white-space:nowrap;color:transparent;-webkit-background-clip:text;background-clip:text;
+ background:
+  radial-gradient(circle at var(--x) 55%,#ffffff 0,#e9fffe 9%,rgba(191,240,238,.0) 24%) no-repeat,
+  linear-gradient(90deg,#c9f3f1 0,#ffffff calc(var(--r) - 6%),#1c5f62 calc(var(--r) + 2%),#164e51 100%);
+ background-size:100% 100%,100% 100%;-webkit-background-clip:text;background-clip:text}
+.sb{font:600 clamp(10px,1.4vw,14px) Inter;letter-spacing:.16em;text-transform:uppercase;text-align:center;max-width:92vw;color:transparent;-webkit-background-clip:text;background-clip:text;
+ background:linear-gradient(90deg,#bdeeed 0,#bdeeed calc(var(--r) - 6%),#1f5b5e calc(var(--r) + 2%),#1f5b5e 100%);-webkit-background-clip:text;background-clip:text}
+.lamp{width:clamp(70px,9vw,110px);height:auto;filter:drop-shadow(0 0 18px rgba(255,251,230,.55))}
+.beam{position:absolute;top:calc(clamp(70px,11vw,110px) * .55);width:clamp(140px,22vw,300px);height:clamp(110px,16vw,190px);transform:translateX(-50%);
+ background:linear-gradient(180deg,rgba(255,251,230,.42),rgba(255,251,230,.08) 70%,transparent);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);mix-blend-mode:screen;pointer-events:none}
+@keyframes flood{0%{background-color:transparent}55%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#pl{display:none}}
+
+#pl{animation:fl .8s 3.8s forwards}@keyframes fl{100%{opacity:0;visibility:hidden}}
+.stage{--x:-25%;--r:-25%}
+.nm{animation:sw1 2s .3s cubic-bezier(.45,0,.35,1) forwards}
+@keyframes sw1{to{--x:125%;--r:125%}}
+.sb{--r:125%;background:linear-gradient(90deg,#1f5b5e 0,#1f5b5e calc(var(--r) - 2%),#bdeeed calc(var(--r) + 6%),#bdeeed 100%);-webkit-background-clip:text;background-clip:text;animation:sw2 1.3s 2.3s cubic-bezier(.45,0,.35,1) forwards}
+@keyframes sw2{to{--r:-25%}}
+.mv{position:absolute;top:0;transform:translateX(-50%);animation:path 3.3s .3s cubic-bezier(.45,0,.35,1) forwards;left:-25%}
+@keyframes path{0%{left:-25%;top:0}60%{left:125%;top:0}62%{left:125%;top:2.2em}100%{left:-25%;top:2.2em}}
+.mv .beam{left:50%}
+</style></head><body>
+<!-- OT-LIGHT PRELOADER E — Two-pass reveal. The light sweeps the name left → right, then glides back right → left along the subtitle, lighting it; the scene then fades softly into the site. Total ≈ 4.6 s. CSS/SVG only, one text layer. -->
+<main class="site"><p class="eb">OT light · E · Two-pass reveal · ≈ 4.6 s</p><h1>Every incision has a reason.</h1><p>The light sweeps the name left → right, then glides back right → left along the subtitle, lighting it; the scene then fades softly into the site.</p><button onclick="replay()">↻ Replay</button></main>
+<div id="pl"><div class="stage"><div class="mv"><svg class="lamp" viewBox="0 0 120 70" aria-hidden="true"><rect x="56" y="0" width="8" height="16" rx="3" fill="#2BB3B1"/><path d="M10 50 Q60 6 110 50 Z" fill="#dfeeed"/><path d="M10 50 Q60 6 110 50" fill="none" stroke="#9fc9c7" stroke-width="2"/><ellipse cx="60" cy="50" rx="50" ry="8" fill="#fff"/><circle cx="40" cy="50" r="4" fill="#fffbe6"/><circle cx="60" cy="51" r="4.5" fill="#fffbe6"/><circle cx="80" cy="50" r="4" fill="#fffbe6"/></svg><div class="beam"></div></div><div class="nm">Dr. Fahim Foysal Kollol</div><div class="sb">General, Laparoscopic, Breast &amp; Colorectal Surgeon</div></div></div>
+<script>function replay(){const p=document.getElementById('pl');p.replaceWith(p.cloneNode(true))}</script>
+</body></html>

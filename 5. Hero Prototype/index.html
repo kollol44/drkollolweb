@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dr. Fahim Foysal Kollol — Surgeon</title>
+<meta name="description" content="Dr. Fahim Foysal Kollol — General, Laparoscopic, Breast & Colorectal Surgeon in Sherpur and Mymensingh.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;700;800&family=Hind+Siliguri:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--white:#fff;--tint:#EEF7F6;--aqua:#2BB3B1;--teal:#0B6E73;--ink:#062F31;--muted:#3f6668;
+ --fh:'Fraunces',serif;--fb:'Inter',sans-serif}
+.bn{--fh:'Anek Bangla',sans-serif;--fb:'Hind Siliguri',sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:var(--ink);font-family:var(--fb);-webkit-font-smoothing:antialiased;overflow-x:clip} /* clip, not hidden: hidden breaks position:sticky */
+a{color:inherit;text-decoration:none}
+
+/* ---------- NAV ---------- */
+.nav{position:fixed;inset:12px 16px auto;z-index:50;display:flex;align-items:center;gap:16px;padding:10px 12px 10px 18px;
+ border-radius:18px;background:rgba(255,255,255,.62);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
+ border:1px solid rgba(43,179,177,.22);box-shadow:0 6px 30px -12px rgba(6,47,49,.18)}
+.brand{display:flex;align-items:center;gap:10px;font:700 17px/1 var(--fh);white-space:nowrap}
+.brand i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--aqua),var(--teal));display:grid;place-items:center;color:#fff;font:700 15px 'Fraunces';font-style:normal}
+.links{display:flex;gap:4px;margin:0 auto}
+.links a,.dd>button{padding:9px 13px;border-radius:10px;font:500 14.5px var(--fb);color:var(--muted);transition:background .2s,color .2s;border:0;background:none;cursor:pointer}
+.dd>button:hover{background:var(--tint);color:var(--teal)}
+/* Conditions & Treatments dropdown (same as inner pages) */
+.links{align-items:center}.dd{position:relative}
+.dd>button:after{content:"";display:inline-block;margin-left:6px;width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-3px) rotate(45deg)}
+.dd-menu{position:absolute;top:calc(100% + 10px);left:50%;transform:translate(-50%,6px);min-width:260px;padding:8px;border-radius:16px;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(43,179,177,.22);box-shadow:0 20px 50px -20px rgba(6,47,49,.35);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.dd:hover .dd-menu,.dd.open .dd-menu{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+.dd-menu a{display:block;padding:10px 12px;border-radius:10px;font:500 14.5px var(--fb);color:var(--ink)}
+.dd-menu a:hover{background:var(--tint);color:var(--teal)}
+.dd-menu a.all{font-weight:600;color:var(--teal);border-bottom:1px solid rgba(43,179,177,.28);margin-bottom:4px}
+.sheet a.sub{padding:9px 14px 9px 28px;font-size:14.5px;color:var(--muted)}
+.links a:hover,.links a.on{background:var(--tint);color:var(--teal)}
+.right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.lang{display:flex;border:1px solid rgba(11,110,115,.25);border-radius:999px;overflow:hidden}
+.lang button{border:0;background:transparent;padding:7px 11px;font:600 12.5px Inter,'Hind Siliguri';color:var(--teal);cursor:pointer}
+.lang button.on{background:var(--teal);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;border-radius:999px;padding:13px 22px;font:600 15px var(--fb);white-space:nowrap;transition:transform .2s,background .2s}
+.btn-p{background:var(--teal);color:#fff;box-shadow:0 10px 26px -10px rgba(11,110,115,.75)}
+.btn-p:hover{transform:translateY(-2px);background:#095c60}
+.btn-g{background:rgba(255,255,255,.8);color:var(--teal);border:1px solid rgba(11,110,115,.3)}
+.btn-g:hover{background:var(--tint)}
+.nav .btn{padding:11px 18px;font-size:14.5px}
+.burger{display:none;width:40px;height:40px;border-radius:12px;border:1px solid rgba(11,110,115,.25);background:#fff;cursor:pointer;place-items:center}
+.burger span{display:block;width:18px;height:2px;background:var(--teal);box-shadow:0 6px 0 var(--teal),0 -6px 0 var(--teal)}
+.sheet{position:fixed;inset:76px 16px auto;z-index:49;display:none;flex-direction:column;padding:10px;border-radius:18px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(43,179,177,.22)}
+.sheet a{padding:13px 14px;border-radius:10px;font:500 16px var(--fb)}
+.sheet.open{display:flex}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;height:290vh} /* scroll length of the hero story: bigger = each scroll moves the cut less */
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#fff}
+canvas#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.loader{position:absolute;left:0;top:0;height:3px;width:0;background:linear-gradient(90deg,var(--aqua),var(--teal));transition:width .2s,opacity .5s;z-index:5}
+.cue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;font:500 12px var(--fb);color:#6a8c8d}
+.cue b{width:22px;height:34px;border:1.5px solid #9dbcbc;border-radius:12px;position:relative}
+.cue b:after{content:"";position:absolute;left:50%;top:7px;width:3px;height:7px;border-radius:2px;background:var(--teal);transform:translateX(-50%);animation:wheel 1.6s infinite}
+@keyframes wheel{0%{opacity:0;transform:translate(-50%,0)}30%{opacity:1}100%{opacity:0;transform:translate(-50%,10px)}}
+
+/* Text emerges out of the bleeding incision: the box's bottom edge sits on the red line and clips
+   everything below it, so each line rises up out of the cut. 100% scroll-driven by JS. */
+.emerge{position:absolute;overflow:hidden;pointer-events:none}
+.emerge .ln{position:absolute;left:0;right:0;will-change:transform}
+.t-h{font:700 clamp(28px,3vw,54px)/1.06 var(--fh);letter-spacing:-.015em}
+.bn .t-h{font-weight:800;line-height:1.22}
+.t-sub{font:500 clamp(16px,1.35vw,22px)/1.45 var(--fb);color:var(--muted)}
+.t-sub em{font-style:normal;color:var(--teal);font-weight:600}
+.t-cue{pointer-events:auto;display:inline-flex!important;align-items:center;gap:10px;font:600 clamp(13px,1vw,15px) var(--fb);color:var(--teal);letter-spacing:.02em}
+.t-cue i{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--aqua);display:grid;place-items:center;font-style:normal;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+
+/* ---------- MEET THE DOCTOR ---------- */
+/* --edge-row = the hero's bottom pixel row, sampled live from the canvas (JS). The section starts with exactly
+   those colours, so hero → doctor has no seam, then eases into the page tint further down. */
+/* ONE pinned section: intro (name, stats) → curtain opens (left text exits left, right exits right) →
+   treatments scroll behind the same doctor image. Section height = scroll length of the whole story. */
+.doc{position:relative;height:calc(var(--n,8)*80vh + 230vh);
+ background:linear-gradient(180deg,rgba(238,247,246,0) 0,rgba(238,247,246,0) 4vh,var(--tint) 95vh,var(--tint) 100%),var(--edge-row,#f2f2f1)}
+.pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.glow{position:absolute;left:50%;top:58%;width:min(80vw,860px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;
+ background:radial-gradient(circle,rgba(43,179,177,.26) 0%,rgba(43,179,177,.08) 45%,transparent 70%);pointer-events:none}
+.intro{position:absolute;left:0;right:0;top:max(11vh,84px);margin:0;text-align:center;z-index:1;white-space:nowrap;font:800 clamp(64px,12vw,200px)/.95 var(--fh);letter-spacing:-.04em}
+.intro span{display:inline-block;will-change:transform,opacity;
+ background:linear-gradient(180deg,var(--teal) 10%,rgba(43,179,177,.35) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bn .intro{letter-spacing:0;line-height:1.15}
+.doc-img{position:absolute;left:50%;bottom:0;height:min(80vh,740px);aspect-ratio:624/1126;transform:translateX(-50%);z-index:2}
+.doc-img img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 30px 40px rgba(6,47,49,.22));animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+.side{position:absolute;top:60%;transform:translateY(-50%);z-index:3;width:min(31vw,430px);will-change:translate,opacity}
+.side.l{left:4.5vw}.side.r{right:4.5vw}
+.name{margin:0;font:700 clamp(30px,2.9vw,50px)/1.08 var(--fh);letter-spacing:-.015em}
+.bn .name{font-weight:800;line-height:1.2}
+.role{margin:10px 0 0;font:600 clamp(15px,1.25vw,19px)/1.4 var(--fb);color:var(--teal)}
+.deg{margin:14px 0 0;display:flex;flex-wrap:wrap;gap:7px}
+.deg span{padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.8);border:1px solid rgba(43,179,177,.3);font:600 13px var(--fb);color:var(--ink)}
+.post{margin:12px 0 0;font:400 14.5px/1.6 var(--fb);color:var(--muted)}
+.cta{margin-top:20px}
+.cta .row{display:flex;gap:10px;flex-wrap:wrap}
+.cta p{margin:12px 0 0;font:500 14px/1.6 var(--fb);color:var(--muted)}
+.cta p strong{color:var(--teal)}
+.cta-m{display:none}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.62);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
+ border:1px solid rgba(43,179,177,.28);box-shadow:0 14px 34px -18px rgba(6,47,49,.35)}
+.stat b{display:block;font:700 clamp(24px,2.1vw,34px)/1 var(--fh);color:var(--teal)}
+.bn .stat b{font-weight:800}
+.stat span{display:block;margin-top:6px;font:500 13px/1.35 var(--fb);color:var(--muted)}
+/* first arrival reveal */
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+/* treatments phase (same pinned stage) */
+.svc-head{position:absolute;left:0;right:0;top:92px;text-align:center;z-index:4;font:600 13px var(--fb);letter-spacing:.18em;text-transform:uppercase;color:var(--teal);opacity:0}
+.bn .svc-head{letter-spacing:.02em;text-transform:none;font-size:15px}
+/* category chips under the heading — the active category lights up as you scroll (no counter) */
+.svc-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:12px auto 0;max-width:min(980px,94vw);letter-spacing:0;text-transform:none}
+.svc-chips a{padding:6px 12px;border-radius:999px;font:600 12.5px var(--fb);color:var(--teal);background:rgba(255,255,255,.7);border:1px solid rgba(43,179,177,.3);transition:background .3s,color .3s}
+.svc-chips a.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.svc-card{display:block;color:inherit}
+.svc-card .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.svc-card .lapb{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font:600 11.5px var(--fb);color:var(--teal);background:var(--tint);border:1px solid rgba(43,179,177,.3)}
+.svc-card .lapb:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--aqua)}
+.svc-card .go{font:600 13.5px var(--fb);color:var(--teal)}
+.svc-card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.svc-card .tags a{padding:4px 10px;border-radius:999px;font:500 12.5px var(--fb);color:var(--ink);background:#fff;border:1px solid rgba(43,179,177,.3)}
+.svc-card .tags a:hover{background:var(--tint)}
+.svc-card .tags a.plus{display:none} /* "+N more" chip is phone-only */
+/* floating, background-free condition image sitting on top of each homepage condition card */
+.svc-card .ci{display:block;width:100%;height:170px;object-fit:contain;margin:-80px 0 6px;filter:drop-shadow(0 18px 26px rgba(6,47,49,.3))}
+.svc-card .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.svc-card .row .btn{padding:10px 16px;font-size:14px}
+.svc-words{position:absolute;inset:0;z-index:1}
+.svc-word{position:absolute;left:50%;top:50%;text-align:center;white-space:nowrap;will-change:transform,opacity;
+ font:800 var(--fs,clamp(96px,18vw,340px))/.92 var(--fh);letter-spacing:-.04em;
+ background:linear-gradient(180deg,var(--teal) 10%,rgba(43,179,177,.4) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bn .svc-word{letter-spacing:0;line-height:1.1}
+.svc-doc{position:absolute;left:50%;bottom:0;height:min(80vh,720px);aspect-ratio:624/1126;transform:translateX(-50%);z-index:2}
+.svc-doc img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 30px 40px rgba(6,47,49,.2))}
+.svc-card{position:absolute;z-index:3;width:min(330px,80vw);padding:18px 20px;border-radius:20px;background:rgba(255,255,255,.9);
+ backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);border:1px solid rgba(43,179,177,.3);box-shadow:0 18px 40px -20px rgba(6,47,49,.4);will-change:transform,opacity}
+.svc-card small{display:block;font:600 11.5px var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--aqua)}
+.bn .svc-card small{letter-spacing:.02em;text-transform:none;font-size:13px}
+.svc-card b{display:block;margin-top:6px;font:700 22px/1.2 var(--fh);color:var(--ink)}
+.svc-card p{margin:6px 0 0;font:400 14.5px/1.55 var(--fb);color:var(--muted)}
+.svc-card.l{left:5vw;top:52%}.svc-card.r{right:5vw;top:36%}
+.svc-bar{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:4;display:flex;gap:6px}
+.svc-bar i{width:18px;height:3px;border-radius:2px;background:rgba(11,110,115,.2);transition:background .3s,width .3s}
+.svc-bar i.on{background:var(--teal);width:30px}
+
+/* laptop: wide condition card on the free side, big floating image on its left half */
+@media (min-width:861px){
+ .svc-card.l:not(.more),.svc-card.r:not(.more){top:auto;bottom:6vh;width:min(46vw,640px);display:grid;grid-template-columns:minmax(0,48%) 1fr;column-gap:20px;align-items:center;padding:20px 24px 20px 14px}
+ .svc-card.l:not(.more){left:3vw}.svc-card.r:not(.more){right:3vw}
+ .svc-card:not(.more) .ci{grid-row:1 / span 4;width:100%;height:min(36vh,300px);margin:-60px 0 -6px}
+ .svc-card:not(.more)>:not(.ci){grid-column:2}
+ .svc-card:not(.more) b{font-size:26px}
+}
+@media (max-width:980px){.links{display:none}.burger{display:grid}.nav .btn-p{display:none}}
+@media (max-width:860px){
+ /* phone: name block on top, stats as a strip over the doctor, buttons at the bottom */
+ .intro{top:10vh;font-size:clamp(52px,17vw,110px)}
+ .doc-img{height:min(56vh,470px)}
+ .side{top:auto;transform:none;width:auto}
+ .side.l{left:16px;right:16px;top:calc(10vh + clamp(52px,17vw,110px) + 6px);text-align:center}
+ .side.l .post,.side.l .cta{display:none}
+ .name{font-size:clamp(24px,6.6vw,32px)}.role{font-size:13.5px;margin-top:6px}
+ .deg{justify-content:center;margin-top:10px;gap:5px}.deg span{font-size:11.5px;padding:4px 9px}
+ .side.r{left:12px;right:12px;bottom:92px}
+ .stats{grid-template-columns:repeat(3,1fr);gap:8px}
+ .stat{padding:9px 10px;border-radius:14px}.stat:nth-child(n+4){display:none}
+ .stat b{font-size:19px}.stat span{font-size:11px;margin-top:3px}
+ .cta-m{display:flex;gap:10px;position:absolute;left:12px;right:12px;bottom:18px;z-index:4;will-change:translate,opacity}
+ .cta-m .btn{flex:1}
+}
+@media (max-width:860px){
+ .svc-word{font-size:clamp(46px,14vw,90px);width:96vw;white-space:normal}
+ .svc-doc{height:min(58vh,480px)}
+ .svc-card,.svc-card.l,.svc-card.r{left:50%;right:auto;top:auto;bottom:24px;transform:translateX(-50%);width:min(360px,92vw);padding:14px 16px;max-height:34vh;overflow:auto}
+ /* phone: keep the "And more" card below the doctor's crossed arms — compact tags, no paragraph */
+ .svc-card .tags{gap:5px;margin-top:8px}.svc-card .tags a{font-size:11.5px;padding:3px 8px}
+ .svc-card.more p{display:none}.svc-card.more .row{margin-top:10px;flex-wrap:nowrap}.svc-card.more .row .btn{flex:1;padding:9px 10px;font-size:13px}.svc-card.more b{font-size:17px}
+ .svc-card.more{max-height:none;overflow:visible}
+ /* phone: image pops half out of the card (like laptop) but stays small so the doctor's face stays clear */
+ .svc-card:not(.more){max-height:none;overflow:visible}
+ .svc-card .ci{height:104px;width:auto;max-width:62%;margin:-66px auto 2px}
+ .svc-card.more .tags a:nth-child(n+7):not(.plus){display:none}
+ .svc-card .tags a.plus{display:inline-block!important;background:var(--tint);color:var(--teal);font-weight:600}
+ /* phone: one swipeable row of category chips instead of 3 wrapped rows */
+ .svc-chips{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;max-width:100vw;padding:0 12px;scrollbar-width:none}
+ .svc-chips::-webkit-scrollbar{display:none}
+ .svc-chips a{flex:none}
+ .svc-bar{display:none}
+ .svc-card b{font-size:19px}.svc-card p{font-size:13.5px}
+}
+@media (max-width:560px){.nav{inset:10px 10px auto;padding:8px 8px 8px 12px}.brand{font-size:15px}.brand i{width:26px;height:26px}
+ .t-h{font-size:clamp(26px,7.6vw,34px)}.t-sub{font-size:16px}
+ .cta .btn{flex:1;min-width:140px}}
+
+/* =====================================================================================
+   HOMEPAGE PART 2 (after the conditions): tickers · How to get a serial · reviews · video · gallery · FAQ · blog · visit/map · footer
+   ===================================================================================== */
+.doc{height:calc(var(--n,8)*80vh + 330vh)} /* +100vh: the serial section rises over the pinned stage during this stretch */
+.pin{transform-origin:50% 100%;will-change:transform,opacity}
+/* ---- infinite right→left tickers (degrees inside the intro, numbers on top of the serial section) ---- */
+.tkr{overflow:hidden;white-space:nowrap;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.tkr .trk{display:inline-flex;align-items:center;animation:tkr var(--dur,40s) linear infinite}
+.tkr:hover .trk{animation-play-state:paused}
+.tkr .it{display:inline-flex;align-items:baseline;gap:8px;padding:0 22px;font:600 15px var(--fb);color:var(--muted)}
+.tkr .it b{font:800 clamp(22px,2vw,30px)/1 var(--fh);color:var(--teal)}
+.tkr .sep{color:var(--aqua);font-size:14px}
+@keyframes tkr{to{transform:translateX(-50%)}}
+.tkr-deg{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:12px 0;background:rgba(255,255,255,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid rgba(43,179,177,.25);will-change:translate,opacity}
+.tkr-deg .it{font:700 15px var(--fb);color:var(--teal);letter-spacing:.02em}
+/* ---- How to get a serial: rises over the conditions (sticky stack), then one step per scroll ---- */
+.hs{position:relative;z-index:6;margin-top:-100vh;height:calc(3*95vh + 100vh);background:#fff;border-radius:34px 34px 0 0;box-shadow:0 -30px 60px -30px rgba(6,47,49,.4)}
+.hs:before{content:"";position:absolute;left:8%;right:8%;top:0;height:2px;z-index:7;border-radius:2px;background:linear-gradient(90deg,transparent,var(--aqua) 30%,#7fe3df 50%,var(--aqua) 70%,transparent);box-shadow:0 0 18px 2px rgba(43,179,177,.55)}
+.hs-pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;border-radius:34px 34px 0 0;background:radial-gradient(ellipse 60% 50% at 50% 100%,rgba(43,179,177,.16),transparent 70%),linear-gradient(180deg,#fff,var(--tint))}
+.tkr-num{position:absolute;left:0;right:0;top:max(84px,11vh);padding:12px 0 10px;border-top:1px solid rgba(43,179,177,.22);border-bottom:1px solid rgba(43,179,177,.22);background:rgba(255,255,255,.6)}
+.hs-h{position:absolute;left:0;right:0;top:calc(max(84px,11vh) + 74px);margin:0;text-align:center;white-space:nowrap;font:800 var(--fs,clamp(54px,8.5vw,140px))/1 var(--fh);letter-spacing:-.035em;
+ background:linear-gradient(180deg,var(--teal) 10%,rgba(43,179,177,.45) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bn .hs-h{letter-spacing:0;line-height:1.2}
+.hs-cards{position:absolute;left:0;right:0;bottom:9vh;height:min(52vh,470px)}
+.hs-card{position:absolute;left:50%;top:0;bottom:0;width:min(600px,44vw);margin-left:calc(min(600px,44vw) / -2);display:grid;grid-template-columns:44% 1fr;align-items:center;gap:6px 22px;padding:26px 28px;border-radius:28px;
+ background:rgba(255,255,255,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(43,179,177,.3);box-shadow:0 26px 50px -28px rgba(6,47,49,.45);will-change:transform,opacity}
+.hs-card .ico{position:relative;width:100%;aspect-ratio:1;align-self:center}
+.hs-card .ico:before{content:"";position:absolute;inset:6%;border-radius:50%;background:radial-gradient(circle,rgba(43,179,177,.22),transparent 70%)}
+.hs-card .ico svg{position:relative;width:100%;height:100%;overflow:visible}
+.hs-card .num{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;color:#fff;font:700 15px var(--fb);background:linear-gradient(135deg,var(--aqua),var(--teal))}
+.hs-card h3{margin:12px 0 0;font:700 clamp(22px,1.9vw,30px)/1.15 var(--fh);color:var(--ink)}
+.bn .hs-card h3{font-weight:800;line-height:1.3}
+.hs-card p{margin:10px 0 16px;font:400 15px/1.6 var(--fb);color:var(--muted)}
+.hs-card .row{display:flex;gap:8px;flex-wrap:wrap}
+.hs-card .row .btn{padding:11px 18px;font-size:14.5px}
+.hs-bar{position:absolute;left:50%;bottom:3.5vh;transform:translateX(-50%);display:flex;gap:8px;z-index:3}
+.hs-bar i{width:28px;height:4px;border-radius:3px;background:rgba(11,110,115,.18);transition:width .3s,background .3s}
+.hs-bar i.on{width:52px;background:var(--teal)}
+/* icon animations (prefixed si- so they never clash with page classes) */
+.si-fill{fill:url(#siG)}.si-soft{fill:url(#siS)}.si-wh{fill:#fff}
+.hs-card:not(.cur) *{animation-play-state:paused!important}
+.si-pin{animation:siPin 3.2s cubic-bezier(.3,1.6,.5,1) infinite;transform-origin:186px 74px}
+@keyframes siPin{0%{transform:translateY(-60px);opacity:0}18%{opacity:1}30%,80%{transform:translateY(0);opacity:1}100%{transform:translateY(0);opacity:0}}
+.si-day{fill:#d9eeec;animation:siDay 3.2s infinite}.si-d1{animation-delay:.6s}.si-d2{animation-delay:.9s}.si-d3{animation-delay:1.2s}
+@keyframes siDay{0%,15%{fill:#d9eeec}25%,85%{fill:#2BB3B1}100%{fill:#d9eeec}}
+.si-finger{animation:siTap 2.2s ease-in-out infinite}
+@keyframes siTap{0%,100%{transform:translate(14px,14px)}40%,55%{transform:translate(0,0)}}
+.si-btn{animation:siPress 2.2s ease-in-out infinite;transform-origin:150px 96px}
+@keyframes siPress{0%,40%,70%,100%{transform:scale(1)}50%{transform:scale(.93)}}
+.si-rip{fill:none;stroke:#2BB3B1;stroke-width:3;opacity:0;animation:siRip 2.2s ease-out infinite;transform-origin:150px 96px}.si-rip2{animation-delay:.25s}
+@keyframes siRip{0%,45%{opacity:0;transform:scale(.8)}50%{opacity:.9;transform:scale(.9)}100%{opacity:0;transform:scale(1.5)}}
+.si-ring{animation:siRing 2.8s ease-in-out infinite;transform-origin:196px 150px}
+@keyframes siRing{0%,60%,100%{transform:rotate(0)}64%{transform:rotate(-10deg)}68%{transform:rotate(10deg)}72%{transform:rotate(-8deg)}76%{transform:rotate(6deg)}80%{transform:rotate(0)}}
+.si-bub{animation:siPop 4s ease-in-out infinite;transform-origin:96px 66px}
+@keyframes siPop{0%,8%{transform:scale(0);opacity:0}16%,92%{transform:scale(1);opacity:1}100%{transform:scale(0);opacity:0}}
+.si-dot{fill:#0B6E73;animation:siDot 4s infinite}.si-dt2{animation-delay:.15s}.si-dt3{animation-delay:.3s}
+@keyframes siDot{0%,15%{opacity:0}20%,45%{opacity:1}50%,100%{opacity:0}}
+.si-tick{fill:none;stroke:#0B6E73;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:siTick 4s infinite}
+@keyframes siTick{0%,50%{stroke-dashoffset:60}62%,92%{stroke-dashoffset:0}100%{stroke-dashoffset:60}}
+.si-flo{animation:siFlo 5s ease-in-out infinite}@keyframes siFlo{50%{transform:translateY(-5px)}}
+/* ---- shared section shell ---- */
+.hx{position:relative;z-index:6;background:#fff;padding:13vh 0}
+.hx.tint{background:var(--tint)}
+.hx .wrap{width:min(1180px,100% - 32px);margin:0 auto}
+.hx .eb{margin:0;text-align:center;font:600 13px var(--fb);letter-spacing:.18em;text-transform:uppercase;color:var(--aqua)}
+.bn .hx .eb{letter-spacing:.02em;text-transform:none;font-size:15px}
+.hx h2{margin:10px 0 0;text-align:center;font:800 clamp(38px,5.4vw,84px)/1.02 var(--fh);letter-spacing:-.035em;
+ background:linear-gradient(180deg,var(--teal) 10%,rgba(43,179,177,.5) 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bn .hx h2{letter-spacing:0;line-height:1.2}
+.hx .lead{margin:14px auto 0;max-width:640px;text-align:center;font:400 16.5px/1.65 var(--fb);color:var(--muted)}
+.glass{background:rgba(255,255,255,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(43,179,177,.28);border-radius:22px;box-shadow:0 20px 44px -26px rgba(6,47,49,.42)}
+.tag-s{display:inline-block;padding:3px 9px;border-radius:999px;font:600 11px var(--fb);letter-spacing:.06em;text-transform:uppercase;color:#8a5a00;background:#fff3d6;border:1px solid #f2d79b}
+.bn .tag-s{letter-spacing:0;text-transform:none;font-size:12px}
+/* ---- reviews ---- */
+.gbox{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin:34px auto 0;padding:18px 24px;max-width:760px}
+.gbox .g{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:#fff;border:1px solid rgba(43,179,177,.3);font:800 22px var(--fh);color:var(--teal)}
+.gbox .gt b{display:block;font:700 18px var(--fh);color:var(--ink)}.gbox .gt span{font:400 14px var(--fb);color:var(--muted)}
+.gbox .row{display:flex;gap:8px;flex-wrap:wrap}
+.revs{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:26px}
+.rev{padding:22px 20px;display:flex;flex-direction:column;gap:12px}
+.rev .st{color:#f2b01e;letter-spacing:2px;font-size:16px}
+.rev q{display:block;font:400 15.5px/1.65 var(--fb);color:var(--ink)}
+.bn .rev q{font-size:16.5px}
+.rev .who{display:flex;align-items:center;gap:10px;margin-top:auto}
+.rev .av{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font:700 14px var(--fb);background:linear-gradient(135deg,var(--aqua),var(--teal))}
+.rev .who b{display:block;font:600 14.5px var(--fb)}.rev .who span{font:400 13px var(--fb);color:var(--muted)}
+/* ---- video + gallery placeholders ---- */
+.ph{position:relative;display:grid;place-items:center;align-content:center;text-align:center;border-radius:22px;overflow:hidden;color:var(--teal);
+ background:repeating-linear-gradient(135deg,rgba(43,179,177,.07) 0 14px,rgba(43,179,177,.13) 14px 28px),linear-gradient(180deg,#fff,var(--tint));border:1.5px dashed rgba(43,179,177,.55)}
+.ph small{display:block;margin-top:10px;font:600 13px var(--fb);color:var(--muted)}
+.ph .play{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;margin:0 auto;background:var(--teal);box-shadow:0 0 0 12px rgba(43,179,177,.18)}
+.ph .play:after{content:"";margin-left:6px;border-left:22px solid #fff;border-top:14px solid transparent;border-bottom:14px solid transparent}
+.ph .play.sm{width:46px;height:46px;box-shadow:0 0 0 8px rgba(43,179,177,.16)}.ph .play.sm:after{border-left-width:14px;border-top-width:9px;border-bottom-width:9px;margin-left:4px}
+.vid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-top:34px}
+.vid .main{aspect-ratio:16/9}.vid .stack{display:grid;gap:16px;grid-template-rows:repeat(3,1fr)}.vid .stack .ph{min-height:0}
+.gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:170px;gap:14px;margin-top:34px}
+.gal .ph:nth-child(1){grid-column:span 2;grid-row:span 2}.gal .ph:nth-child(4){grid-row:span 2}.gal .ph:nth-child(6){grid-column:span 2}
+.gal .ph b{font:600 14px var(--fb)}
+/* ---- FAQ ---- */
+.faq{max-width:860px;margin:34px auto 0;display:grid;gap:12px}
+.faq details{padding:0 22px}
+.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:20px 0;font:600 17px/1.4 var(--fb);color:var(--ink)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:"+";flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font:500 22px var(--fb);color:#fff;background:linear-gradient(135deg,var(--aqua),var(--teal));transition:transform .3s}
+.faq details[open] summary:after{transform:rotate(45deg)}
+.faq details p{margin:0 0 20px;font:400 15.5px/1.7 var(--fb);color:var(--muted)}
+/* ---- blog ---- */
+.blogs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+.blog{display:flex;flex-direction:column;overflow:hidden;padding:0}
+.blog .ph{border-radius:0;border:0;aspect-ratio:16/10}
+.blog .bd{padding:18px 20px 22px;display:flex;flex-direction:column;gap:8px}
+.blog small{font:600 12px var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--aqua)}
+.bn .blog small{letter-spacing:0;text-transform:none;font-size:13px}
+.blog h3{margin:0;font:700 20px/1.3 var(--fh);color:var(--ink)}.bn .blog h3{font-weight:800}
+.blog p{margin:0;font:400 14.5px/1.6 var(--fb);color:var(--muted)}
+.blog .go{margin-top:6px;font:600 14px var(--fb);color:var(--teal)}
+/* ---- visit: doctor centred + CTA left + chambers right, then the map ---- */
+.visit{overflow:clip;padding-top:8vh}
+.v-stage{position:relative;min-height:min(92vh,820px);display:grid;grid-template-columns:1fr min(32vw,440px) 1fr;align-items:center;gap:0 2vw;padding:0 3vw}
+.v-big{position:absolute;left:0;right:0;top:2vh;text-align:center;white-space:nowrap;font:800 clamp(80px,14vw,240px)/.95 var(--fh);letter-spacing:-.04em;
+ background:linear-gradient(180deg,var(--teal),rgba(43,179,177,.4));-webkit-background-clip:text;background-clip:text;color:transparent;pointer-events:none}
+.bn .v-big{letter-spacing:0;line-height:1.2}
+.v-doc{grid-column:2;grid-row:1;align-self:end;position:relative;z-index:2;height:min(80vh,720px);display:flex;justify-content:center}
+.v-doc img{height:100%;width:auto;filter:drop-shadow(0 30px 40px rgba(6,47,49,.22));animation:float 6s ease-in-out infinite}
+.v-cta{grid-column:1;grid-row:1;position:relative;z-index:3;padding:28px 26px}
+.v-cta h3{margin:0;font:700 clamp(26px,2.4vw,38px)/1.12 var(--fh)}.bn .v-cta h3{font-weight:800;line-height:1.3}
+.v-cta p{margin:12px 0 18px;font:400 15.5px/1.6 var(--fb);color:var(--muted)}
+.v-cta .row{display:flex;gap:8px;flex-wrap:wrap}
+.v-chs{grid-column:3;grid-row:1;position:relative;z-index:3;display:grid;gap:10px}
+.v-ch{display:block;width:100%;text-align:left;cursor:pointer;padding:14px 18px;font:inherit;color:inherit;transition:border-color .3s,box-shadow .3s}
+.v-ch.on{border-color:var(--teal);box-shadow:0 0 0 2px rgba(11,110,115,.25),0 20px 44px -26px rgba(6,47,49,.42)}
+.v-ch small{font:600 11.5px var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--aqua)}.bn .v-ch small{letter-spacing:.02em;text-transform:none;font-size:13px}
+.v-ch b{display:block;margin-top:5px;font:700 17px/1.3 var(--fh)}
+.v-ch span{display:block;margin-top:4px;font:400 13.5px/1.5 var(--fb);color:var(--muted)}
+.v-ch em{display:inline-block;margin-top:8px;font:600 13px var(--fb);font-style:normal;color:var(--teal)}
+.v-map{margin:5vh auto 0;width:min(1180px,100% - 32px)}
+.v-map .mh{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.v-map .mh b{font:700 20px var(--fh)}.v-map .mh span{display:block;font:400 14px var(--fb);color:var(--muted)}
+.v-map iframe{display:block;width:100%;height:min(52vh,460px);border:0;border-radius:22px;box-shadow:0 20px 44px -26px rgba(6,47,49,.42);background:var(--tint)}
+.v-map .note{margin-top:10px;font:400 12.5px var(--fb);color:#8a5a00}
+.hfoot{position:relative;z-index:6;background:var(--ink);color:#cfe3e2;padding:44px 0 28px;font:400 14px/1.7 var(--fb)}
+.hfoot .wrap{width:min(1180px,100% - 32px);margin:0 auto;display:flex;flex-wrap:wrap;gap:16px 40px;justify-content:space-between}
+.hfoot b{color:#fff;font:700 18px var(--fh)}.hfoot a{color:#cfe3e2}
+@media (min-width:861px){.svc-card.more{top:auto;bottom:4vh}}
+@media (max-width:980px){.revs{grid-template-columns:repeat(2,1fr)}.blogs{grid-template-columns:1fr 1fr}}
+@media (max-width:860px){
+ .tkr-deg{padding:9px 0}.tkr-deg .it{font-size:13px;padding:0 14px}
+ .cta-m{bottom:54px}.side.r{bottom:120px}
+ .hs{border-radius:24px 24px 0 0}.hs-pin{border-radius:24px 24px 0 0}
+ .tkr-num{padding:12px 0 9px}.tkr .it{padding:0 14px;font-size:13px}.tkr .it b{font-size:20px}
+ .tkr-num{top:max(74px,10vh)}
+ .hs-h{top:calc(max(74px,10vh) + 56px);font-size:var(--fs,clamp(38px,11vw,64px))}
+ .hs-cards{bottom:3vh;height:min(62vh,560px)}
+ .hs-card{left:12px;right:12px;top:auto;width:auto;margin-left:0;grid-template-columns:1fr;grid-template-rows:auto 1fr;align-content:start;text-align:center;padding:18px 18px 20px}
+ .hs-card .ico{width:min(48vw,220px);margin:0 auto}.hs-card .row{justify-content:center}.hs-card p{font-size:14.5px}
+ .hs-bar{display:none}
+ .hx{padding:9vh 0}
+ .revs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:8px;scrollbar-width:none}.revs::-webkit-scrollbar{display:none}
+ .rev{flex:0 0 84%;scroll-snap-align:center}
+ .vid{grid-template-columns:1fr}.vid .stack{grid-template-columns:repeat(3,1fr);grid-template-rows:none}.vid .stack .ph{aspect-ratio:16/10}
+ .gal{grid-template-columns:1fr 1fr;grid-auto-rows:130px}.gal .ph:nth-child(6){grid-column:span 2}
+ .blogs{grid-template-columns:1fr}
+ .v-stage{grid-template-columns:1fr;padding:0 12px;min-height:0}
+ .v-big{top:0;font-size:clamp(54px,17vw,90px)}
+ .v-doc{grid-column:1;grid-row:1;height:min(58vh,460px);margin-top:3vh}
+ .v-cta{grid-column:1;grid-row:2;margin-top:-6px}.v-chs{grid-column:1;grid-row:3;margin-top:12px}
+}
+@media (prefers-reduced-motion:reduce){.tkr .trk,.hs-card *,.v-doc img{animation:none!important}}
+</style>
+<link rel="stylesheet" href="assets/preloader.css?v=1">
+<script>/* OT-light preloader: once per session */try{if(sessionStorage.getItem('kpl'))document.documentElement.classList.add('pl-skip');else sessionStorage.setItem('kpl','1')}catch(e){}</script>
+</head>
+<body>
+<!-- OT-light preloader (assets/preloader.css). Name text must come from the admin panel in the final build. -->
+<div id="pl" role="presentation" aria-hidden="true"><div class="pl-stage"><div class="pl-mv"><svg class="pl-lamp" viewBox="0 0 120 70" aria-hidden="true"><rect x="56" y="0" width="8" height="16" rx="3" fill="#2BB3B1"/><path d="M10 50 Q60 6 110 50 Z" fill="#dfeeed"/><path d="M10 50 Q60 6 110 50" fill="none" stroke="#9fc9c7" stroke-width="2"/><ellipse cx="60" cy="50" rx="50" ry="8" fill="#fff"/><circle cx="40" cy="50" r="4" fill="#fffbe6"/><circle cx="60" cy="51" r="4.5" fill="#fffbe6"/><circle cx="80" cy="50" r="4" fill="#fffbe6"/></svg><div class="pl-beam"></div></div><div class="pl-name">Dr. Fahim Foysal Kollol</div><div class="pl-sub">General, Laparoscopic, Breast &amp; Colorectal Surgeon</div></div></div>
+<script>(function(){var p=document.getElementById('pl');if(!p)return;try{if(localStorage.getItem('kollol-lang')==='bn'){p.querySelector('.pl-name').textContent='ডাঃ ফাহিম ফয়সাল কল্লোল';p.querySelector('.pl-name').style.fontFamily="'Anek Bangla',sans-serif";p.querySelector('.pl-sub').textContent='জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন';p.querySelector('.pl-sub').style.letterSpacing='0'}}catch(e){}var k=function(){p.remove()};p.addEventListener('click',k);p.addEventListener('animationend',function(e){if(e.animationName==='plFlood')k()})})();</script>
+
+<header class="nav">
+  <a class="brand" href="#"><i>K</i><span data-t="brand"></span></a>
+  <nav class="links">
+    <a href="index.html" class="on" data-t="home"></a><a href="#doctor" data-t="about"></a>
+    <div class="dd"><button type="button" data-t="services"></button><div class="dd-menu" id="ddMenu"></div></div>
+    <a href="#" data-t="blogs"></a><a href="#" data-t="contact"></a>
+  </nav>
+  <div class="right">
+    <div class="lang"><button data-l="en">EN</button><button data-l="bn">বাং</button></div>
+    <a class="btn btn-p" href="#" data-t="book"></a>
+    <button class="burger" aria-label="Menu"><span></span></button>
+  </div>
+</header>
+<div class="sheet"><a href="index.html" data-t="home"></a><a href="#doctor" data-t="about"></a><a href="conditions/index.html" data-t="services"></a><div id="sheetCats" style="display:flex;flex-direction:column"></div><a href="#" data-t="blogs"></a><a href="#" data-t="contact"></a><a href="tel:01670879100" class="btn btn-p" style="margin-top:6px" data-t="call"></a></div>
+
+<!-- ================= HERO: scroll-driven incision ================= -->
+<section class="hero" id="hero">
+  <div class="stage">
+    <canvas id="cv"></canvas>
+    <div class="emerge" id="em">
+      <div class="ln t-h" data-g="1" data-t="h1"></div>
+      <div class="ln t-sub" data-g="2" data-t="h2"></div>
+      <a class="ln t-cue" data-g="3" href="#doctor"><span data-t="meet"></span><i>↓</i></a>
+    </div>
+    <div class="cue" id="cue"><b></b><span data-t="scroll"></span></div>
+    <div class="loader" id="ld"></div>
+  </div>
+</section>
+
+<!-- ================= MEET THE DOCTOR ================= -->
+<section class="doc" id="doctor">
+  <div class="pin">
+    <div class="glow"></div>
+    <h2 class="intro rv" id="intro"><span></span><span></span></h2>
+    <div class="svc-head" id="svcHead"><span data-t="svcHead"></span><div class="svc-chips" id="svcChips"></div></div>
+    <div class="svc-words" id="svcWords"></div>
+    <div class="doc-img"><img src="img/doctor.webp" alt="Dr. Fahim Foysal Kollol, surgeon, in green scrubs" width="624" height="1126"></div>
+    <div class="side l" id="sideL">
+      <h3 class="name rv" data-t="name"></h3>
+      <p class="role rv" data-t="role"></p>
+      <div class="deg rv"><span data-t="d1"></span><span data-t="d2"></span><span data-t="d3"></span><span data-t="d4"></span></div>
+      <p class="post rv" data-t="post"></p>
+      <div class="cta rv">
+        <div class="row"><a class="btn btn-p" href="#" data-t="book"></a><a class="btn btn-g" href="tel:01670879100" data-t="call"></a></div>
+        <p data-t="chambers"></p>
+      </div>
+    </div>
+    <div class="side r" id="sideR">
+      <div class="stats">
+        <div class="stat rv"><b data-t="s1n"></b><span data-t="s1"></span></div>
+        <div class="stat rv"><b data-t="s2n"></b><span data-t="s2"></span></div>
+        <div class="stat rv"><b data-t="s3n"></b><span data-t="s3"></span></div>
+        <div class="stat rv"><b data-t="s4n"></b><span data-t="s4"></span></div>
+        <div class="stat rv"><b data-t="s5n"></b><span data-t="s5"></span></div>
+        <div class="stat rv"><b data-t="s6n"></b><span data-t="s6"></span></div>
+      </div>
+    </div>
+    <div class="tkr tkr-deg" id="tkrDeg"></div>
+    <div class="cta-m" id="ctaM"><a class="btn btn-p" href="#" data-t="book"></a><a class="btn btn-g" href="tel:01670879100" data-t="call"></a></div>
+    <div id="svcCards"></div>
+    <div class="svc-bar" id="svcBar"></div>
+  </div>
+</section>
+
+
+<!-- ================= PART 2 (rendered by buildHome() — all copy EN/BN in HX below; developer: admin-editable) ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ <linearGradient id="siG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B6E73"/><stop offset="1" stop-color="#2BB3B1"/></linearGradient>
+ <linearGradient id="siS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2BB3B1"/><stop offset="1" stop-color="#7fd6d3"/></linearGradient>
+ <g id="siP"><ellipse fill="rgba(6,47,49,.10)" cx="0" cy="96" rx="46" ry="6"/><path class="si-fill" d="M-44 92 L-39 42 Q-36 16 0 16 Q36 16 39 42 L44 92 Z"/><circle class="si-fill" stroke="#fff" stroke-width="5" cx="0" cy="-20" r="30"/></g>
+</defs></svg>
+
+<!-- How to get a serial: rises over the conditions stage, numbers ticker on its top edge, one step per scroll -->
+<section class="hs" id="serial"><div class="hs-pin">
+  <div class="tkr tkr-num" id="tkrNum"></div>
+  <h2 class="hs-h" id="hsH"></h2>
+  <div class="hs-cards" id="hsCards"></div>
+  <div class="hs-bar" id="hsBar"></div>
+</div></section>
+
+<section class="hx" id="reviews"><div class="wrap">
+  <p class="eb" id="rvEb"></p><h2 id="rvH"></h2><p class="lead" id="rvLead"></p>
+  <div class="gbox glass" id="gbox"></div>
+  <div class="revs" id="revs"></div>
+</div></section>
+
+<section class="hx tint" id="videos"><div class="wrap">
+  <p class="eb" id="vdEb"></p><h2 id="vdH"></h2><p class="lead" id="vdLead"></p>
+  <div class="vid" id="vid"></div>
+</div></section>
+
+<section class="hx" id="gallery"><div class="wrap">
+  <p class="eb" id="glEb"></p><h2 id="glH"></h2><p class="lead" id="glLead"></p>
+  <div class="gal" id="gal"></div>
+</div></section>
+
+<section class="hx tint" id="faq"><div class="wrap">
+  <p class="eb" id="fqEb"></p><h2 id="fqH"></h2>
+  <div class="faq" id="faqList"></div>
+</div></section>
+
+<section class="hx" id="blog"><div class="wrap">
+  <p class="eb" id="bgEb"></p><h2 id="bgH"></h2>
+  <div class="blogs" id="blogs"></div>
+</div></section>
+
+<section class="hx tint visit" id="visit">
+  <div class="v-stage">
+    <div class="v-big" id="vBig"></div>
+    <div class="v-doc"><img src="img/doctor-cta.webp" alt="Dr. Fahim Foysal Kollol" width="649" height="1081" loading="lazy"></div>
+    <div class="v-cta glass" id="vCta"></div>
+    <div class="v-chs" id="vChs"></div>
+  </div>
+  <div class="v-map" id="vMap"></div>
+</section>
+<footer class="hfoot" id="hfoot"></footer>
+
+<script src="assets/conditions-data.js?v=7"></script>
+<script>
+/* ================= COPY (EN / BN) ================= */
+const COPY={
+ en:{brand:'Dr. Kollol',home:'Home',about:'About the Doctor',services:'Conditions &amp; Treatments',blogs:'Blogs',contact:'Contact',book:'Book a serial',call:'Call now',scroll:'Scroll',
+  h1:'Every incision has a reason.',h2:'And an <em>expert surgeon</em> knows it all.',meet:'Meet your surgeon',
+  intro:'Meet Your Surgeon',name:'Dr. Fahim Foysal Kollol',role:'General, Laparoscopic, Breast &amp; Colorectal Surgeon',
+  d1:'MBBS',d2:'BCS (Health)',d3:'FCPS (Surgery)',d4:'MACS (USA)',
+  post:'Assistant Professor of Surgery, Mymensingh Medical College Hospital · BMDC Reg. A-61041',
+  s1n:'10,000+',s1:'Major &amp; minor surgeries',s2n:'300+',s2:'Laparoscopic (keyhole) surgeries',s3n:'250+',s3:'Fistula operations',
+  s4n:'100+',s4:'Longo (stapler) piles surgeries',s5n:'10+ yrs',s5:'In practice since 2015',s6n:'11',s6:'Research publications',
+  chambers:'<strong>Sherpur</strong> every Thursday &amp; Friday · <strong>Mymensingh</strong> Saturday to Tuesday'},
+ bn:{brand:'ডাঃ কল্লোল',home:'হোম',about:'ডাক্তার সম্পর্কে',services:'রোগ ও চিকিৎসা',blogs:'ব্লগ',contact:'যোগাযোগ',book:'সিরিয়াল নিন',call:'কল করুন',scroll:'স্ক্রল করুন',
+  h1:'প্রতিটা ইনসিশনের পেছনে একটা কারণ আছে।',h2:'আর একজন <em>অভিজ্ঞ সার্জনই</em> সেই কারণ জানেন।',meet:'পরিচিত হন আপনার সার্জনের সাথে',
+  intro:'ইনিই আপনার সার্জন',name:'ডাঃ ফাহিম ফয়সাল কল্লোল',role:'জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন',
+  d1:'এমবিবিএস',d2:'বিসিএস (স্বাস্থ্য)',d3:'এফসিপিএস (সার্জারি)',d4:'এমএসিএস (আমেরিকা)',
+  post:'সহকারী অধ্যাপক (সার্জারি), ময়মনসিংহ মেডিকেল কলেজ হাসপাতাল · বিএমডিসি রেজি: এ-৬১০৪১',
+  s1n:'১০,০০০+',s1:'বড়-ছোট অপারেশন',s2n:'৩০০+',s2:'ল্যাপারোস্কপিক অপারেশন',s3n:'২৫০+',s3:'ফিস্টুলা অপারেশন',
+  s4n:'১০০+',s4:'লংগো পদ্ধতিতে পাইলস অপারেশন',s5n:'১০+ বছর',s5:'২০১৫ থেকে চিকিৎসা দিচ্ছেন',s6n:'১১',s6:'গবেষণা প্রকাশনা',
+  chambers:'<strong>শেরপুরে</strong> প্রতি বৃহস্পতি ও শুক্রবার · <strong>ময়মনসিংহে</strong> শনি থেকে মঙ্গলবার'}};
+
+/* ================= CONDITIONS (data: assets/conditions-data.js — same source as the Conditions & Treatments pages) =================
+   Homepage shows the conditions that have a `home` entry, in category order, then a final "And more" step + CTA. */
+COPY.en.svcHead='Conditions Dr. Kollol treats';COPY.bn.svcHead='যেসব রোগের চিকিৎসা করেন ডাঃ কল্লোল';
+const HOME_UI={en:{more:'And more',moreT:'More conditions Dr. Kollol treats',all:'All conditions & treatments',go:'Learn more →',lap:'Laparoscopic',ask:'Not sure what you have? Come for a check-up.'},
+ bn:{more:'আরও অনেক',moreT:'ডাঃ কল্লোল আরও যেসব রোগের চিকিৎসা করেন',all:'সব রোগ ও চিকিৎসা',go:'বিস্তারিত →',lap:'ল্যাপারোস্কপিক',ask:'কোন রোগ বুঝতে পারছেন না? একবার দেখিয়ে নিন।'}};
+const CD=window.KOLLOL_DATA,condUrl=s=>`conditions/condition.html?c=${s}`,catUrl=s=>`conditions/category.html?cat=${s}`;
+const svc=document.getElementById('doctor'),svcWords=document.getElementById('svcWords'),svcCards=document.getElementById('svcCards'),svcBar=document.getElementById('svcBar'),svcChips=document.getElementById('svcChips');
+let svcItems=[];
+const introEl=document.getElementById('intro'),sideL=document.getElementById('sideL'),sideR=document.getElementById('sideR'),ctaM=document.getElementById('ctaM'),svcHead=document.getElementById('svcHead');
+let svcEls=[];
+/* split the giant "Introducing" word in two halves (grapheme-safe for Bangla) so the curtain can pull them apart */
+/* the giant headline is now the doctor's NAME, always on one line, as big as the screen allows */
+function splitIntro(l){introEl.children[0].textContent=COPY[l].intro;introEl.children[1].textContent='';fitIntro()}
+function fitIntro(){const s=introEl.children[0];introEl.style.fontSize='';const base=parseFloat(getComputedStyle(introEl).fontSize),max=innerWidth*(innerWidth<860?.92:.9);
+ if(s.scrollWidth>max)introEl.style.fontSize=Math.floor(base*max/s.scrollWidth)+'px';
+ if(innerWidth<860)sideL.style.top=(introEl.offsetTop+introEl.offsetHeight+4)+'px';else sideL.style.top=''}
+addEventListener('resize',fitIntro);if(document.fonts)document.fonts.ready.then(fitIntro);
+
+/* fast number count-up every time the stats come into view (scrolling down OR up) */
+const BN='০১২৩৪৫৬৭৮৯',toL=s=>s.replace(/[০-৯]/g,d=>BN.indexOf(d)),toB=s=>s.replace(/\d/g,d=>BN[d]);
+function countUp(b){const txt=COPY[document.documentElement.lang||'en'][b.dataset.t];const bn=/[০-৯]/.test(txt),m=toL(txt).match(/[\d,]+/);if(!m)return;
+ const n=+m[0].replace(/,/g,''),pre=toL(txt).slice(0,m.index),suf=toL(txt).slice(m.index+m[0].length),t0=performance.now(),dur=900;
+ cancelAnimationFrame(b._raf);const step=t=>{const k=Math.min(1,Math.max(0,(t-t0)/dur)),v=Math.round(n*(1-Math.pow(1-k,3)));let s=pre+v.toLocaleString('en-US')+suf;b.textContent=bn?toB(s):s;if(k<1)b._raf=requestAnimationFrame(step)};b._raf=requestAnimationFrame(step)}
+const statIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('.stat b').forEach(countUp)}),{threshold:.3});
+/* story inside the pinned doctor section (fraction of its scroll) */
+const DOC={hold:.05,curtain:[.05,.2],svc:[.2,1]};
+function buildServices(l){const u=HOME_UI[l],catName=s=>CD.categories.find(c=>c.slug===s)[l].name;
+ const featured=CD.conditions.filter(c=>c.home&&!c.hidden).sort((a,b)=>a.home.order-b.home.order);
+ const rest=CD.conditions.filter(c=>!c.home&&!c.hidden);
+ svcItems=[...featured.map(c=>({word:c.home[l],cat:c.cat,c})),{word:u.more,cat:null,more:true}];
+ svc.style.setProperty('--n',svcItems.length);splitIntro(l);
+ svcChips.innerHTML=CD.categories.map(c=>`<a href="${catUrl(c.slug)}" data-cat="${c.slug}">${c[l].name}</a>`).join('');
+ svcWords.innerHTML=svcItems.map(s=>`<div class="svc-word">${s.word}</div>`).join('');
+ svcCards.innerHTML=svcItems.map((s,i)=>s.more
+  ? `<div class="svc-card r more"><small>${u.all}</small><b>${u.moreT}</b><div class="tags">${rest.map(c=>`<a href="${condUrl(c.slug)}">${c[l].name}</a>`).join('')}<a class="plus" href="conditions/index.html">+${l==='bn'?String(rest.length-6).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]):rest.length-6}</a></div>
+     <p style="margin-top:12px">${u.ask}</p><div class="row"><a class="btn btn-p" href="tel:01750529252">${COPY[l].book}</a><a class="btn btn-g" href="conditions/index.html">${u.all}</a></div></div>`
+  : `<a class="svc-card ${Math.floor(i/3)%2?'r':'l'}" href="${condUrl(s.c.slug)}"><img class="ci" src="img/conditions/${s.c.slug}.webp?v=2" alt=""><small>${catName(s.cat)}</small><b>${s.c[l].name}</b><p>${s.c[l].short}</p>
+     <span class="meta">${s.c.lap?`<span class="lapb">${u.lap}</span>`:'<span></span>'}<span class="go">${u.go}</span></span></a>`).join('');
+ svcBar.innerHTML=svcItems.map(()=>'<i></i>').join('');
+ document.getElementById('ddMenu').innerHTML=`<a class="all" href="conditions/index.html">${u.all}</a>`+CD.categories.map(c=>`<a href="${catUrl(c.slug)}">${c[l].name}</a>`).join('');
+ document.getElementById('sheetCats').innerHTML=CD.categories.map(c=>`<a class="sub" href="${catUrl(c.slug)}">${c[l].name}</a>`).join('');
+ svcEls=svcItems.map((_,i)=>[svcWords.children[i],svcCards.children[i],svcBar.children[i]]);fitWords();svcDraw(true)}
+/* laptop: each treatment name as big as possible on ONE line — long names (Varicose veins) shrink just enough to fit 96% width */
+function fitWords(){svcEls.forEach(([w],i)=>{w.style.removeProperty('--fs');if(innerWidth<860)return;
+ const more=svcItems[i]&&svcItems[i].more,base=parseFloat(getComputedStyle(w).fontSize),wd=w.scrollWidth,max=innerWidth*(more?.96:.44);
+ let fs=wd>max?base*max/wd:base;if(!more)fs=Math.min(fs,innerHeight*.2);if(fs!==base)w.style.setProperty('--fs',Math.floor(fs)+'px')})}
+/* laptop: the doctor swings side to side per condition — right, left, right… (card + word on the free side), zoomed in to
+   upper-chest-and-face; crosses the middle a little farther away; back to centre, normal size, for "And more". */
+const docImg=document.querySelector('.doc-img');
+const sideOf=i=>svcItems[i]&&svcItems[i].more?0:(Math.floor(i/3)%2?-1:1);   /* groups of 3 by position (never by category): right ×3, left ×3, right ×3… · +1 = doctor right, card left */
+const restH=x=>{const b=Math.floor(x),f=x-b,t=clamp((f-.3)/.4,0,1);return b+t*t*(3-2*t)};
+function docState(i){const sd=sideOf(i);if(!sd)return{x:0,s:1,y:0};
+ const H=docImg.offsetHeight,vh=innerHeight,S=Math.max(1.6,(.76*vh)/(.42*H)),top0=vh-H;
+ return{x:sd*innerWidth*.27,s:S,y:vh*.24-(top0+.015*H*S)}}
+addEventListener('resize',()=>{fitWords();svcDraw(true)});
+if(document.fonts)document.fonts.ready.then(fitWords);
+let svcLast=-1;
+function svcDraw(force){const r=svc.getBoundingClientRect(),q=clamp(-r.top/(svc.offsetHeight-2*innerHeight),0,1);if(!force&&q===svcLast)return;svcLast=q;
+ /* 1) curtain: left-side text slides out to the left, right-side text to the right, the giant word splits apart */
+ /* 1) intro lifts off: every intro text/card/button rises up out of the frame (doctor stays put), reverses on scroll-up */
+ const c=seg(q,...DOC.curtain),up=-c*innerHeight*1.15;
+ introEl.children[0].style.transform=introEl.children[1].style.transform='';
+ introEl.style.translate=`0 ${up*1.1}px`;
+ sideL.style.translate=`0 ${up}px`;sideR.style.translate=`0 ${up*.9}px`;tkrDeg.style.translate=`0 ${up*.25}px`;tkrDeg.style.opacity=1-seg(c,0,.45);ctaM.style.translate=`0 ${up*1.2}px`;
+ introEl.style.opacity=sideL.style.opacity=sideR.style.opacity=ctaM.style.opacity=1-seg(c,.55,1);
+ [sideL,sideR,ctaM].forEach(e=>e.style.pointerEvents=c>.5?'none':'auto');
+ /* 2) treatments: giant names scroll up behind the same doctor */
+ const inS=seg(q,DOC.curtain[0]+.04,DOC.curtain[1]+.02),n=svcEls.length,mob=innerWidth<860,pos=mob?seg(q,...DOC.svc)*(n-1):restH(seg(q,...DOC.svc)*(n-1)),step=innerHeight*(mob?.34:.62);
+ if(mob){docImg.style.transform=''}else{const a=Math.floor(pos),f=pos-a,A=docState(a),B=docState(Math.min(n-1,a+1)),e=f*f*(3-2*f),C={x:0,s:1,y:0},k=inS*inS*(3-2*inS);
+  let x=lerp(A.x,B.x,e),sc=lerp(A.s,B.s,e)-Math.sin(Math.PI*e)*(A.x&&B.x&&A.x!==B.x?.45:0),y=lerp(A.y,B.y,e);
+  x=lerp(C.x,x,k);sc=lerp(1,sc,k);y=lerp(0,y,k);docImg.style.transformOrigin='50% 0';docImg.style.transform=`translateX(calc(-50% + ${x}px)) translateY(${y}px) scale(${sc})`}
+ svcHead.style.opacity=inS;svcBar.style.opacity=inS;
+ svcEls.forEach(([w,cd,b],i)=>{const o=i-pos,a=Math.abs(o);
+  const wx=mob?0:-sideOf(i)*innerWidth*.25;w.style.transform=`translate(calc(-50% + ${wx}px),calc(-50% + ${o*step+(1-inS)*innerHeight*.9}px - ${mob?14:(sideOf(i)?14:8)}vh)) scale(${1-Math.min(a,1)*.12})`;w.style.opacity=clamp(1-a*.75,0,1)*inS;
+  const co=clamp(1-a*2.4,0,1)*inS;cd.style.opacity=co;cd.style.pointerEvents=co>.5?'auto':'none';
+  cd.style.translate=`0 ${o*50}px`;b.classList.toggle('on',Math.round(pos)===i)});
+ /* category chip of the current condition lights up (no counter) */
+ const cur=svcItems[Math.round(pos)];svcChips.querySelectorAll('a').forEach(a=>{const on=!!cur&&a.dataset.cat===cur.cat;
+  if(on&&!a.classList.contains('on')&&mob)svcChips.scrollTo({left:a.offsetLeft-svcChips.clientWidth/2+a.offsetWidth/2,behavior:'smooth'});a.classList.toggle('on',on)})}
+
+
+/* ================= HOMEPAGE PART 2 — copy (EN/BN). Developer: every string/list here becomes admin-editable (Supabase). =================
+   Reviews below are SAMPLES (clearly tagged "Sample") — replace with real, consented patient reviews before launch.
+   FAQ answers are drafts — must be approved by Dr. Kollol. Blog cards are placeholders until the blogs are written. */
+const SERIAL_NO='01750529252',CALL_NO='01670879100',WA_URL='https://wa.me/8801670879100';
+const HX={
+ en:{deg:['MBBS','BCS (Health) · 33rd BCS','FCPS (Surgery)','MACS (USA)','Life Member, SOSB','Life Member, SELSB','Assistant Professor of Surgery, MMCH','Laparoscopy Training, SELSB'],
+  hsH:'How to get a serial',
+  steps:[{t:'See where & when he sits',p:'Sherpur every Thursday & Friday · Mymensingh Saturday to Tuesday. Addresses, days and times are on this page.',b:[['g','Chambers & timings →','#visit']]},
+   {t:'Tap “Book a serial”',p:'The “Book a serial” button is on every page of the website. One tap opens the serial number.',b:[['p','Book a serial','tel:'+SERIAL_NO]]},
+   {t:'Call or WhatsApp to confirm',p:'Tell us your name, your problem and your chamber — you’ll get your serial number.',b:[['p','Call','tel:'+SERIAL_NO],['g','WhatsApp',WA_URL]]}],
+  rvEb:'Patient reviews',rvH:'What patients say',rvLead:'Real experiences from patients in Sherpur and Mymensingh.',
+  gT:'Google reviews',gS:'Dr. Kollol’s Google rating and reviews will appear here.',gSee:'See reviews on Google',gWrite:'Write a review',sample:'Sample',
+  revs:[{q:'I suffered from piles for years. Sir explained everything calmly — after the Longo operation I went home in two days and I am completely fine now.',n:'A. R.',m:'45 · Sherpur · Piles (Longo)'},
+   {q:'I was scared when I heard “gallstones”. It was done through small holes and the scars are barely visible. Sir is very caring.',n:'S. A.',m:'34 · Mymensingh · Gallstones (laparoscopic)'},
+   {q:'My fistula came back after two operations elsewhere. After Dr. Kollol’s surgery it has not returned.',n:'M. H.',m:'28 · Nalitabari, Sherpur · Fistula'},
+   {q:'I was very worried about a lump in my breast. He arranged the tests quickly, explained clearly and the operation was done on time.',n:'R. K.',m:'52 · Mymensingh · Breast lump'}],
+  vdEb:'Videos',vdH:'Watch & understand',vdLead:'Short videos where Dr. Kollol explains common problems and surgeries.',soon:'Videos coming soon',
+  glEb:'Gallery',glH:'Inside the practice',glLead:'Operation theatre, chambers, health camps and conferences.',gsoon:'Photos coming soon',
+  gal:['Operation theatre','Sherpur chamber','Mymensingh chamber','Health camps','Conferences','With patients'],
+  fqEb:'FAQ',fqH:'Common questions',
+  faq:[['Do piles always need an operation?','No. Early piles often get better with fibre-rich food, enough water and medicine. An operation (such as the Longo / stapler method) is advised when bleeding keeps coming back, the piles come out, or the pain does not settle.'],
+   ['What is laparoscopic (keyhole) surgery?','The operation is done through a few small holes with a camera. Usually there is less pain, smaller scars and a faster return to work. It is used for gallbladder stones, appendicitis, hernia, varicocele and more.'],
+   ['How long will I stay in hospital?','It depends on the operation. Many keyhole and anal operations need only a short stay; Dr. Kollol will tell you exactly after the check-up.'],
+   ['Is every breast lump cancer?','Most breast lumps are not cancer — but every lump must be examined. Checking early is the safest choice.'],
+   ['Can a fistula come back after surgery?','It can come back if it is not treated properly. Careful surgery and regular follow-up make that much less likely.'],
+   ['What should I bring to the chamber?','Old prescriptions, any ultrasound, X-ray or blood reports, and the list of medicines you take.'],
+   ['How do I get a serial?','Call or WhatsApp the serial number, say your name, problem and chamber. Sherpur: Thursday & Friday · Mymensingh: Saturday to Tuesday.']],
+  bgEb:'Health blog',bgH:'Read before you worry',bsoon:'Coming soon',bmore:'Read article →',
+  blogs:[['Colorectal & Anal','Piles: when do you really need surgery?','Bleeding, pain or a lump — what each sign means and when an operation helps.'],
+   ['Gallbladder & Bile Duct','Gallstones and keyhole surgery — what to expect','From the first ultrasound to going home: a simple guide to laparoscopic cholecystectomy.'],
+   ['Breast','Found a breast lump? Don’t panic — get checked','Most lumps are harmless. Here is how a lump is checked and why early is better.']],
+  vH:'Don’t wait. Talk to your surgeon.',vP:'Call for a serial or come to the chamber — Dr. Kollol will explain your problem and the right treatment.',book:'Book a serial',call:'Call now',wa:'WhatsApp',dir:'Directions →',
+  ch:[{t:'Sherpur · Thursday',n:'Asia Diagnostic Center',a:'Zila Hospital Road, Narayanpur · 3 PM – 9 PM',q:'Sadar Hospital Road, Narayanpur, Sherpur',ok:false},
+   {t:'Sherpur · Friday',n:'Amjad Diagnostic Center',a:'Zila Hospital Road, Narayanpur · 11 AM – 9 PM',q:'Amzad diagnostic center, Sherpur',ok:true},
+   {t:'Mymensingh · Sat – Tue',n:'New Medicare Pathology Lab',a:'204 Charpara (opp. Hospital Gate 1, 5th floor) · 3:30 PM – 8 PM',q:'New medicare Path. Lab, Charpara, Mymensingh',ok:true}],
+  mapH:'Find the chamber',mapS:'Tap a chamber to see it on the map.',mapNote:'Map location for Asia Diagnostic Center (Sherpur) is approximate — it is not listed on Google Maps yet.',
+  foot:['Dr. Fahim Foysal Kollol','General, Laparoscopic, Breast & Colorectal Surgeon','Serial','Call']},
+ bn:{deg:['এমবিবিএস','বিসিএস (স্বাস্থ্য) · ৩৩তম বিসিএস','এফসিপিএস (সার্জারি)','এমএসিএস (আমেরিকা)','আজীবন সদস্য, এসওএসবি','আজীবন সদস্য, এসইএলএসবি','সহকারী অধ্যাপক (সার্জারি), ময়মনসিংহ মেডিকেল কলেজ','ল্যাপারোস্কপি ট্রেনিং, এসইএলএসবি'],
+  hsH:'যেভাবে সিরিয়াল নেবেন',
+  steps:[{t:'দেখে নিন কবে, কোথায় বসেন',p:'শেরপুরে প্রতি বৃহস্পতি ও শুক্রবার · ময়মনসিংহে শনি থেকে মঙ্গলবার। ঠিকানা, দিন ও সময় এই পাতাতেই আছে।',b:[['g','চেম্বার ও সময় দেখুন →','#visit']]},
+   {t:'“সিরিয়াল নিন” বোতামে চাপ দিন',p:'ওয়েবসাইটের প্রতিটা পাতায় “সিরিয়াল নিন” বোতাম আছে। চাপ দিলেই সিরিয়ালের নম্বর খুলে যাবে।',b:[['p','সিরিয়াল নিন','tel:'+SERIAL_NO]]},
+   {t:'কল বা WhatsApp-এ নিশ্চিত করুন',p:'আপনার নাম, সমস্যা আর কোন চেম্বারে দেখাবেন জানান — সিরিয়াল নম্বর জানিয়ে দেওয়া হবে।',b:[['p','কল করুন','tel:'+SERIAL_NO],['g','WhatsApp',WA_URL]]}],
+  rvEb:'রোগীদের মতামত',rvH:'রোগীরা যা বলেন',rvLead:'শেরপুর ও ময়মনসিংহের রোগীদের অভিজ্ঞতা।',
+  gT:'Google রিভিউ',gS:'ডাঃ কল্লোলের Google রেটিং ও রিভিউ এখানে দেখা যাবে।',gSee:'Google-এ রিভিউ দেখুন',gWrite:'রিভিউ লিখুন',sample:'নমুনা',
+  revs:[{q:'অনেক বছর ধরে পাইলসের কষ্টে ছিলাম। স্যার সব শান্তভাবে বুঝিয়ে বললেন, লংগো অপারেশনের দুই দিন পরেই বাড়ি ফিরেছি। এখন একদম ভালো আছি।',n:'আ. র.',m:'৪৫ · শেরপুর · পাইলস (লংগো)'},
+   {q:'পিত্তথলিতে পাথর শুনে খুব ভয় পেয়েছিলাম। ছোট ছিদ্রে অপারেশন হলো, দাগ প্রায় বোঝাই যায় না। স্যারের ব্যবহার খুবই আন্তরিক।',n:'সা. আ.',m:'৩৪ · ময়মনসিংহ · পিত্তথলির পাথর (ল্যাপারোস্কপি)'},
+   {q:'অন্য জায়গায় দুইবার অপারেশনের পরও ফিস্টুলা ফিরে এসেছিল। ডাঃ কল্লোলের অপারেশনের পর আর হয়নি।',n:'ম. হ.',m:'২৮ · নালিতাবাড়ী, শেরপুর · ফিস্টুলা'},
+   {q:'স্তনে চাকা দেখে খুব দুশ্চিন্তায় ছিলাম। স্যার দ্রুত পরীক্ষা করিয়ে পরিষ্কার করে বুঝিয়ে দিলেন, সময়মতো অপারেশন হয়েছে।',n:'র. খা.',m:'৫২ · ময়মনসিংহ · স্তনের চাকা'}],
+  vdEb:'ভিডিও',vdH:'ভিডিওতে জেনে নিন',vdLead:'সাধারণ রোগ ও অপারেশন নিয়ে ডাঃ কল্লোলের ছোট ছোট ভিডিও।',soon:'ভিডিও শীঘ্রই আসছে',
+  glEb:'গ্যালারি',glH:'ছবিতে চিকিৎসা ও চেম্বার',glLead:'অপারেশন থিয়েটার, চেম্বার, স্বাস্থ্য ক্যাম্প ও সম্মেলন।',gsoon:'ছবি শীঘ্রই আসছে',
+  gal:['অপারেশন থিয়েটার','শেরপুর চেম্বার','ময়মনসিংহ চেম্বার','স্বাস্থ্য ক্যাম্প','সম্মেলন','রোগীদের সাথে'],
+  fqEb:'প্রশ্নোত্তর',fqH:'সাধারণ প্রশ্ন',
+  faq:[['পাইলস হলে কি সবসময় অপারেশন লাগে?','না। শুরুর দিকের পাইলস অনেক সময় আঁশযুক্ত খাবার, পর্যাপ্ত পানি আর ওষুধে ভালো হয়। বারবার রক্ত গেলে, পাইলস বাইরে বেরিয়ে এলে বা ব্যথা না কমলে অপারেশন (যেমন লংগো বা স্টেপলার পদ্ধতি) দরকার হয়।'],
+   ['ল্যাপারোস্কপিক (ছোট ছিদ্রে) অপারেশন কী?','কয়েকটা ছোট ছিদ্র দিয়ে ক্যামেরার সাহায্যে অপারেশন। সাধারণত ব্যথা কম, দাগ ছোট আর দ্রুত কাজে ফেরা যায়। পিত্তথলির পাথর, অ্যাপেন্ডিসাইটিস, হার্নিয়া, ভ্যারিকোসিল ইত্যাদিতে করা হয়।'],
+   ['হাসপাতালে কত দিন থাকতে হবে?','অপারেশনের ধরনের উপর নির্ভর করে। অনেক ল্যাপারোস্কপিক ও পায়ুপথের অপারেশনে অল্প দিন থাকলেই হয়; পরীক্ষার পর ডাঃ কল্লোল নির্দিষ্ট করে জানাবেন।'],
+   ['স্তনে চাকা মানেই কি ক্যান্সার?','বেশিরভাগ চাকাই ক্যান্সার নয় — তবে প্রতিটা চাকাই পরীক্ষা করানো জরুরি। আগে পরীক্ষা করানোই সবচেয়ে নিরাপদ।'],
+   ['অপারেশনের পর কি ফিস্টুলা আবার হতে পারে?','ঠিকমতো চিকিৎসা না হলে আবার হতে পারে। যত্ন নিয়ে অপারেশন আর নিয়মিত ফলো-আপে এই ঝুঁকি অনেক কমে যায়।'],
+   ['চেম্বারে কী সাথে আনব?','আগের প্রেসক্রিপশন, আল্ট্রাসনোগ্রাম, এক্স-রে বা রক্তের রিপোর্ট আর যে ওষুধ খাচ্ছেন তার তালিকা।'],
+   ['সিরিয়াল কীভাবে নেব?','সিরিয়ালের নম্বরে কল বা WhatsApp করে নাম, সমস্যা আর চেম্বার জানান। শেরপুর: বৃহস্পতি ও শুক্রবার · ময়মনসিংহ: শনি থেকে মঙ্গলবার।']],
+  bgEb:'স্বাস্থ্য ব্লগ',bgH:'দুশ্চিন্তার আগে পড়ে নিন',bsoon:'শীঘ্রই আসছে',bmore:'পড়ুন →',
+  blogs:[['মলদ্বার ও বৃহদন্ত্র','পাইলস: কখন সত্যিই অপারেশন লাগে?','রক্ত, ব্যথা নাকি চাকা — কোন লক্ষণের মানে কী, আর কখন অপারেশন উপকারী।'],
+   ['পিত্তথলি ও পিত্তনালি','পিত্তথলির পাথর ও ল্যাপারোস্কপি — কী আশা করবেন','প্রথম আল্ট্রাসনোগ্রাম থেকে বাড়ি ফেরা পর্যন্ত — সহজ ভাষায় পুরো পথ।'],
+   ['স্তন','স্তনে চাকা? ভয় নয়, পরীক্ষা করান','বেশিরভাগ চাকাই নিরীহ। কীভাবে পরীক্ষা হয় আর কেন আগে দেখানো ভালো।']],
+  vH:'দেরি নয়। আপনার সার্জনের সাথে কথা বলুন।',vP:'সিরিয়ালের জন্য কল করুন বা চেম্বারে আসুন — ডাঃ কল্লোল আপনার সমস্যা ও সঠিক চিকিৎসা বুঝিয়ে বলবেন।',book:'সিরিয়াল নিন',call:'কল করুন',wa:'WhatsApp',dir:'দিকনির্দেশনা →',
+  ch:[{t:'শেরপুর · বৃহস্পতিবার',n:'এশিয়া ডায়াগনস্টিক সেন্টার',a:'জেলা হাসপাতাল রোড, নারায়ণপুর · দুপুর ৩টা – রাত ৯টা',q:'Sadar Hospital Road, Narayanpur, Sherpur',ok:false},
+   {t:'শেরপুর · শুক্রবার',n:'আমজাদ ডায়াগনস্টিক সেন্টার',a:'জেলা হাসপাতাল রোড, নারায়ণপুর · সকাল ১১টা – রাত ৯টা',q:'Amzad diagnostic center, Sherpur',ok:true},
+   {t:'ময়মনসিংহ · শনি – মঙ্গল',n:'নিউ মেডিকেয়ার প্যাথলজি ল্যাব',a:'২০৪ চরপাড়া (১নং হাসপাতাল গেটের বিপরীতে, ৫ম তলা) · বিকাল ৩:৩০টা – রাত ৮টা',q:'New medicare Path. Lab, Charpara, Mymensingh',ok:true}],
+  mapH:'চেম্বার খুঁজে নিন',mapS:'ম্যাপে দেখতে একটা চেম্বারে চাপ দিন।',mapNote:'শেরপুরের এশিয়া ডায়াগনস্টিক সেন্টারের লোকেশন আনুমানিক — Google Maps-এ এখনো তালিকাভুক্ত নয়।',
+  foot:['ডাঃ ফাহিম ফয়সাল কল্লোল','জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন','সিরিয়াল','কল']}};
+const ICONS=[
+ `<svg viewBox="0 0 240 240" role="img" aria-hidden="true"><g class="si-flo"><use href="#siP" x="70" y="118"/></g><g transform="translate(132 86)"><rect width="100" height="96" rx="14" class="si-fill"/><rect width="100" height="24" rx="12" fill="#0B6E73"/><rect x="18" y="-10" width="8" height="20" rx="4" class="si-wh"/><rect x="74" y="-10" width="8" height="20" rx="4" class="si-wh"/><rect x="8" y="30" width="84" height="58" rx="8" class="si-wh"/><rect class="si-day" x="14" y="36" width="20" height="14" rx="4"/><rect class="si-day si-d1" x="40" y="36" width="20" height="14" rx="4"/><rect class="si-day" x="66" y="36" width="20" height="14" rx="4"/><rect class="si-day" x="14" y="56" width="20" height="14" rx="4"/><rect class="si-day si-d2" x="40" y="56" width="20" height="14" rx="4"/><rect class="si-day si-d3" x="66" y="56" width="20" height="14" rx="4"/><rect class="si-day" x="14" y="76" width="20" height="8" rx="3"/><rect class="si-day" x="40" y="76" width="20" height="8" rx="3"/></g><g class="si-pin"><path d="M186 30 C170 30 160 42 160 55 C160 72 186 96 186 96 C186 96 212 72 212 55 C212 42 202 30 186 30 Z" class="si-soft" stroke="#fff" stroke-width="4"/><circle cx="186" cy="55" r="9" class="si-wh"/></g></svg>`,
+ `<svg viewBox="0 0 240 240" role="img" aria-hidden="true"><g class="si-flo"><use href="#siP" x="62" y="122"/></g><circle class="si-rip" cx="150" cy="96" r="42"/><circle class="si-rip si-rip2" cx="150" cy="96" r="42"/><g class="si-btn"><circle cx="150" cy="96" r="42" class="si-fill" stroke="#fff" stroke-width="5"/><text x="150" y="92" text-anchor="middle" fill="#fff" font-family="Inter,Arial" font-weight="700" font-size="13">BOOK A</text><text x="150" y="110" text-anchor="middle" fill="#fff" font-family="Inter,Arial" font-weight="700" font-size="13">SERIAL</text></g><g transform="translate(40 60) scale(.75)"><g class="si-finger"><path d="M178 136 L178 112 Q178 104 186 104 Q194 104 194 112 L194 132 Q206 128 214 136 Q222 144 218 160 L212 186 Q208 196 196 196 L184 196 Q174 196 168 186 L158 166 Q154 158 162 154 Q170 150 176 158 Z" class="si-soft" stroke="#fff" stroke-width="4"/></g></g></svg>`,
+ `<svg viewBox="0 0 240 240" role="img" aria-hidden="true"><g class="si-flo"><use href="#siP" x="80" y="126"/></g><g class="si-bub"><path d="M56 22 H136 Q150 22 150 36 V70 Q150 84 136 84 H92 L74 100 L78 84 H56 Q42 84 42 70 V36 Q42 22 56 22 Z" class="si-wh" stroke="#2BB3B1" stroke-width="5"/><circle class="si-dot" cx="78" cy="53" r="6"/><circle class="si-dot si-dt2" cx="96" cy="53" r="6"/><circle class="si-dot si-dt3" cx="114" cy="53" r="6"/><path class="si-tick" d="M80 54 L92 66 L114 42"/></g><g class="si-ring"><rect x="170" y="104" width="54" height="94" rx="12" class="si-fill" stroke="#fff" stroke-width="5"/><rect x="178" y="116" width="38" height="62" rx="5" class="si-wh"/><path d="M188 138 q4 -6 8 0 l2 6 q-2 4 2 8 q4 4 8 2 l6 2 q6 4 0 8 q-10 6 -22 -6 q-12 -12 -4 -20 z" fill="#0B6E73"/><circle cx="197" cy="188" r="4" class="si-wh"/></g></svg>`];
+const BNd=s=>String(s).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]);
+const tkrDeg=document.getElementById('tkrDeg'),tkrNum=document.getElementById('tkrNum'),serialEl=document.getElementById('serial'),pinEl=svc.querySelector('.pin'),hsCards=document.getElementById('hsCards'),hsBar=document.getElementById('hsBar'),hsH=document.getElementById('hsH');
+let hsEls=[];
+/* ticker: the item set is repeated until it is wider than the screen, then doubled → translateX(-50%) loops seamlessly */
+function fillTicker(el,itemsHtml){const one=itemsHtml.join('<span class="sep">✦</span>')+'<span class="sep">✦</span>';
+ el.innerHTML=`<div class="trk">${one}</div>`;const trk=el.firstChild;let reps=1;while(trk.scrollWidth<innerWidth*1.2&&reps<8){reps++;trk.innerHTML=one.repeat(reps)}
+ trk.innerHTML=one.repeat(reps*2);trk.style.setProperty('--dur',Math.max(18,trk.scrollWidth/2/55)+'s')}
+function fitHsH(){hsH.style.removeProperty('--fs');const base=parseFloat(getComputedStyle(hsH).fontSize),max=innerWidth*.92;if(hsH.scrollWidth>max)hsH.style.setProperty('--fs',Math.floor(base*max/hsH.scrollWidth)+'px')}
+function buildHome(l){const h=HX[l],c=COPY[l],$$=id=>document.getElementById(id);
+ fillTicker(tkrDeg,h.deg.map(d=>`<span class="it">${d}</span>`));
+ fillTicker(tkrNum,[1,2,3,4,5,6].map(i=>`<span class="it"><b data-t="s${i}n">${c['s'+i+'n']}</b>${c['s'+i].replace(/&amp;/g,'&')}</span>`));
+ hsH.textContent=h.hsH;fitHsH();
+ hsCards.innerHTML=h.steps.map((s,i)=>`<div class="hs-card"><div class="ico">${ICONS[i]}</div><div><span class="num">${l==='bn'?BNd(i+1):i+1}</span><h3>${s.t}</h3><p>${s.p}</p><div class="row">${s.b.map(([k,t,u])=>`<a class="btn btn-${k}" href="${u}"${u.startsWith('http')?' target="_blank" rel="noopener"':''}>${t}</a>`).join('')}</div></div></div>`).join('');
+ hsEls=[...hsCards.children];hsBar.innerHTML=h.steps.map(()=>'<i></i>').join('');
+ $$('rvEb').textContent=h.rvEb;$$('rvH').textContent=h.rvH;$$('rvLead').textContent=h.rvLead;
+ $$('gbox').innerHTML=`<span class="g">G</span><div class="gt"><b>${h.gT}</b><span>${h.gS}</span></div><div class="row"><a class="btn btn-p" href="#">${h.gSee}</a><a class="btn btn-g" href="#">${h.gWrite}</a></div>`;
+ $$('revs').innerHTML=h.revs.map(r=>`<div class="rev glass"><div style="display:flex;justify-content:space-between;align-items:center"><span class="st">★★★★★</span><span class="tag-s">${h.sample}</span></div><q>${r.q}</q><div class="who"><span class="av">${r.n.replace(/[.\s]/g,'').slice(0,l==='bn'?3:2)}</span><div><b>${r.n}</b><span>${r.m}</span></div></div></div>`).join('');
+ $$('vdEb').textContent=h.vdEb;$$('vdH').textContent=h.vdH;$$('vdLead').textContent=h.vdLead;
+ $$('vid').innerHTML=`<div class="ph main"><div><span class="play"></span><small>${h.soon}</small></div></div><div class="stack">${[1,2,3].map(()=>`<div class="ph"><div><span class="play sm"></span></div></div>`).join('')}</div>`;
+ $$('glEb').textContent=h.glEb;$$('glH').textContent=h.glH;$$('glLead').textContent=h.glLead;
+ $$('gal').innerHTML=h.gal.map(g=>`<div class="ph"><div><b>${g}</b><small>${h.gsoon}</small></div></div>`).join('');
+ $$('fqEb').textContent=h.fqEb;$$('fqH').textContent=h.fqH;
+ $$('faqList').innerHTML=h.faq.map(([q,a],i)=>`<details class="glass"${i?'':' open'}><summary>${q}</summary><p>${a}</p></details>`).join('');
+ $$('bgEb').textContent=h.bgEb;$$('bgH').textContent=h.bgH;
+ $$('blogs').innerHTML=h.blogs.map(([c2,t,p])=>`<a class="blog glass" href="#"><div class="ph"><div><span class="tag-s">${h.bsoon}</span></div></div><div class="bd"><small>${c2}</small><h3>${t}</h3><p>${p}</p><span class="go">${h.bmore}</span></div></a>`).join('');
+ $$('vBig').textContent=c.brand;
+ $$('vCta').innerHTML=`<h3>${h.vH}</h3><p>${h.vP}</p><div class="row"><a class="btn btn-p" href="tel:${SERIAL_NO}">${h.book}</a><a class="btn btn-g" href="tel:${CALL_NO}">${h.call}</a><a class="btn btn-g" href="${WA_URL}" target="_blank" rel="noopener">${h.wa}</a></div>`;
+ $$('vChs').innerHTML=h.ch.map((x,i)=>`<button class="v-ch glass" data-i="${i}"><small>${x.t}</small><b>${x.n}</b><span>${x.a}</span><em>${h.dir}</em></button>`).join('');
+ $$('vMap').innerHTML=`<div class="mh"><div><b>${h.mapH}</b><span>${h.mapS}</span></div></div><iframe id="mapFrame" title="Map" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe><p class="note" id="mapNote"></p>`;
+ const pick=i=>{const x=h.ch[i];document.querySelectorAll('.v-ch').forEach(b=>b.classList.toggle('on',+b.dataset.i===i));
+  $$('mapFrame').src=`https://maps.google.com/maps?q=${encodeURIComponent(x.q)}&z=16&output=embed`;$$('mapNote').textContent=x.ok?'':h.mapNote};
+ document.querySelectorAll('.v-ch').forEach(b=>b.onclick=e=>{const i=+b.dataset.i;if(b.classList.contains('on'))window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.ch[i].q)}`,'_blank','noopener');else pick(i)});
+ pick(0);
+ $$('hfoot').innerHTML=`<div class="wrap"><div><b>${h.foot[0]}</b><br>${h.foot[1]}</div><div>${h.foot[2]}: <a href="tel:${SERIAL_NO}">${l==='bn'?BNd(SERIAL_NO):SERIAL_NO}</a><br>${h.foot[3]}: <a href="tel:${CALL_NO}">${l==='bn'?BNd(CALL_NO):CALL_NO}</a></div><div>© ${l==='bn'?'২০২৬':'2026'}</div></div>`}
+addEventListener('resize',()=>{fitHsH();const l=document.documentElement.lang||'en';fillTicker(tkrDeg,HX[l].deg.map(d=>`<span class="it">${d}</span>`))});
+/* numbers ticker counts up each time it comes into view */
+new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.querySelectorAll('b[data-t]').forEach(countUp)}),{threshold:.4}).observe(tkrNum);
+/* serial section: rises over the conditions stage (stage eases back), then one step per scroll —
+   laptop: cards travel right → centre → left (horizontal) · phone: bottom → centre → top (vertical) */
+let hsLast='';
+function hsDraw(){const vh=innerHeight,r=serialEl.getBoundingClientRect(),cover=clamp(1-r.top/vh,0,1),mob=innerWidth<860;
+ pinEl.style.transform=cover>0&&cover<1?`scale(${1-.06*cover})`:cover>=1?'scale(.94)':'';pinEl.style.opacity=cover>0?1-.5*cover:'';
+ const n=hsEls.length;if(!n)return;const q=clamp(-r.top/(serialEl.offsetHeight-vh),0,1),pos=restH(q*(n-1))-(1-cover),key=pos.toFixed(4)+mob+innerWidth;if(key===hsLast)return;hsLast=key;
+ hsEls.forEach((el,i)=>{const o=i-pos,a=Math.abs(o);
+  if(mob){el.style.transform=`translateY(${o*72}vh) scale(${1-Math.min(a,1)*.08})`;el.style.opacity=clamp(1-a*1.6,0,1)}
+  else{el.style.transform=`translateX(${o*46}vw) scale(${1-Math.min(a,1.5)*.16})`;el.style.opacity=a>1.7?0:clamp(1-a*.55,0,1)}
+  el.style.zIndex=10-Math.round(a*2);el.style.pointerEvents=a<.5?'auto':'none';el.classList.toggle('cur',a<.5)});
+ [...hsBar.children].forEach((b,i)=>b.classList.toggle('on',Math.round(clamp(pos,0,n-1))===i))}
+
+/* ================= VIDEO / STORY CONFIG =================
+   Frames: frames/<mode>/001.webp … (ffmpeg, 30fps).  Blade path measured on the frames (fractions of the frame):
+   the blade touches down at `touch` seconds, then cuts left→right along y. */
+const CFG={
+ wide:{n:111,y:.811,touch:1.27,path:[[1.27,.165],[2.47,.316],[3.67,.47]]},
+ tall:{n:113,y:.795,touch:.63,path:[[.63,.114],[1.97,.278],[3.54,.47]]}};
+const STORY={
+ descend:.06,   /* 0 → .06 : blade comes down and touches — the very first scroll starts the cut */
+ cutEnd:.62,    /* .06 → .62 : incision drawn left→right */
+ groups:[[.14,.42],[.42,.62],[.66,.8]]  /* scroll windows: 1 headline, 2 second line, 3 "meet your surgeon" */
+};
+const fps=30;
+
+/* ================= STATE ================= */
+const $=id=>document.getElementById(id);
+const cv=$('cv'),cx=cv.getContext('2d'),em=$('em'),cue=$('cue'),ld=$('ld'),hero=$('hero');
+const lines=[...em.querySelectorAll('.ln')];
+let mode,C,W=1600,H=900,view={s:1,ox:0,oy:0},pS=0,lastKey='';
+const SETS={wide:{f:[],bm:new Map(),started:false},tall:{f:[],bm:new Map(),started:false}};
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),lerp=(a,b,t)=>a+(b-a)*t,seg=(v,a,b)=>clamp((v-a)/(b-a),0,1);
+const ease=t=>1-Math.pow(1-t,3);
+
+/* ================= LANGUAGE / MENU ================= */
+function setLang(l){document.documentElement.lang=l;document.body.classList.toggle('bn',l==='bn');
+ document.querySelectorAll('[data-t]').forEach(e=>e.innerHTML=COPY[l][e.dataset.t]);
+ document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+ try{localStorage.setItem('kollol-lang',l)}catch(e){} lastKey='';buildServices(l);buildHome(l);(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{lastKey=''})}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.l));
+document.querySelector('.burger').onclick=()=>document.querySelector('.sheet').classList.toggle('open');
+{const dd=document.querySelector('.dd');dd.querySelector('button').onclick=()=>dd.classList.toggle('open');document.addEventListener('click',e=>{if(!dd.contains(e.target))dd.classList.remove('open')})}
+
+/* ================= FRAMES (coarse-to-fine so the whole cut is scrubbable almost immediately) ================= */
+function order(n){const o=[],seen=new Set();for(let st=16;st>=1;st>>=1)for(let i=0;i<n;i+=st)if(!seen.has(i)){seen.add(i);o.push(i)}if(!seen.has(n-1))o.splice(1,0,n-1);return o}
+async function load(){
+ mode=innerWidth/innerHeight<.9?'tall':'wide';C=CFG[mode];const S=SETS[mode],m=mode;lastKey='';
+ const url=i=>`frames/${m}/${String(i+1).padStart(3,'0')}.webp`;
+ const get=async i=>{if(S.f[i])return;const b=await (await fetch(url(i))).blob();S.f[i]=b;S.bm.set(i,await createImageBitmap(b))};
+ await get(0);const b0=S.bm.get(0);W=b0.width;H=b0.height;resize();
+ if(S.started)return;S.started=true;const q=order(C.n);let k=0,done=0;
+ const worker=async()=>{while(k<q.length){const i=q[k++];await get(i);done++;if(m===mode){ld.style.width=(100*done/C.n)+'%';lastKey=''}}};
+ await Promise.all(Array.from({length:6},worker));if(m===mode)ld.style.opacity=0}
+function frameBitmap(i){const bm=SETS[mode].bm;if(bm.has(i))return bm.get(i);for(let d=1;d<C.n;d++){if(bm.has(i-d))return bm.get(i-d);if(bm.has(i+d))return bm.get(i+d)}return null}
+
+/* ================= GEOMETRY ================= */
+function resize(){if(!C)return;const dpr=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
+ const s=Math.max(innerWidth/W,innerHeight/H),dw=W*s;
+ const centre=(innerWidth-dw)/2,safe=20-C.path[0][1]*dw; /* narrow phones: keep the start of the cut on screen */
+ view={s,ox:clamp(Math.max(centre,Math.min(0,safe)),innerWidth-dw,0),oy:(innerHeight-H*s)/2};lastKey='';edgeDone=false}
+const sx=fx=>view.ox+fx*W*view.s, sy=fy=>view.oy+fy*H*view.s;
+const phone=()=>innerWidth<560;
+
+function timeAt(p){const d=CFG[mode],end=(d.n-1)/fps;
+ if(p<STORY.descend)return lerp(0,d.touch,p/STORY.descend);
+ if(p<STORY.cutEnd)return lerp(d.touch,d.path[d.path.length-1][0],(p-STORY.descend)/(STORY.cutEnd-STORY.descend));
+ return lerp(d.path[d.path.length-1][0],end,seg(p,STORY.cutEnd,1))}
+function tipAt(t){const p=C.path;if(t<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++)if(t<=p[i][0])return lerp(p[i-1][1],p[i][1],(t-p[i-1][0])/(p[i][0]-p[i-1][0]));return p[p.length-1][1]}
+
+/* ================= DRAW: frame + bleeding incision ================= */
+const BEADS=Array.from({length:16},(_,i)=>({f:(i+.5)/16+((i*37)%7-3)/260,r:.5+((i*53)%10)/13,d:((i*29)%9-4)/12,late:((i*17)%5)/100}));
+function drawCut(t){const x0=C.path[0][1],x1=C.path[C.path.length-1][1],tip=tipAt(t);if(t<C.touch||tip-x0<.002)return tip;
+ const a=sx(x0),b=sx(tip),y=sy(C.y),u=Math.max(1,view.s*W/1300);
+ const g=cx.createLinearGradient(0,y-3*u,0,y+3*u);g.addColorStop(0,'#6d0a10');g.addColorStop(.5,'#b3141d');g.addColorStop(1,'#56060a');
+ cx.lineCap='round';cx.strokeStyle=g;cx.lineWidth=2.4*u;cx.beginPath();cx.moveTo(a,y);
+ for(let x=a;x<b;x+=5*u)cx.lineTo(x,y+Math.sin(x*.09)*.3*u);cx.lineTo(Math.max(a,b-1.5*u),y);cx.stroke();
+ cx.strokeStyle='rgba(255,255,255,.35)';cx.lineWidth=.7*u;cx.beginPath();cx.moveTo(a,y-.8*u);cx.lineTo(Math.max(a,b-3*u),y-.8*u);cx.stroke();
+ BEADS.forEach(k=>{const fx=x0+k.f*(x1-x0),age=(tip-fx-k.late)/.045;if(age<=0)return;const gr=ease(clamp(age,0,1)),px=sx(fx),py=y+k.d*u,rx=k.r*3.6*u*gr,ry=k.r*2.4*u*gr;
+  const rg=cx.createRadialGradient(px-rx*.3,py-ry*.4,0,px,py,rx);rg.addColorStop(0,'#d62a33');rg.addColorStop(.55,'#9e121b');rg.addColorStop(1,'#55050a');
+  cx.fillStyle=rg;cx.beginPath();cx.ellipse(px,py,rx,ry,0,0,7);cx.fill();
+  cx.fillStyle='rgba(255,255,255,.6)';cx.beginPath();cx.ellipse(px-rx*.35,py-ry*.35,rx*.22,ry*.18,0,0,7);cx.fill()});
+ return tip}
+
+/* ================= TEXT: rises up out of the red line (desktop + phone), scrubbed by scroll =================
+   Each line has a resting spot; while it emerges it is pushed down to the incision and clipped there,
+   so it looks like it is coming out of the cut. Fresh text is blood-red and blurred, then settles to ink. */
+function placeText(){const y=sy(C.y),left=Math.max(20,sx(C.path[0][1]));
+ if(phone()){ /* phone: hand fills the right side above the cut, so text rises up the empty left/top area */
+  em.style.left=left+'px';em.style.width=(innerWidth-left-20)+'px';em.style.top='84px';em.style.height=(y-84-2)+'px';
+ }else{em.style.left=left+'px';em.style.width=Math.max(300,sx(C.path[C.path.length-1][1])-left-12)+'px';em.style.top='84px';em.style.height=(y-84-2)+'px'}
+ /* resting layout: stacked from the bottom of the box (just above the cut) upwards */
+ const gap=phone()?12:16,box=em.clientHeight;let bottom=0;
+ const rest=[...lines].reverse().map(el=>{const h=el.offsetHeight,top=box-bottom-h;bottom+=h+gap;return[el,top]});
+ if(phone()){ /* phone: park the settled text high up in the empty white area, well clear of the hand */
+  const total=bottom-gap,shift=Math.max(0,box-total-box*.18);rest.forEach(r=>r[1]-=shift)}
+ rest.forEach(([el,top])=>el.dataset.top=top)}
+function drawText(p,tip){const box=em.clientHeight;
+ /* desktop: release text only over the part that is already cut (clip at the blade tip) until the cut is done */
+ if(!phone()){const tipX=sx(tip)-em.getBoundingClientRect().left-14;em.style.clipPath=p<STORY.cutEnd?`inset(-60px ${Math.max(0,em.clientWidth-tipX)}px 0 -60px)`:'none'}
+ else em.style.clipPath='none';
+ lines.forEach(el=>{const[a,b]=STORY.groups[el.dataset.g-1],e=ease(seg(p,a,b)),top=+el.dataset.top;
+  const y=lerp(box,top,e);                        /* from the incision (box bottom) up to its resting spot */
+  el.style.transform=`translateY(${y}px)`;el.style.top='0';
+  el.style.opacity=e<=0?0:.25+.75*e;
+  el.style.filter=e<1?`blur(${(1-e)*3}px)`:'none';
+  el.style.color=e<1&&!el.classList.contains('t-cue')?`rgb(${Math.round(lerp(158,6,e))},${Math.round(lerp(18,47,e))},${Math.round(lerp(27,49,e))})`:''})}
+
+/* ================= SEAMLESS HAND-OFF: copy the hero's bottom pixel row into the doctor section's background ================= */
+let edgeDone=false,edgeKey='';
+function sampleEdge(){const n=24,row=cx.getImageData(0,cv.height-1,cv.width,1).data,bw=Math.floor(cv.width/n),stops=[];
+ for(let k=0;k<n;k++){let r=0,g=0,b=0;for(let x=k*bw;x<(k+1)*bw;x++){const o=x*4;r+=row[o];g+=row[o+1];b+=row[o+2]}
+  stops.push(`rgb(${Math.round(r/bw)},${Math.round(g/bw)},${Math.round(b/bw)}) ${((k+.5)/n*100).toFixed(1)}%`)}
+ const v=`linear-gradient(90deg,${stops.join(',')})`;if(v!==edgeKey){edgeKey=v;$('doctor').style.setProperty('--edge-row',v)}edgeDone=true}
+
+/* ================= LOOP: everything follows scroll (down = cut forward, up = reverse) ================= */
+function progress(){const r=hero.getBoundingClientRect();return clamp(-r.top/(hero.offsetHeight-innerHeight),0,1)}
+function tick(){
+ const p=progress();pS+=(p-pS)*.28;if(Math.abs(p-pS)<.0004)pS=p;
+ if(C){const t=timeAt(pS),i=clamp(Math.round(t*fps),0,C.n-1),key=mode+i+'|'+pS.toFixed(4)+'|'+innerWidth+'x'+innerHeight;
+  if(key!==lastKey){lastKey=key;const bm=frameBitmap(i);
+   if(bm){cx.fillStyle='#fff';cx.fillRect(0,0,innerWidth,innerHeight);cx.drawImage(bm,view.ox,view.oy,W*view.s,H*view.s)}
+   const tip=drawCut(i/fps);placeText();drawText(pS,tip);
+   if(bm&&(pS>.9||!edgeDone))sampleEdge()}
+  cue.style.opacity=1-seg(pS,0,.04)}
+ svcDraw();hsDraw();
+ requestAnimationFrame(tick)}
+
+/* ================= DOCTOR SECTION: first-arrival reveal ================= */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');else if(e.boundingClientRect.top>0)e.target.classList.remove('in')}),{threshold:.15});
+statIO.observe(sideR);
+document.querySelectorAll('.rv').forEach(el=>{el.style.transitionDelay=(el.closest('.stats')?[...el.parentNode.children].indexOf(el)*.08:0)+'s';io.observe(el)});
+
+let L0='en';try{L0=localStorage.getItem('kollol-lang')||'en'}catch(e){}
+setLang(L0);
+addEventListener('resize',()=>{const m=innerWidth/innerHeight<.9?'tall':'wide';if(m!==mode)load();else resize()});
+load();requestAnimationFrame(tick);
+</script>
+</body>
+</html>

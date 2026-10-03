@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kollol Font Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;600;800&family=Hind+Siliguri:wght@400;600&family=Noto+Serif+Bengali:wght@500;700&family=Tiro+Bangla&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;600&family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B1B3F;--navy2:#13295C;--sky:#4FB3E0;--orange:#F26B1D;--cream:#F6F4EF;--ink:#0E1628}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,sans-serif;padding:16px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:16px}
+.c{background:#fff;border-radius:16px;padding:20px}
+.lab{font:600 12px Inter;color:#667;text-transform:uppercase;letter-spacing:.08em}
+h1{margin:6px 0;font-size:34px;line-height:1.2}
+p{font-size:17px;line-height:1.7;margin:6px 0}
+.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:20px;padding:28px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:var(--sky);opacity:.35;filter:blur(40px)}
+.glass{background:rgba(255,255,255,.1);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:16px;margin-top:14px;max-width:420px}
+.btn{display:inline-block;background:var(--orange);color:#fff;padding:12px 22px;border-radius:999px;font:600 16px 'Anek Bangla';margin-top:14px}
+.sw{display:flex;gap:8px;flex-wrap:wrap}.sw div{width:90px;height:60px;border-radius:10px;font:600 11px Inter;display:flex;align-items:flex-end;padding:6px;box-sizing:border-box}
+</style></head><body>
+<div class="row">
+ <div class="c"><div class="lab">A — Anek Bangla 800 + Hind Siliguri (Recommended BN)</div>
+  <h1 style="font-family:'Anek Bangla';font-weight:800">পাইলস, ফিস্টুলা আর লজ্জা নয়</h1>
+  <p style="font-family:'Hind Siliguri'">মলদ্বারের রক্তপাত বা ব্যথা নিয়ে চুপ করে থাকবেন না। সঠিক সময়ে চিকিৎসা নিলে বেশিরভাগ রোগ সহজেই সেরে যায়।</p></div>
+ <div class="c"><div class="lab">B — Noto Serif Bengali + Noto Sans Bengali</div>
+  <h1 style="font-family:'Noto Serif Bengali';font-weight:700">পাইলস, ফিস্টুলা আর লজ্জা নয়</h1>
+  <p style="font-family:'Noto Sans Bengali',sans-serif">মলদ্বারের রক্তপাত বা ব্যথা নিয়ে চুপ করে থাকবেন না। সঠিক সময়ে চিকিৎসা নিলে বেশিরভাগ রোগ সহজেই সেরে যায়।</p></div>
+ <div class="c"><div class="lab">C — Tiro Bangla + Hind Siliguri</div>
+  <h1 style="font-family:'Tiro Bangla'">পাইলস, ফিস্টুলা আর লজ্জা নয়</h1>
+  <p style="font-family:'Hind Siliguri'">মলদ্বারের রক্তপাত বা ব্যথা নিয়ে চুপ করে থাকবেন না। সঠিক সময়ে চিকিৎসা নিলে বেশিরভাগ রোগ সহজেই সেরে যায়।</p></div>
+</div>
+<div class="row">
+ <div class="c"><div class="lab">EN — Fraunces + Inter (Recommended EN)</div>
+  <h1 style="font-family:Fraunces">Precise hands. Quiet recovery.</h1>
+  <p>Laparoscopic, breast and colorectal surgery in Sherpur &amp; Mymensingh — 10,000+ operations.</p></div>
+ <div class="c"><div class="lab">EN — Manrope only</div>
+  <h1 style="font-family:Manrope;font-weight:700">Precise hands. Quiet recovery.</h1>
+  <p style="font-family:Manrope">Laparoscopic, breast and colorectal surgery in Sherpur &amp; Mymensingh — 10,000+ operations.</p></div>
+</div>
+<div class="hero">
+ <div class="lab" style="color:#9fd3ee">Palette "Surgical Navy" + glass</div>
+ <h1 style="font-family:Fraunces;font-size:40px">Surgery you don't have to fear.</h1>
+ <h1 style="font-family:'Anek Bangla';font-weight:800;font-size:30px">ভয় নয়, ভরসার অপারেশন</h1>
+ <div class="glass" style="font-family:'Hind Siliguri'">শেরপুর চেম্বার — বৃহস্পতি ও শুক্রবার<br>ময়মনসিংহ — শনি থেকে মঙ্গল, বিকাল ৩:৩০–রাত ৮টা</div>
+ <span class="btn">সিরিয়াল নিন</span>
+</div>
+<div class="c" style="margin-top:16px"><div class="sw">
+ <div style="background:#0B1B3F;color:#fff">#0B1B3F Navy</div><div style="background:#13295C;color:#fff">#13295C Navy 2</div>
+ <div style="background:#4FB3E0">#4FB3E0 Sky</div><div style="background:#F26B1D;color:#fff">#F26B1D Orange CTA</div>
+ <div style="background:#F6F4EF;border:1px solid #ddd">#F6F4EF Cream</div><div style="background:#0E1628;color:#fff">#0E1628 Ink</div>
+</div></div>
+</body></html>

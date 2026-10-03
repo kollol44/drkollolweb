@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OT Light C</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,800&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:Inter,system-ui,sans-serif;background:linear-gradient(180deg,#fff,#EEF7F6);color:#062F31;overflow:hidden}
+.site{height:100%;display:grid;place-content:center;text-align:center;gap:10px;padding:16px}
+.site .eb{margin:0;font:600 12px Inter;letter-spacing:.16em;text-transform:uppercase;color:#2BB3B1}
+.site h1{margin:0;font:800 clamp(30px,6vw,64px)/1.05 Fraunces,serif;letter-spacing:-.03em;background:linear-gradient(180deg,#0B6E73,rgba(43,179,177,.55));-webkit-background-clip:text;background-clip:text;color:transparent}
+.site p{margin:0;color:#3f6668;font-size:14px;max-width:560px}
+.site button{justify-self:center;margin-top:8px;padding:10px 18px;border-radius:999px;border:0;background:#0B6E73;color:#fff;font:600 14px Inter;cursor:pointer}
+/* ---- OT-light preloader core: ONE text layer (no doubled fonts). Dark until the light reaches it, lit after. ---- */
+@property --x{syntax:'<percentage>';inherits:true;initial-value:-25%}
+@property --r{syntax:'<percentage>';inherits:true;initial-value:-25%}
+#pl{position:fixed;inset:0;z-index:9;display:grid;place-items:center;pointer-events:none;overflow:hidden;
+ background:radial-gradient(ellipse 80% 70% at 50% 45%,#0d5a5e,#06393c 70%,#042c2e)}
+.stage{position:relative;display:grid;justify-items:center;gap:12px;padding-top:clamp(70px,11vw,110px)}
+.nm{position:relative;font:800 clamp(22px,5.8vw,68px)/1.08 Fraunces,serif;letter-spacing:-.02em;white-space:nowrap;color:transparent;-webkit-background-clip:text;background-clip:text;
+ background:
+  radial-gradient(circle at var(--x) 55%,#ffffff 0,#e9fffe 9%,rgba(191,240,238,.0) 24%) no-repeat,
+  linear-gradient(90deg,#c9f3f1 0,#ffffff calc(var(--r) - 6%),#1c5f62 calc(var(--r) + 2%),#164e51 100%);
+ background-size:100% 100%,100% 100%;-webkit-background-clip:text;background-clip:text}
+.sb{font:600 clamp(10px,1.4vw,14px) Inter;letter-spacing:.16em;text-transform:uppercase;text-align:center;max-width:92vw;color:transparent;-webkit-background-clip:text;background-clip:text;
+ background:linear-gradient(90deg,#bdeeed 0,#bdeeed calc(var(--r) - 6%),#1f5b5e calc(var(--r) + 2%),#1f5b5e 100%);-webkit-background-clip:text;background-clip:text}
+.lamp{width:clamp(70px,9vw,110px);height:auto;filter:drop-shadow(0 0 18px rgba(255,251,230,.55))}
+.beam{position:absolute;top:calc(clamp(70px,11vw,110px) * .55);width:clamp(140px,22vw,300px);height:clamp(110px,16vw,190px);transform:translateX(-50%);
+ background:linear-gradient(180deg,rgba(255,251,230,.42),rgba(255,251,230,.08) 70%,transparent);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);mix-blend-mode:screen;pointer-events:none}
+@keyframes flood{0%{background-color:transparent}55%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#pl{display:none}}
+
+#pl{animation:fl .6s 2.8s forwards}@keyframes fl{50%{background:#e9fbfa}100%{background:#fff;opacity:0;visibility:hidden}}
+.stage{padding-top:0;--x:-25%;--r:-25%;animation:sweep 2.3s .25s cubic-bezier(.45,0,.35,1) forwards}
+@keyframes sweep{to{--x:125%;--r:125%}}
+.pool{position:absolute;top:50%;left:var(--x);width:clamp(160px,24vw,320px);aspect-ratio:1;transform:translate(-50%,-55%);border-radius:50%;
+ background:radial-gradient(circle,rgba(255,251,230,.30),rgba(255,251,230,.10) 45%,transparent 70%);mix-blend-mode:screen}
+.pool i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fffbe6;opacity:.8;animation:dust 2.4s linear infinite}
+.pool i:nth-child(1){left:30%;top:40%}.pool i:nth-child(2){left:62%;top:30%;animation-delay:-.8s}.pool i:nth-child(3){left:48%;top:66%;animation-delay:-1.6s}.pool i:nth-child(4){left:70%;top:58%;animation-delay:-.4s}
+@keyframes dust{50%{transform:translate(6px,-10px);opacity:.3}}
+.sb{opacity:0;animation:fi .5s 2.2s forwards}@keyframes fi{to{opacity:1}}
+</style></head><body>
+<!-- OT-LIGHT PRELOADER C — Light pool + dust. Just the light: a warm circular pool of OT light travels across the name with tiny dust specks floating in it; the trail it leaves stays lit. Total ≈ 3.4 s. CSS/SVG only, one text layer. -->
+<main class="site"><p class="eb">OT light · C · Light pool + dust · ≈ 3.4 s</p><h1>Every incision has a reason.</h1><p>Just the light: a warm circular pool of OT light travels across the name with tiny dust specks floating in it; the trail it leaves stays lit.</p><button onclick="replay()">↻ Replay</button></main>
+<div id="pl"><div class="stage"><div class="pool"><i></i><i></i><i></i><i></i></div><div class="nm">Dr. Fahim Foysal Kollol</div><div class="sb">General, Laparoscopic, Breast &amp; Colorectal Surgeon</div></div></div>
+<script>function replay(){const p=document.getElementById('pl');p.replaceWith(p.cloneNode(true))}</script>
+</body></html>

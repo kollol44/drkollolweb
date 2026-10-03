@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dr. Fahim Foysal Kollol</title>
+<meta name="description" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;700;800&family=Hind+Siliguri:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=18">
+<link rel="stylesheet" href="../assets/preloader.css?v=1">
+<script>/* OT-light preloader: once per session */try{if(sessionStorage.getItem('kpl'))document.documentElement.classList.add('pl-skip');else sessionStorage.setItem('kpl','1')}catch(e){}</script>
+</head>
+<!-- CONDITION PAGE (one template for every condition; content from conditions-data.js).
+     Pinned showcase steps: 1 condition (image, short line, CTA) → 2 what it is → 3 symptoms → 4 how Dr. Kollol treats it (+ proof)
+     → 5 when to see a doctor (+ Serial/WhatsApp). Then CTA band + related conditions.
+     Next.js route: /conditions-treatments/[category]/[condition] -->
+<body data-root="../" data-page="ct">
+<!-- OT-light preloader (assets/preloader.css). Name text must come from the admin panel in the final build. -->
+<div id="pl" role="presentation" aria-hidden="true"><div class="pl-stage"><div class="pl-mv"><svg class="pl-lamp" viewBox="0 0 120 70" aria-hidden="true"><rect x="56" y="0" width="8" height="16" rx="3" fill="#2BB3B1"/><path d="M10 50 Q60 6 110 50 Z" fill="#dfeeed"/><path d="M10 50 Q60 6 110 50" fill="none" stroke="#9fc9c7" stroke-width="2"/><ellipse cx="60" cy="50" rx="50" ry="8" fill="#fff"/><circle cx="40" cy="50" r="4" fill="#fffbe6"/><circle cx="60" cy="51" r="4.5" fill="#fffbe6"/><circle cx="80" cy="50" r="4" fill="#fffbe6"/></svg><div class="pl-beam"></div></div><div class="pl-name">Dr. Fahim Foysal Kollol</div><div class="pl-sub">General, Laparoscopic, Breast &amp; Colorectal Surgeon</div></div></div>
+<script>(function(){var p=document.getElementById('pl');if(!p)return;try{if(localStorage.getItem('kollol-lang')==='bn'){p.querySelector('.pl-name').textContent='ডাঃ ফাহিম ফয়সাল কল্লোল';p.querySelector('.pl-name').style.fontFamily="'Anek Bangla',sans-serif";p.querySelector('.pl-sub').textContent='জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন';p.querySelector('.pl-sub').style.letterSpacing='0'}}catch(e){}var k=function(){p.remove()};p.addEventListener('click',k);p.addEventListener('animationend',function(e){if(e.animationName==='plFlood')k()})})();</script>
+
+<header class="nav" id="nav"></header><div class="sheet" id="sheet"></div>
+
+<section id="show"></section>
+
+<div id="cta"></div>
+<section class="sec" id="relSec"><div class="wrap">
+  <p class="eyebrow rv" id="relEb"></p><h2 class="h2 rv" id="relH"></h2>
+  <div class="cards" id="rel"></div>
+</div></section>
+<footer class="sitefoot" id="foot"></footer>
+<div class="mbar" id="mbar"></div>
+
+<script src="../assets/conditions-data.js?v=18"></script>
+<script src="../assets/site.js?v=18"></script>
+<script>
+const slug=new URLSearchParams(location.search).get('c')||'piles';
+const T={en:{all:'Conditions & Treatments',what:'What is it?',whatW:'What is it?',symp:'Symptoms',sympT:'Do you have these?',treat:'Treatment',treatT:'How Dr. Kollol treats it',
+  when:'When to see a doctor',whenW:'Don\'t wait',whenT:'Act early',lap:'Laparoscopic (keyhole) surgery',relEb:'Related',relH:'Other conditions in this area'},
+ bn:{all:'রোগ ও চিকিৎসা',what:'এটা কী?',whatW:'এটা কী?',symp:'লক্ষণ',sympT:'আপনার কি এমন হচ্ছে?',treat:'চিকিৎসা',treatT:'ডাঃ কল্লোল যেভাবে চিকিৎসা করেন',
+  when:'কখন ডাক্তার দেখাবেন',whenW:'দেরি নয়',whenT:'আগে দেখান',lap:'ল্যাপারোস্কপিক (ছোট ছিদ্রে) অপারেশন',relEb:'আরও দেখুন',relH:'এই ক্ষেত্রের অন্যান্য রোগ'}};
+window.renderPage=l=>{const c=K.cond(slug)||K.D.conditions[0],x=c[l],cat=K.cat(c.cat),t=T[l],name=(c.home&&c.home[l])||x.name;
+ document.title=`${x.name} — ${l==='bn'?'ডাঃ ফাহিম ফয়সাল কল্লোল':'Dr. Fahim Foysal Kollol'}`;
+ document.querySelector('meta[name=description]').content=x.short;
+ const book=`<div class="row"><a class="btn btn-p" href="tel:${K.SERIAL}">${K.t('book')}</a><a class="btn btn-g" href="${K.WA}" target="_blank" rel="noopener">${K.t('wa')}</a></div>`;
+ const pic={src:K.condImg(c),alt:x.name};
+ const steps=[
+  {word:name,cat:c.cat,ey:cat[l].name+(x.med&&x.med!==x.name?' · '+x.med:''),title:x.name,
+   first:true,body:`<p>${x.short}</p><div class="toc"><small>${l==='bn'?'এই পাতায়':'On this page'}</small>${[t.what,t.symp,t.treat,t.when].map((w,i)=>`<span><i>${i+1}</i>${w}</span>`).join('')}</div>${c.lap||x.stat?`<div class="meta">${c.lap?`<span class="badge lap">${t.lap}</span>`:''}${x.stat?`<span class="go">✓ ${x.stat}</span>`:''}</div>`:''}${book}`},
+  {word:t.whatW,cat:c.cat,ey:t.what,title:x.name,body:`<p style="font-size:16px;color:var(--ink)">${x.what}</p>`},
+  {word:t.symp,cat:c.cat,ey:t.symp,title:t.sympT,body:`<ul>${x.symptoms.map(s=>`<li>${s}</li>`).join('')}</ul>`},
+  {word:t.treat,cat:c.cat,ey:t.treat,title:t.treatT,body:`<ol>${x.treat.map(s=>`<li>${s}</li>`).join('')}</ol>${x.stat?`<div class="meta"><span class="go">✓ ${x.stat}</span></div>`:''}`},
+  {word:t.whenW,cat:c.cat,alert:true,ey:t.when,title:t.whenT,body:`<p style="font-size:16px;color:var(--ink)">${x.when}</p>${book}`}];
+ K.showcase(document.getElementById('show'),steps,{hero:pic,crumb:`<a href="${K.hubUrl()}">${t.all}</a> &nbsp;/&nbsp; <a href="${K.catUrl(cat.slug)}">${cat[l].name}</a>`});
+ cta.innerHTML=K.ctaBand({doc:true});
+ relEb.textContent=t.relEb;relH.textContent=t.relH;
+ const rel=K.list(c.cat).filter(o=>o.slug!==c.slug);
+ document.getElementById('rel').innerHTML=(rel.length?rel:K.list().filter(o=>o.slug!==c.slug).slice(0,3)).map(K.card).join('');
+ K.stack([document.getElementById('cta'),document.getElementById('relSec')])};
+window.fitPage=()=>K.fitShow();
+</script>
+</body>
+</html>

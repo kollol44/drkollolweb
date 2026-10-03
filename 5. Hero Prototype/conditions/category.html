@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dr. Fahim Foysal Kollol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;700;800&family=Hind+Siliguri:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css?v=18">
+<link rel="stylesheet" href="../assets/preloader.css?v=1">
+<script>/* OT-light preloader: once per session */try{if(sessionStorage.getItem('kpl'))document.documentElement.classList.add('pl-skip');else sessionStorage.setItem('kpl','1')}catch(e){}</script>
+</head>
+<!-- CATEGORY PAGE (navbar dropdown target). Pinned showcase: category intro → each condition of the category.
+     Next.js route: /conditions-treatments/[category] -->
+<body data-root="../" data-page="ct">
+<!-- OT-light preloader (assets/preloader.css). Name text must come from the admin panel in the final build. -->
+<div id="pl" role="presentation" aria-hidden="true"><div class="pl-stage"><div class="pl-mv"><svg class="pl-lamp" viewBox="0 0 120 70" aria-hidden="true"><rect x="56" y="0" width="8" height="16" rx="3" fill="#2BB3B1"/><path d="M10 50 Q60 6 110 50 Z" fill="#dfeeed"/><path d="M10 50 Q60 6 110 50" fill="none" stroke="#9fc9c7" stroke-width="2"/><ellipse cx="60" cy="50" rx="50" ry="8" fill="#fff"/><circle cx="40" cy="50" r="4" fill="#fffbe6"/><circle cx="60" cy="51" r="4.5" fill="#fffbe6"/><circle cx="80" cy="50" r="4" fill="#fffbe6"/></svg><div class="pl-beam"></div></div><div class="pl-name">Dr. Fahim Foysal Kollol</div><div class="pl-sub">General, Laparoscopic, Breast &amp; Colorectal Surgeon</div></div></div>
+<script>(function(){var p=document.getElementById('pl');if(!p)return;try{if(localStorage.getItem('kollol-lang')==='bn'){p.querySelector('.pl-name').textContent='ডাঃ ফাহিম ফয়সাল কল্লোল';p.querySelector('.pl-name').style.fontFamily="'Anek Bangla',sans-serif";p.querySelector('.pl-sub').textContent='জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন';p.querySelector('.pl-sub').style.letterSpacing='0'}}catch(e){}var k=function(){p.remove()};p.addEventListener('click',k);p.addEventListener('animationend',function(e){if(e.animationName==='plFlood')k()})})();</script>
+
+<header class="nav" id="nav"></header><div class="sheet" id="sheet"></div>
+
+<section id="show"></section>
+
+<section class="sec" id="allSec"><div class="wrap">
+  <p class="eyebrow rv" id="eb"></p><h2 class="h2 rv" id="h2"></h2>
+  <div class="cards" id="cards"></div>
+</div></section>
+<section class="sec tint" id="otherSec"><div class="wrap">
+  <p class="eyebrow rv" id="otherEb"></p>
+  <div class="chips rv" id="others" style="margin-top:16px"></div>
+</div></section>
+<div id="cta"></div>
+<footer class="sitefoot" id="foot"></footer>
+<div class="mbar" id="mbar"></div>
+
+<script src="../assets/conditions-data.js?v=18"></script>
+<script src="../assets/site.js?v=18"></script>
+<script>
+const slug=new URLSearchParams(location.search).get('cat')||'colorectal';
+const T={en:{eb:'All conditions in this area',other:'Other areas Dr. Kollol treats',all:'Conditions & Treatments',introEy:'Treated by Dr. Kollol',scroll:'Scroll to see each condition.'},
+ bn:{eb:'এই ক্ষেত্রের সব রোগ',other:'ডাঃ কল্লোল আরও যেসব ক্ষেত্রের চিকিৎসা করেন',all:'রোগ ও চিকিৎসা',introEy:'ডাঃ কল্লোলের চিকিৎসা',scroll:'স্ক্রল করে প্রতিটা রোগ দেখুন।'}};
+window.renderPage=l=>{const c=K.cat(slug)||K.D.categories[0],t=T[l],list=K.list(c.slug);
+ document.title=c[l].name+' — '+(l==='bn'?'ডাঃ ফাহিম ফয়সাল কল্লোল':'Dr. Fahim Foysal Kollol');
+ const steps=[{word:c[l].name,cat:c.slug,ey:t.introEy,title:c[l].name,body:`<p>${c[l].desc} ${t.scroll}</p><div class="row"><a class="btn btn-p" href="tel:${K.SERIAL}">${K.t('book')}</a><a class="btn btn-g" href="tel:${K.PHONE}">${K.t('call')}</a></div>`},
+  ...list.map((x,i)=>({word:(x.home&&x.home[l])||x[l].name,cat:c.slug,ey:c[l].name,title:x[l].name,img:{src:K.condImg(x),alt:x[l].name},
+   body:`<p>${x[l].short}</p><div class="meta">${x.lap?`<span class="badge lap">${K.t('lap')}</span>`:'<span></span>'}<a class="go" href="${K.condUrl(x.slug)}">${K.t('more')} →</a></div>`}))];
+ K.showcase(document.getElementById('show'),steps,{swap:true,crumb:`<a href="${K.hubUrl()}">${t.all}</a> &nbsp;/&nbsp; ${c[l].name}`});
+ eb.textContent=t.eb;h2.textContent=c[l].name;cards.innerHTML=list.map(K.card).join('');
+ otherEb.textContent=t.other;others.innerHTML=K.D.categories.filter(x=>x.slug!==c.slug).map(x=>`<a class="chip" href="${K.catUrl(x.slug)}">${x[l].name}</a>`).join('');
+ cta.innerHTML=K.ctaBand({doc:true});
+ K.stack([document.getElementById('allSec'),document.getElementById('otherSec'),document.getElementById('cta')])};
+window.fitPage=()=>K.fitShow();
+</script>
+</body>
+</html>
