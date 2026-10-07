@@ -192,7 +192,7 @@ export function SerialStepsSection({ steps, profile, onBookClick }: SerialStepsS
         </div>
 
         {/* Section Headline */}
-        <h2 className="absolute inset-x-0 top-[calc(max(84px,11vh)+72px)] text-center font-heading font-extrabold text-[clamp(44px,7.5vw,110px)] leading-none tracking-tight bg-gradient-to-b from-[var(--teal)] via-[var(--teal)]/80 to-[rgba(43,179,177,0.45)] bg-clip-text text-transparent px-4">
+        <h2 className="absolute inset-x-0 top-[calc(max(76px,10vh)+52px)] sm:top-[calc(max(84px,11vh)+72px)] text-center font-heading font-extrabold text-[clamp(32px,6.5vw,100px)] leading-none tracking-tight bg-gradient-to-b from-[var(--teal)] via-[var(--teal)]/80 to-[rgba(43,179,177,0.45)] bg-clip-text text-transparent px-4">
           {t.heading}
         </h2>
 
@@ -201,10 +201,10 @@ export function SerialStepsSection({ steps, profile, onBookClick }: SerialStepsS
           {steps.map((st, idx) => (
             <div
               key={st.step_number}
-              className="absolute left-1/2 top-0 bottom-0 w-[min(620px,46vw)] -ml-[calc(min(620px,46vw)/2)] sm:grid sm:grid-cols-12 sm:items-center sm:gap-6 p-6 sm:p-8 rounded-[28px] bg-white/90 backdrop-blur-2xl border border-[rgba(43,179,177,0.3)] shadow-[0_26px_50px_-28px_rgba(6,47,49,0.45)] will-change-transform opacity-0 pointer-events-auto"
+              className="absolute left-1/2 top-0 bottom-0 w-[min(92vw,560px)] -ml-[calc(min(92vw,560px)/2)] sm:w-[min(620px,46vw)] sm:-ml-[calc(min(620px,46vw)/2)] flex flex-col justify-between sm:grid sm:grid-cols-12 sm:items-center sm:gap-6 p-5 sm:p-8 rounded-2xl sm:rounded-[28px] bg-white/90 backdrop-blur-2xl border border-[rgba(43,179,177,0.3)] shadow-[0_26px_50px_-28px_rgba(6,47,49,0.45)] will-change-transform opacity-0 pointer-events-auto"
             >
               {/* Animated Pictogram Icon */}
-              <div className="sm:col-span-5 w-28 sm:w-full aspect-square mx-auto mb-3 sm:mb-0 relative grid place-items-center">
+              <div className="sm:col-span-5 w-20 sm:w-full aspect-square mx-auto mb-2 sm:mb-0 relative grid place-items-center">
                 <div className="absolute inset-2 rounded-full bg-[radial-gradient(circle,rgba(43,179,177,0.22),transparent_70%)]" />
                 {ICONS[idx]}
               </div>

@@ -48,7 +48,7 @@ export function VisitChambersSection({ settings, chambers, onBookClick }: VisitC
         {/* Stage with Doctor Centered, CTA Left, Chambers Right */}
         <div className="relative min-h-[min(90vh,760px)] grid grid-cols-1 lg:grid-cols-12 items-center gap-8 mb-16">
           {/* Giant Brand Name Behind Doctor */}
-          <div className="absolute inset-x-0 top-0 text-center font-heading font-extrabold text-[clamp(70px,13vw,210px)] leading-[0.9] tracking-tight bg-gradient-to-b from-[var(--teal)]/40 via-[var(--teal)]/20 to-transparent bg-clip-text text-transparent pointer-events-none select-none">
+          <div className="absolute inset-x-0 top-0 text-center font-heading font-extrabold text-[clamp(44px,9vw,150px)] leading-[0.9] tracking-tight bg-gradient-to-b from-[var(--teal)]/40 via-[var(--teal)]/20 to-transparent bg-clip-text text-transparent pointer-events-none select-none max-w-full overflow-hidden px-2">
             {isBn ? settings.brand_name_bn : settings.brand_name_en}
           </div>
 

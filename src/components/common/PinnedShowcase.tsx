@@ -77,13 +77,13 @@ export function PinnedShowcase({
       const step = window.innerHeight * (mob ? 0.36 : 0.6);
       const cur = Math.round(pos);
 
-      // Words motion
+      // Words motion - always centered horizontally to prevent right-edge spill
       const words = Array.from(wordsEl.children) as HTMLElement[];
       words.forEach((w, i) => {
         const o = i - pos;
         const a = Math.abs(o);
-        w.style.transform = `translate(${mob ? '-50%' : '0'}, calc(-50% + ${o * step}px)) scale(${1 - Math.min(a, 1) * 0.1})`;
-        w.style.opacity = String(Math.max(0, 1 - a * (mode === 'hero' || mode === 'swap' ? 1.8 : 0.8)));
+        w.style.transform = `translate(-50%, calc(-50% + ${o * step}px)) scale(${1 - Math.min(a, 1) * 0.1})`;
+        w.style.opacity = String(Math.max(0, 1 - a * (mode === 'hero' || mode === 'swap' ? 1.5 : 0.75)));
       });
 
       // Panel Cards motion
@@ -91,10 +91,10 @@ export function PinnedShowcase({
       panes.forEach((p, i) => {
         const o = i - pos;
         const a = Math.abs(o);
-        const op = Math.max(0, 1 - a * 2.2);
-        p.style.transform = `translateY(${o * 70}px)`;
+        const op = Math.max(0, 1 - a * 1.6);
+        p.style.transform = `translateY(${o * 50}px)`;
         p.style.opacity = String(op);
-        p.style.pointerEvents = op > 0.6 ? 'auto' : 'none';
+        p.style.pointerEvents = op > 0.4 ? 'auto' : 'none';
       });
 
       // Dots
@@ -168,17 +168,11 @@ export function PinnedShowcase({
     >
       <div className="sticky top-0 h-[100vh] h-[100svh] overflow-hidden bg-[radial-gradient(ellipse_45%_55%_at_22%_64%,rgba(43,179,177,0.24),transparent_70%)] bg-gradient-to-b from-white to-[var(--tint)]">
         {/* Giant Drift Words */}
-        <div ref={wordsRef} className="absolute inset-0 z-[1] pointer-events-none">
+        <div ref={wordsRef} className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
           {steps.map((st, i) => (
             <div
               key={i}
-              className={`absolute top-[31%] whitespace-nowrap will-change-transform font-heading font-extrabold text-[clamp(64px,14vw,240px)] leading-[0.95] tracking-tight bg-gradient-to-b from-[var(--teal)] via-[var(--teal)]/80 to-[rgba(43,179,177,0.35)] bg-clip-text text-transparent opacity-0 ${
-                mode === 'hero'
-                  ? 'sm:left-[48vw] left-1/2 -translate-x-1/2 sm:translate-x-0'
-                  : mode === 'swap'
-                  ? 'sm:left-[48vw] left-1/2 -translate-x-1/2 sm:translate-x-0'
-                  : 'sm:left-[24vw] left-1/2 -translate-x-1/2 sm:translate-x-0'
-              }`}
+              className="absolute left-1/2 top-[26%] sm:top-[28%] -translate-x-1/2 text-center whitespace-nowrap will-change-transform font-heading font-extrabold text-[clamp(28px,5vw,90px)] leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/38 via-[var(--teal)]/22 to-[rgba(43,179,177,0.06)] bg-clip-text text-transparent opacity-0 select-none max-w-[92vw] overflow-hidden truncate"
             >
               {st.word}
             </div>
@@ -189,7 +183,7 @@ export function PinnedShowcase({
         {mode !== 'hero' && (
           <div
             ref={docImgRef}
-            className="absolute left-1/2 sm:left-[3vw] -translate-x-1/2 sm:translate-x-0 bottom-0 h-[min(70vh,680px)] sm:h-[min(88vh,820px)] aspect-[655/1069] z-[2] pointer-events-none will-change-transform"
+            className="absolute left-1/2 sm:left-[3vw] -translate-x-1/2 sm:translate-x-0 bottom-0 h-[min(60vh,540px)] sm:h-[min(88vh,820px)] aspect-[655/1069] z-[2] pointer-events-none will-change-transform"
           >
             <Image
               src="/img/doctor-gloves.webp"
@@ -236,17 +230,17 @@ export function PinnedShowcase({
         )}
 
         {/* Top Header: Breadcrumb & Chips */}
-        <div className="absolute inset-x-0 top-[max(9vh,78px)] z-[4] text-center px-4 pointer-events-auto">
+        <div className="absolute inset-x-0 top-[max(9vh,78px)] z-[4] text-center px-3 sm:px-4 pointer-events-auto">
           {crumb && <div className="text-xs font-bold uppercase tracking-wider text-[var(--teal)] mb-2">{crumb}</div>}
           {chips && (
-            <div className="flex justify-center gap-1.5 flex-wrap max-w-4xl mx-auto overflow-x-auto pb-1">
+            <div className="flex justify-start sm:justify-center gap-1.5 flex-nowrap sm:flex-wrap max-w-4xl mx-auto overflow-x-auto pb-1 scrollbar-none px-1">
               {chips.map((c) => (
                 <Link
                   key={c.slug}
                   href={c.href}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                  className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all backdrop-blur-md ${
                     activeChip === c.slug
-                      ? 'bg-[var(--teal)] text-white shadow-sm'
+                      ? 'bg-[var(--teal)] text-white shadow-sm ring-2 ring-[var(--teal)]/20'
                       : 'bg-white/80 text-[var(--teal)] border border-[rgba(43,179,177,0.3)] hover:bg-white'
                   }`}
                 >
@@ -257,16 +251,16 @@ export function PinnedShowcase({
           )}
         </div>
 
-        {/* Panel Cards Container */}
+        {/* Panel Cards Container - anchored to right on desktop */}
         <div
           ref={panelRef}
-          className={`absolute z-[3] bottom-16 sm:bottom-12 ${
+          className={`absolute z-[3] bottom-[82px] sm:bottom-12 ${
             mode === 'hero'
-              ? 'sm:left-[48vw] sm:right-[4vw] left-4 right-4 sm:w-[min(560px,46vw)]'
+              ? 'left-3 right-3 sm:left-auto sm:right-[5vw] lg:right-[6vw] sm:w-[min(540px,46vw)]'
               : mode === 'swap'
-              ? 'sm:left-[48vw] sm:right-[4vw] left-4 right-4 sm:w-[min(560px,46vw)]'
-              : 'sm:left-[42vw] sm:right-[4vw] left-4 right-4 sm:w-[min(640px,52vw)]'
-          } h-[min(48vh,450px)] pointer-events-none`}
+              ? 'left-3 right-3 sm:left-auto sm:right-[5vw] lg:right-[6vw] sm:w-[min(540px,46vw)]'
+              : 'left-3 right-3 sm:left-auto sm:right-[5vw] lg:right-[6vw] sm:w-[min(540px,46vw)]'
+          } h-[min(54vh,500px)] pointer-events-none`}
         >
           {steps.map((st, i) => (
             <div
@@ -274,12 +268,23 @@ export function PinnedShowcase({
               className="absolute inset-0 flex items-end justify-end pointer-events-auto will-change-transform opacity-0"
             >
               <div
-                className={`w-full p-6 sm:p-7 rounded-3xl bg-white/90 backdrop-blur-2xl border shadow-[0_20px_45px_-20px_rgba(6,47,49,0.35)] max-h-full overflow-y-auto ${
+                className={`w-full p-4 sm:p-6 lg:p-7 rounded-3xl bg-white/92 backdrop-blur-2xl border shadow-[0_20px_45px_-20px_rgba(6,47,49,0.35)] max-h-full overflow-y-auto ${
                   st.alert
                     ? 'border-red-300 ring-1 ring-red-200'
                     : 'border-[rgba(43,179,177,0.3)]'
                 }`}
               >
+                {/* 3D Medical Organ Illustration in Default Mode */}
+                {mode === 'default' && st.img?.src && (
+                  <div className="h-20 sm:h-36 relative flex items-center justify-center p-1 mb-2 sm:mb-3">
+                    <Image
+                      src={st.img.src}
+                      alt={st.img.alt || st.title}
+                      fill
+                      className="object-contain filter drop-shadow-[0_16px_22px_rgba(6,47,49,0.25)]"
+                    />
+                  </div>
+                )}
                 {st.ey && (
                   <span
                     className={`text-[11px] font-bold uppercase tracking-wider block mb-1 ${

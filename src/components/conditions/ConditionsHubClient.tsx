@@ -145,7 +145,7 @@ export function ConditionsHubClient({
 
       {/* Sticky Chip Navigation Bar */}
       <div id="browse-areas" className="sticky top-20 z-30 py-3 bg-white/80 backdrop-blur-md border-y border-[rgba(43,179,177,0.25)]">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-start md:justify-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {categories.map((c) => (
             <a
               key={c.slug}
