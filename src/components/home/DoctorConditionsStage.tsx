@@ -228,9 +228,8 @@ export function DoctorConditionsStage({
         words.forEach((w, i) => {
           const o = i - pos;
           const a = Math.abs(o);
-          const wx = mob ? 0 : -sideOf(i) * window.innerWidth * 0.12;
-          w.style.transform = `translate(calc(-50% + ${wx}px), calc(-50% + ${o * stepDist + (1 - inS) * vh * 0.9}px - ${
-            mob ? 14 : sideOf(i) ? 14 : 8
+          w.style.transform = `translate(-50%, calc(-50% + ${o * stepDist + (1 - inS) * vh * 0.9}px - ${
+            mob ? 14 : 10
           }vh)) scale(${1 - Math.min(a, 1) * 0.12})`;
           w.style.opacity = String(clamp(1 - a * 0.75, 0, 1) * inS);
         });
@@ -333,7 +332,7 @@ export function DoctorConditionsStage({
           {svcItems.map((item, idx) => (
             <div
               key={idx}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap will-change-transform font-heading font-extrabold text-[clamp(42px,7.5vw,130px)] leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/40 via-[var(--teal)]/25 to-[rgba(43,179,177,0.1)] bg-clip-text text-transparent opacity-0 select-none max-w-[96vw] overflow-hidden"
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap will-change-transform font-heading font-extrabold text-[clamp(26px,5vw,90px)] leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/40 via-[var(--teal)]/25 to-[rgba(43,179,177,0.1)] bg-clip-text text-transparent opacity-0 select-none max-w-[92vw] overflow-hidden truncate"
             >
               {item.word}
             </div>
@@ -461,7 +460,7 @@ export function DoctorConditionsStage({
               return (
                 <div
                   key="more"
-                  className="absolute bottom-20 sm:bottom-10 left-1/2 -translate-x-1/2 w-[min(620px,94vw)] max-h-[62vh] overflow-y-auto p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/92 backdrop-blur-2xl border border-[rgba(43,179,177,0.35)] shadow-2xl pointer-events-auto opacity-0 will-change-transform"
+                  className="absolute bottom-16 sm:bottom-10 left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[560px] sm:max-w-[560px] max-h-[65vh] overflow-y-auto p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/92 backdrop-blur-2xl border border-[rgba(43,179,177,0.35)] shadow-2xl pointer-events-auto opacity-0 will-change-transform"
                 >
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--aqua)]">
                     {isBn ? 'সব রোগ ও চিকিৎসা' : 'All conditions & treatments'}
@@ -470,12 +469,12 @@ export function DoctorConditionsStage({
                     {isBn ? 'ডাঃ কল্লোল আরও যেসব রোগের চিকিৎসা করেন' : 'More conditions Dr. Kollol treats'}
                   </h4>
 
-                  <div className="flex flex-wrap gap-1.5 my-3.5">
+                  <div className="flex flex-wrap gap-1.5 my-3.5 max-w-full">
                     {rest.map((c) => (
                       <Link
                         key={c.slug}
                         href={`/conditions-treatments/${c.category_slug}/${c.slug}`}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium text-[var(--ink)] bg-white border border-[rgba(43,179,177,0.3)] hover:bg-[var(--tint)]"
+                        className="px-2.5 py-1 rounded-full text-xs font-medium text-[var(--ink)] bg-white border border-[rgba(43,179,177,0.3)] hover:bg-[var(--tint)] truncate max-w-full"
                       >
                         {isBn ? c.name_bn : c.name_en}
                       </Link>
@@ -486,11 +485,11 @@ export function DoctorConditionsStage({
                     {isBn ? 'কোন রোগ বুঝতে পারছেন না? একবার দেখিয়ে নিন।' : 'Not sure what you have? Come for a consultation.'}
                   </p>
 
-                  <div className="flex gap-2">
-                    <a href="tel:01750529252" className="btn btn-p text-xs py-2.5 px-4 flex-1 text-center font-bold">
+                  <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+                    <a href="tel:01750529252" className="btn btn-p text-xs py-2.5 px-4 flex-1 text-center font-bold whitespace-nowrap">
                       {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
                     </a>
-                    <Link href="/conditions-treatments" className="btn btn-g text-xs py-2.5 px-4 flex-1 text-center font-bold">
+                    <Link href="/conditions-treatments" className="btn btn-g text-xs py-2.5 px-4 flex-1 text-center font-bold whitespace-nowrap">
                       {isBn ? 'সব রোগ দেখুন →' : 'All conditions →'}
                     </Link>
                   </div>
@@ -503,10 +502,10 @@ export function DoctorConditionsStage({
               <Link
                 key={c.slug}
                 href={`/conditions-treatments/${c.category_slug}/${c.slug}`}
-                className="absolute bottom-16 sm:bottom-12 w-[calc(100vw-2rem)] sm:w-[min(48vw,640px)] p-5 sm:p-6 rounded-3xl bg-white/90 backdrop-blur-2xl border border-[rgba(43,179,177,0.3)] shadow-[0_20px_45px_-20px_rgba(6,47,49,0.35)] pointer-events-auto opacity-0 will-change-transform sm:grid sm:grid-cols-12 sm:gap-5 items-center transition-shadow hover:shadow-2xl"
+                className="absolute bottom-16 sm:bottom-12 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[min(48vw,620px)] sm:max-w-[620px] p-4 sm:p-6 rounded-3xl bg-white/90 backdrop-blur-2xl border border-[rgba(43,179,177,0.3)] shadow-[0_20px_45px_-20px_rgba(6,47,49,0.35)] pointer-events-auto opacity-0 will-change-transform sm:grid sm:grid-cols-12 sm:gap-5 items-center transition-shadow hover:shadow-2xl"
               >
                 {/* Floating condition image */}
-                <div className="sm:col-span-5 h-28 sm:h-52 relative mb-2 sm:mb-0">
+                <div className="sm:col-span-5 h-24 sm:h-52 relative mb-2 sm:mb-0">
                   <Image
                     src={c.image_url || `/img/conditions/${c.slug}.webp`}
                     alt={isBn ? c.name_bn : c.name_en}
