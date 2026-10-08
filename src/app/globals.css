@@ -30,6 +30,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -38,6 +42,15 @@ html, body {
   font-family: var(--fb);
   -webkit-font-smoothing: antialiased;
   overflow-x: clip; /* clip, not hidden: hidden breaks position:sticky */
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 a {

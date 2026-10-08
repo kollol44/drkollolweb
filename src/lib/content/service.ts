@@ -43,9 +43,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('site_settings').select('*').limit(1).single();
-      if (!error && data) return data as SiteSettings;
+      if (!error && data) {
+        memSiteSettings = data as SiteSettings;
+        return memSiteSettings;
+      }
     } catch (e) {
-      console.warn('Falling back to default site settings:', e);
+      console.warn('Falling back to cached site settings:', e);
     }
   }
   return memSiteSettings;
@@ -56,9 +59,10 @@ export async function updateSiteSettings(settings: Partial<SiteSettings>): Promi
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('site_settings').upsert(memSiteSettings);
+      const { error } = await supabase.from('site_settings').upsert(memSiteSettings);
+      if (error) console.error('Supabase updateSiteSettings error:', error);
     } catch (e) {
-      console.error('Supabase updateSiteSettings error:', e);
+      console.error('Supabase updateSiteSettings exception:', e);
     }
   }
   return memSiteSettings;
@@ -69,9 +73,12 @@ export async function getHeroSection(): Promise<HeroSection> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('hero_section').select('*').limit(1).single();
-      if (!error && data) return data as HeroSection;
+      if (!error && data) {
+        memHeroSection = data as HeroSection;
+        return memHeroSection;
+      }
     } catch (e) {
-      console.warn('Falling back to default hero section:', e);
+      console.warn('Falling back to cached hero section:', e);
     }
   }
   return memHeroSection;
@@ -82,9 +89,10 @@ export async function updateHeroSection(hero: Partial<HeroSection>): Promise<Her
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('hero_section').upsert(memHeroSection);
+      const { error } = await supabase.from('hero_section').upsert(memHeroSection);
+      if (error) console.error('Supabase updateHeroSection error:', error);
     } catch (e) {
-      console.error('Supabase updateHeroSection error:', e);
+      console.error('Supabase updateHeroSection exception:', e);
     }
   }
   return memHeroSection;
@@ -95,9 +103,12 @@ export async function getSurgeonProfile(): Promise<SurgeonProfile> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('surgeon_profile').select('*').limit(1).single();
-      if (!error && data) return data as SurgeonProfile;
+      if (!error && data) {
+        memSurgeonProfile = data as SurgeonProfile;
+        return memSurgeonProfile;
+      }
     } catch (e) {
-      console.warn('Falling back to default surgeon profile:', e);
+      console.warn('Falling back to cached surgeon profile:', e);
     }
   }
   return memSurgeonProfile;
@@ -108,9 +119,10 @@ export async function updateSurgeonProfile(profile: Partial<SurgeonProfile>): Pr
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('surgeon_profile').upsert(memSurgeonProfile);
+      const { error } = await supabase.from('surgeon_profile').upsert(memSurgeonProfile);
+      if (error) console.error('Supabase updateSurgeonProfile error:', error);
     } catch (e) {
-      console.error('Supabase updateSurgeonProfile error:', e);
+      console.error('Supabase updateSurgeonProfile exception:', e);
     }
   }
   return memSurgeonProfile;
@@ -121,9 +133,12 @@ export async function getCategories(): Promise<Category[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-      if (!error && data && data.length > 0) return data as Category[];
+      if (!error && data && data.length > 0) {
+        memCategories = data as Category[];
+        return memCategories;
+      }
     } catch (e) {
-      console.warn('Falling back to default categories:', e);
+      console.warn('Falling back to cached categories:', e);
     }
   }
   return memCategories;
@@ -138,9 +153,11 @@ export async function getConditions(categorySlug?: string): Promise<Condition[]>
         query = query.eq('category_slug', categorySlug);
       }
       const { data, error } = await query;
-      if (!error && data && data.length > 0) return data as Condition[];
+      if (!error && data && data.length > 0) {
+        return data as Condition[];
+      }
     } catch (e) {
-      console.warn('Falling back to default conditions:', e);
+      console.warn('Falling back to cached conditions:', e);
     }
   }
   let list = memConditions.filter((c) => !c.is_hidden);
@@ -155,7 +172,10 @@ export async function getAllConditionsAdmin(): Promise<Condition[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('conditions').select('*').order('sort_order', { ascending: true });
-      if (!error && data && data.length > 0) return data as Condition[];
+      if (!error && data && data.length > 0) {
+        memConditions = data as Condition[];
+        return memConditions;
+      }
     } catch (e) {
       console.warn('Falling back to all mem conditions:', e);
     }
@@ -170,7 +190,7 @@ export async function getConditionBySlug(slug: string): Promise<Condition | null
       const { data, error } = await supabase.from('conditions').select('*').eq('slug', slug).single();
       if (!error && data) return data as Condition;
     } catch (e) {
-      console.warn('Falling back to default condition by slug:', e);
+      console.warn('Falling back to cached condition by slug:', e);
     }
   }
   return memConditions.find((c) => c.slug === slug) || null;
@@ -187,12 +207,27 @@ export async function saveCondition(condition: Condition): Promise<Condition> {
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('conditions').upsert(condition);
+      const { error } = await supabase.from('conditions').upsert(condition);
+      if (error) console.error('Supabase saveCondition error:', error);
     } catch (e) {
-      console.error('Supabase saveCondition error:', e);
+      console.error('Supabase saveCondition exception:', e);
     }
   }
   return condition;
+}
+
+export async function deleteCondition(slug: string): Promise<boolean> {
+  memConditions = memConditions.filter((c) => c.slug !== slug);
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from('conditions').delete().eq('slug', slug);
+      if (error) console.error('Supabase deleteCondition error:', error);
+    } catch (e) {
+      console.error('Supabase deleteCondition exception:', e);
+    }
+  }
+  return true;
 }
 
 export async function getSerialSteps(): Promise<SerialStep[]> {
@@ -200,9 +235,12 @@ export async function getSerialSteps(): Promise<SerialStep[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('serial_steps').select('*').order('step_number', { ascending: true });
-      if (!error && data && data.length > 0) return data as SerialStep[];
+      if (!error && data && data.length > 0) {
+        memSerialSteps = data as SerialStep[];
+        return memSerialSteps;
+      }
     } catch (e) {
-      console.warn('Falling back to default serial steps:', e);
+      console.warn('Falling back to cached serial steps:', e);
     }
   }
   return memSerialSteps;
@@ -216,9 +254,10 @@ export async function updateSerialStep(step: SerialStep): Promise<SerialStep> {
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('serial_steps').upsert(step);
+      const { error } = await supabase.from('serial_steps').upsert(step);
+      if (error) console.error('Supabase updateSerialStep error:', error);
     } catch (e) {
-      console.error('Supabase updateSerialStep error:', e);
+      console.error('Supabase updateSerialStep exception:', e);
     }
   }
   return step;
@@ -229,9 +268,12 @@ export async function getChambers(): Promise<Chamber[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('chambers').select('*').order('sort_order', { ascending: true });
-      if (!error && data && data.length > 0) return data as Chamber[];
+      if (!error && data && data.length > 0) {
+        memChambers = data as Chamber[];
+        return memChambers;
+      }
     } catch (e) {
-      console.warn('Falling back to default chambers:', e);
+      console.warn('Falling back to cached chambers:', e);
     }
   }
   return memChambers;
@@ -247,12 +289,27 @@ export async function saveChamber(chamber: Chamber): Promise<Chamber> {
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('chambers').upsert(chamber);
+      const { error } = await supabase.from('chambers').upsert(chamber);
+      if (error) console.error('Supabase saveChamber error:', error);
     } catch (e) {
-      console.error('Supabase saveChamber error:', e);
+      console.error('Supabase saveChamber exception:', e);
     }
   }
   return chamber;
+}
+
+export async function deleteChamber(id: number): Promise<boolean> {
+  memChambers = memChambers.filter((c) => c.id !== id);
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from('chambers').delete().eq('id', id);
+      if (error) console.error('Supabase deleteChamber error:', error);
+    } catch (e) {
+      console.error('Supabase deleteChamber exception:', e);
+    }
+  }
+  return true;
 }
 
 export async function getReviews(): Promise<Review[]> {
@@ -260,9 +317,12 @@ export async function getReviews(): Promise<Review[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('reviews').select('*').order('sort_order', { ascending: true });
-      if (!error && data && data.length > 0) return data as Review[];
+      if (!error && data && data.length > 0) {
+        memReviews = data as Review[];
+        return memReviews;
+      }
     } catch (e) {
-      console.warn('Falling back to default reviews:', e);
+      console.warn('Falling back to cached reviews:', e);
     }
   }
   return memReviews;
@@ -278,12 +338,27 @@ export async function saveReview(review: Review): Promise<Review> {
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('reviews').upsert(review);
+      const { error } = await supabase.from('reviews').upsert(review);
+      if (error) console.error('Supabase saveReview error:', error);
     } catch (e) {
-      console.error('Supabase saveReview error:', e);
+      console.error('Supabase saveReview exception:', e);
     }
   }
   return review;
+}
+
+export async function deleteReview(id: number): Promise<boolean> {
+  memReviews = memReviews.filter((r) => r.id !== id);
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from('reviews').delete().eq('id', id);
+      if (error) console.error('Supabase deleteReview error:', error);
+    } catch (e) {
+      console.error('Supabase deleteReview exception:', e);
+    }
+  }
+  return true;
 }
 
 export async function getFaqs(): Promise<FAQ[]> {
@@ -291,9 +366,12 @@ export async function getFaqs(): Promise<FAQ[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('faqs').select('*').order('sort_order', { ascending: true });
-      if (!error && data && data.length > 0) return data as FAQ[];
+      if (!error && data && data.length > 0) {
+        memFaqs = data as FAQ[];
+        return memFaqs;
+      }
     } catch (e) {
-      console.warn('Falling back to default faqs:', e);
+      console.warn('Falling back to cached faqs:', e);
     }
   }
   return memFaqs;
@@ -309,12 +387,27 @@ export async function saveFaq(faq: FAQ): Promise<FAQ> {
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('faqs').upsert(faq);
+      const { error } = await supabase.from('faqs').upsert(faq);
+      if (error) console.error('Supabase saveFaq error:', error);
     } catch (e) {
-      console.error('Supabase saveFaq error:', e);
+      console.error('Supabase saveFaq exception:', e);
     }
   }
   return faq;
+}
+
+export async function deleteFaq(id: number): Promise<boolean> {
+  memFaqs = memFaqs.filter((f) => f.id !== id);
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from('faqs').delete().eq('id', id);
+      if (error) console.error('Supabase deleteFaq error:', error);
+    } catch (e) {
+      console.error('Supabase deleteFaq exception:', e);
+    }
+  }
+  return true;
 }
 
 export async function getBlogs(): Promise<BlogPost[]> {
@@ -326,9 +419,11 @@ export async function getBlogs(): Promise<BlogPost[]> {
         .select('*')
         .eq('is_published', true)
         .order('published_at', { ascending: false });
-      if (!error && data && data.length > 0) return data as BlogPost[];
+      if (!error && data && data.length > 0) {
+        return data as BlogPost[];
+      }
     } catch (e) {
-      console.warn('Falling back to default blogs:', e);
+      console.warn('Falling back to cached published blogs:', e);
     }
   }
   return memBlogs.filter((b) => b.is_published);
@@ -339,9 +434,12 @@ export async function getAllBlogsAdmin(): Promise<BlogPost[]> {
   if (supabase) {
     try {
       const { data, error } = await supabase.from('blogs').select('*').order('published_at', { ascending: false });
-      if (!error && data && data.length > 0) return data as BlogPost[];
+      if (!error && data && data.length > 0) {
+        memBlogs = data as BlogPost[];
+        return memBlogs;
+      }
     } catch (e) {
-      console.warn('Falling back to all mem blogs:', e);
+      console.warn('Falling back to all cached blogs:', e);
     }
   }
   return memBlogs;
@@ -354,7 +452,7 @@ export async function getBlogBySlug(slug: string): Promise<BlogPost | null> {
       const { data, error } = await supabase.from('blogs').select('*').eq('slug', slug).single();
       if (!error && data) return data as BlogPost;
     } catch (e) {
-      console.warn('Falling back to default blog by slug:', e);
+      console.warn('Falling back to cached blog by slug:', e);
     }
   }
   return memBlogs.find((b) => b.slug === slug) || null;
@@ -370,12 +468,27 @@ export async function saveBlog(blog: BlogPost): Promise<BlogPost> {
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('blogs').upsert(blog);
+      const { error } = await supabase.from('blogs').upsert(blog);
+      if (error) console.error('Supabase saveBlog error:', error);
     } catch (e) {
-      console.error('Supabase saveBlog error:', e);
+      console.error('Supabase saveBlog exception:', e);
     }
   }
   return blog;
+}
+
+export async function deleteBlog(slug: string): Promise<boolean> {
+  memBlogs = memBlogs.filter((b) => b.slug !== slug);
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from('blogs').delete().eq('slug', slug);
+      if (error) console.error('Supabase deleteBlog error:', error);
+    } catch (e) {
+      console.error('Supabase deleteBlog exception:', e);
+    }
+  }
+  return true;
 }
 
 export async function getAppointments(): Promise<Appointment[]> {
@@ -403,9 +516,10 @@ export async function createAppointment(appointment: Omit<Appointment, 'id' | 'c
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('appointments').insert(newAppointment);
+      const { error } = await supabase.from('appointments').insert(newAppointment);
+      if (error) console.error('Supabase createAppointment error:', error);
     } catch (e) {
-      console.error('Supabase createAppointment error:', e);
+      console.error('Supabase createAppointment exception:', e);
     }
   }
   return newAppointment;
@@ -419,9 +533,10 @@ export async function updateAppointmentStatus(id: string, status: 'pending' | 'c
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      await supabase.from('appointments').update({ status }).eq('id', id);
+      const { error } = await supabase.from('appointments').update({ status }).eq('id', id);
+      if (error) console.error('Supabase updateAppointmentStatus error:', error);
     } catch (e) {
-      console.error('Supabase updateAppointmentStatus error:', e);
+      console.error('Supabase updateAppointmentStatus exception:', e);
     }
   }
   return true;

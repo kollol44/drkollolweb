@@ -513,6 +513,28 @@ export const DEFAULT_CONDITIONS: Condition[] = [
     when_bn: 'পায়ে ঘা বা চামড়ার রঙ পরিবর্তন শুরু হলে দ্রুত চিকিৎসা নিন।',
     image_url: '/img/conditions/varicose-veins.webp',
   },
+  {
+    slug: 'incisional-hernia',
+    category_slug: 'abdomen',
+    sort_order: 16,
+    is_laparoscopic: true,
+    is_hidden: false,
+    name_en: 'Incisional & Ventral Hernia',
+    name_bn: 'অপারেশন পরবর্তী হার্নিয়া',
+    med_en: 'Incisional hernia',
+    med_bn: 'ইনসিশনাল হার্নিয়া',
+    short_en: 'Bulge at previous surgery scar — laparoscopic mesh reconstruction.',
+    short_bn: 'আগের অপারেশনের কাটার জায়গায় ফোলা — ল্যাপারোস্কপিক মেশ রিপেয়ার।',
+    what_en: 'An incisional hernia develops through an operative scar from a previous abdominal surgery where muscle layers separated over time.',
+    what_bn: 'আগের কোনো পেটের অপারেশনের দাগের ভেতর দিয়ে মাংসপেশি দুর্বল হয়ে নাড়িভুড়ি ফুলে বের হয়ে আসাকে ইনসিশনাল হার্নিয়া বলে।',
+    symptoms_en: ['Bulge under or around previous surgical incision', 'Pain while lifting weights or coughing', 'Skin stretching over the scar'],
+    symptoms_bn: ['আগের অপারেশনের দাগের নিচে চাকা বা ফোলা', 'কাশি দিলে বা ভারী কাজ করলে টান লাগা ও ব্যথা', 'দাগের চামড়া পাতলা হয়ে আসা'],
+    treat_en: ['Laparoscopic IPOM (keyhole) mesh repair or open component separation.', 'Strengthens abdominal wall with dual-layer surgical mesh.'],
+    treat_bn: ['ল্যাপারোস্কপিক পদ্ধতিতে পেটের ভেতর থেকে টেকসই মেশ স্থাপন।', 'দ্রুত আরোগ্য এবং পুনরায় হওয়ার ঝুঁকি সর্বনিম্ন।'],
+    when_en: 'Seek surgical consultation early before the abdominal wall defect expands.',
+    when_bn: 'ফোলা আরও বড় হয়ে নাড়ি আটকে যাওয়ার আগেই বিশেষজ্ঞ সার্জনকে দেখান।',
+    image_url: '/img/conditions/umbilical-hernia.webp',
+  },
 
   // 4. Additional Breast Conditions
   {
@@ -739,7 +761,7 @@ export const DEFAULT_CONDITIONS: Condition[] = [
     treat_bn: ['থলিসহ সিস্ট অপসারণ ও কসমেটিক সেলাই।'],
     when_en: 'Infection, redness or foul-smelling leakage.',
     when_bn: 'লাল হয়ে ব্যথা হলে বা পুঁজ বের হলে অবিলম্বে সার্জন দেখান।',
-    image_url: '/img/conditions/lump-cyst-lipoma.webp',
+    image_url: '/img/conditions/cysts.webp',
   },
 ];
 

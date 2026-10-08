@@ -197,7 +197,7 @@ export function SerialStepsSection({ steps, profile, onBookClick }: SerialStepsS
         </h2>
 
         {/* Scroll-Driven Cards Deck */}
-        <div ref={cardsRef} className="absolute inset-x-0 bottom-[9vh] h-[min(52vh,470px)] pointer-events-none">
+        <div ref={cardsRef} className="absolute inset-x-0 bottom-[96px] sm:bottom-[9vh] h-[min(50vh,450px)] sm:h-[min(52vh,470px)] pointer-events-none">
           {steps.map((st, idx) => (
             <div
               key={st.step_number}
@@ -253,7 +253,7 @@ export function SerialStepsSection({ steps, profile, onBookClick }: SerialStepsS
         </div>
 
         {/* Progress Bar Dots */}
-        <div ref={barRef} className="absolute left-1/2 bottom-[3.5vh] -translate-x-1/2 flex items-center gap-2 z-20">
+        <div ref={barRef} className="absolute left-1/2 bottom-[72px] sm:bottom-[3.5vh] -translate-x-1/2 flex items-center gap-2 z-20">
           {steps.map((_, i) => (
             <i
               key={i}

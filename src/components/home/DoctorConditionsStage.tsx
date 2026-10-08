@@ -256,9 +256,15 @@ export function DoctorConditionsStage({
           cd.style.pointerEvents = co > 0.4 ? 'auto' : 'none';
 
           if (svcItems[i]?.isMore) {
-            cd.style.left = '50%';
-            cd.style.right = 'auto';
-            cd.style.transform = `translate(-50%, ${o * 40}px)`;
+            if (mob) {
+              cd.style.left = '16px';
+              cd.style.right = '16px';
+              cd.style.transform = `translate(0, ${o * 40}px)`;
+            } else {
+              cd.style.left = '50%';
+              cd.style.right = 'auto';
+              cd.style.transform = `translate(-50%, ${o * 40}px)`;
+            }
           } else {
             const isLeft = sideOf(i) === 1; // 1 = doctor right, card left; -1 = doctor left, card right
             if (mob) {
@@ -292,6 +298,18 @@ export function DoctorConditionsStage({
     return () => cancelAnimationFrame(animId);
   }, [svcItems]);
 
+  // Auto-scroll active category chip into view on mobile
+  useEffect(() => {
+    if (!activeChip || !chipsRef.current) return;
+    const chipsContainer = chipsRef.current.querySelector<HTMLElement>('.chips-scroll-container');
+    if (!chipsContainer) return;
+    const activeEl = chipsContainer.querySelector<HTMLElement>(`[data-cat="${activeChip}"]`);
+    if (activeEl && window.innerWidth < 640) {
+      const left = activeEl.offsetLeft - chipsContainer.clientWidth / 2 + activeEl.offsetWidth / 2;
+      chipsContainer.scrollTo({ left, behavior: 'smooth' });
+    }
+  }, [activeChip]);
+
   return (
     <section
       ref={stageRef}
@@ -306,30 +324,21 @@ export function DoctorConditionsStage({
         {/* Soft Radial Ambient Glow */}
         <div className="absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 w-[min(80vw,860px)] aspect-square rounded-full bg-radial from-[rgba(43,179,177,0.26)] via-[rgba(43,179,177,0.08)] to-transparent pointer-events-none" />
 
-        {/* Phase 1: Giant Intro Word */}
-        <h2
-          ref={introRef}
-          className="absolute inset-x-0 top-[max(11vh,84px)] text-center z-[1] whitespace-nowrap font-heading font-extrabold text-[clamp(44px,9vw,160px)] leading-[0.95] tracking-tight will-change-transform select-none pointer-events-none px-4"
-        >
-          <span className="inline-block bg-gradient-to-b from-[var(--teal)] via-[var(--teal)]/80 to-[rgba(43,179,177,0.35)] bg-clip-text text-transparent">
-            {isBn ? profile.intro_word_bn : profile.intro_word_en}
-          </span>
-        </h2>
-
-        {/* Phase 2: Category Chips Bar */}
+        {/* Phase 2: Category Chips Bar (Placed cleanly at top) */}
         <div
           ref={chipsRef}
-          className="absolute inset-x-0 top-[84px] sm:top-[92px] z-[10] text-center flex flex-col items-center gap-1.5 sm:gap-2 px-3 pointer-events-auto"
+          className="absolute inset-x-0 top-[74px] sm:top-[78px] z-[10] text-center flex flex-col items-center gap-1 sm:gap-1.5 px-3 pointer-events-auto"
         >
-          <span className="font-bold text-[10px] sm:text-xs tracking-wider uppercase text-[var(--teal)]/90 px-3 py-0.5 rounded-full bg-white/70 backdrop-blur-md border border-[rgba(43,179,177,0.25)] shadow-xs">
+          <span className="font-bold text-[10px] sm:text-[11px] tracking-wider uppercase text-[var(--teal)] px-3 py-0.5 rounded-full bg-white/85 backdrop-blur-md border border-[rgba(43,179,177,0.25)] shadow-xs shrink-0">
             {isBn ? 'যেসব রোগের চিকিৎসা করেন ডাঃ কল্লোল' : 'Conditions Dr. Kollol treats'}
           </span>
-          <div className="flex justify-center flex-wrap gap-1 sm:gap-1.5 max-w-[min(980px,96vw)] px-2">
+          <div className="chips-scroll-container flex justify-start sm:justify-center items-center flex-nowrap sm:flex-wrap gap-1 sm:gap-1.5 w-full max-w-[min(980px,96vw)] px-2 py-0.5 overflow-x-auto no-scrollbar scroll-smooth">
             {categories.map((c) => (
               <Link
                 key={c.slug}
+                data-cat={c.slug}
                 href={`/conditions-treatments/${c.slug}`}
-                className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all backdrop-blur-md ${
+                className={`shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all backdrop-blur-md ${
                   activeChip === c.slug
                     ? 'bg-[var(--teal)] text-white shadow-sm ring-2 ring-[var(--teal)]/20'
                     : 'bg-white/85 text-[var(--teal)] border border-[rgba(43,179,177,0.3)] hover:bg-white'
@@ -340,6 +349,16 @@ export function DoctorConditionsStage({
             ))}
           </div>
         </div>
+
+        {/* Phase 1: Giant Intro Word (Placed cleanly BELOW Category Chips) */}
+        <h2
+          ref={introRef}
+          className="absolute inset-x-0 top-[134px] sm:top-[max(16vh,144px)] text-center z-[1] whitespace-nowrap font-heading font-extrabold text-[clamp(36px,8.5vw,144px)] leading-[0.95] tracking-tight will-change-transform select-none pointer-events-none px-4"
+        >
+          <span className="inline-block bg-gradient-to-b from-[var(--teal)] via-[var(--teal)]/80 to-[rgba(43,179,177,0.35)] bg-clip-text text-transparent">
+            {isBn ? profile.intro_word_bn : profile.intro_word_en}
+          </span>
+        </h2>
 
         {/* Background Giant Words Container */}
         <div ref={wordsContainerRef} className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
@@ -476,7 +495,7 @@ export function DoctorConditionsStage({
               return (
                 <div
                   key="more"
-                  className="absolute bottom-16 sm:bottom-10 left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[560px] sm:max-w-[560px] max-h-[65vh] overflow-y-auto p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/92 backdrop-blur-2xl border border-[rgba(43,179,177,0.35)] shadow-2xl pointer-events-auto opacity-0 will-change-transform"
+                  className="absolute bottom-20 sm:bottom-10 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[560px] sm:max-w-[560px] max-h-[62vh] sm:max-h-[65vh] overflow-y-auto p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/92 backdrop-blur-2xl border border-[rgba(43,179,177,0.35)] shadow-2xl pointer-events-auto opacity-0 will-change-transform"
                 >
                   <span className="text-xs font-bold uppercase tracking-wider text-[var(--aqua)]">
                     {isBn ? 'সব রোগ ও চিকিৎসা' : 'All conditions & treatments'}
@@ -518,7 +537,7 @@ export function DoctorConditionsStage({
               <Link
                 key={c.slug}
                 href={`/conditions-treatments/${c.category_slug}/${c.slug}`}
-                className="absolute bottom-16 sm:bottom-12 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[min(48vw,620px)] sm:max-w-[620px] p-4 sm:p-6 rounded-3xl bg-white/90 backdrop-blur-2xl border border-[rgba(43,179,177,0.3)] shadow-[0_20px_45px_-20px_rgba(6,47,49,0.35)] pointer-events-auto opacity-0 will-change-transform sm:grid sm:grid-cols-12 sm:gap-5 items-center transition-shadow hover:shadow-2xl"
+                className="absolute bottom-20 sm:bottom-12 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[min(48vw,620px)] sm:max-w-[620px] p-4 sm:p-6 rounded-3xl bg-white/90 backdrop-blur-2xl border border-[rgba(43,179,177,0.3)] shadow-[0_20px_45px_-20px_rgba(6,47,49,0.35)] pointer-events-auto opacity-0 will-change-transform sm:grid sm:grid-cols-12 sm:gap-5 items-center transition-shadow hover:shadow-2xl"
               >
                 {/* Floating condition image */}
                 <div className="sm:col-span-5 h-24 sm:h-52 relative mb-2 sm:mb-0">
@@ -526,6 +545,7 @@ export function DoctorConditionsStage({
                     src={c.image_url || `/img/conditions/${c.slug}.webp`}
                     alt={isBn ? c.name_bn : c.name_en}
                     fill
+                    sizes="(max-width: 640px) 100vw, 240px"
                     className="object-contain filter drop-shadow-[0_18px_26px_rgba(6,47,49,0.3)]"
                   />
                 </div>

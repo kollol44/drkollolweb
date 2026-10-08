@@ -214,7 +214,8 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
       const lines = em.querySelectorAll<HTMLElement>('.emerge-line');
       const gap = phone() ? 12 : 16;
       const box = em.clientHeight;
-      let bottom = 0;
+      const bottomPad = phone() ? 24 : 38;
+      let bottom = bottomPad;
 
       const rest = Array.from(lines)
         .reverse()
@@ -415,13 +416,13 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
             dangerouslySetInnerHTML={{ __html: isBn ? heroData.h1_bn : heroData.h1_en }}
           />
           <div
-            className="emerge-line absolute inset-x-0 font-sans font-medium text-[clamp(16px,1.4vw,23px)] leading-relaxed text-[var(--muted)] will-change-transform mt-2"
+            className="emerge-line absolute inset-x-0 font-sans font-medium text-[clamp(16px,1.4vw,23px)] leading-relaxed text-[var(--muted)] will-change-transform"
             data-group="2"
             dangerouslySetInnerHTML={{ __html: isBn ? heroData.h2_bn : heroData.h2_en }}
           />
           <a
             href="#doctor"
-            className="emerge-line cue-link pointer-events-auto inline-flex items-center gap-2.5 font-semibold text-[clamp(13px,1vw,15px)] text-[var(--teal)] tracking-wide mt-4"
+            className="emerge-line cue-link pointer-events-auto inline-flex items-center gap-2.5 font-semibold text-[clamp(13px,1vw,15px)] text-[var(--teal)] tracking-wide"
             data-group="3"
           >
             <span>{isBn ? heroData.meet_cta_bn : heroData.meet_cta_en}</span>

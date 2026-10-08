@@ -2,13 +2,14 @@
 
 import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Lock, Eye, EyeOff, ShieldCheck, Stethoscope, ArrowRight } from 'lucide-react';
+import { Lock, Eye, EyeOff, ShieldCheck, Stethoscope, ArrowRight, User } from 'lucide-react';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get('from') || '/admin';
 
+  const [identifier, setIdentifier] = useState('admin');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -16,6 +17,10 @@ function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!identifier.trim()) {
+      setError('Please enter your admin username or email address.');
+      return;
+    }
     if (!password) {
       setError('Please enter the administrator master password.');
       return;
@@ -28,7 +33,7 @@ function LoginForm() {
       const res = await fetch('/api/admin/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ identifier: identifier.trim(), password }),
       });
 
       const data = await res.json();
@@ -36,7 +41,7 @@ function LoginForm() {
         router.push(from);
         router.refresh();
       } else {
-        setError(data.message || 'Incorrect admin password. Access denied.');
+        setError(data.message || 'Incorrect credentials. Access denied.');
       }
     } catch {
       setError('Connection failed. Please check network connectivity.');
@@ -67,7 +72,29 @@ function LoginForm() {
           <span>Authorized Medical Personnel Only</span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Admin Identifier */}
+          <div>
+            <label className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">
+              Admin Username or Email
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-white/50">
+                <User className="w-5 h-5" />
+              </div>
+              <input
+                type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="admin or email"
+                autoFocus
+                required
+                className="w-full pl-11 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#2BB3B1] focus:border-transparent transition-all text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Admin Password */}
           <div>
             <label className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">
               Administrator Password
@@ -81,9 +108,8 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter administrator password"
-                autoFocus
                 required
-                className="w-full pl-11 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#2BB3B1] focus:border-transparent transition-all"
+                className="w-full pl-11 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#2BB3B1] focus:border-transparent transition-all text-sm"
               />
               <button
                 type="button"
