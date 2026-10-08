@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MobileStickyBar } from '@/components/MobileStickyBar';
@@ -31,100 +30,108 @@ export function ConditionPageClient({
   const { lang, isBn } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
 
+  const ctaRef = useRef<HTMLElement>(null);
+  const relSecRef = useRef<HTMLElement>(null);
+
   const t = {
     en: {
       all: 'Conditions & Treatments',
       what: 'What is it?',
       whatW: 'What is it?',
       symp: 'Symptoms',
-      sympT: 'Do you experience these?',
+      sympT: 'Do you have these?',
       treat: 'Treatment',
       treatT: 'How Dr. Kollol treats it',
       when: 'When to see a doctor',
       whenW: 'Don’t wait',
-      whenT: 'Act early for best results',
-      lap: 'Laparoscopic keyhole procedure',
-      relEb: 'Related Conditions',
-      relH: 'Other conditions in this anatomical area',
+      whenT: 'Act early',
+      lap: 'Laparoscopic (keyhole) surgery',
+      relEb: 'Related',
+      relH: 'Other conditions in this area',
       book: 'Book a serial',
       call: 'Call now',
       wa: 'WhatsApp',
+      learnMore: 'Learn more',
       ctaH: 'Don’t wait. Talk to your surgeon.',
       ctaS: 'Call for a serial or come to the chamber — Dr. Kollol will explain your problem and the right treatment.',
-      onPage: 'On this page',
     },
     bn: {
       all: 'রোগ ও চিকিৎসা',
       what: 'এটা কী?',
-      whatW: 'রোগের পরিচয়',
-      symp: 'লক্ষণসমূহ',
+      whatW: 'এটা কী?',
+      symp: 'লক্ষণ',
       sympT: 'আপনার কি এমন হচ্ছে?',
-      treat: 'চিকিৎসা পদ্ধতি',
+      treat: 'চিকিৎসা',
       treatT: 'ডাঃ কল্লোল যেভাবে চিকিৎসা করেন',
       when: 'কখন ডাক্তার দেখাবেন',
       whenW: 'দেরি নয়',
-      whenT: 'শুরুতেই চিকিৎসা নিন',
+      whenT: 'আগে দেখান',
       lap: 'ল্যাপারোস্কপিক (ছোট ছিদ্রে) অপারেশন',
       relEb: 'আরও দেখুন',
-      relH: 'এই ক্ষেত্রের অন্যান্য রোগ ও চিকিৎসা',
+      relH: 'এই ক্ষেত্রের অন্যান্য রোগ',
       book: 'সিরিয়াল নিন',
       call: 'কল করুন',
       wa: 'হোয়াটসঅ্যাপ',
+      learnMore: 'বিস্তারিত',
       ctaH: 'দেরি করবেন না। সার্জনের সাথে কথা বলুন।',
       ctaS: 'সিরিয়ালের জন্য কল করুন বা চেম্বারে আসুন — ডাঃ কল্লোল আপনার সমস্যা ও সঠিক চিকিৎসা বুঝিয়ে বলবেন।',
-      onPage: 'এই পাতায় রয়েছে',
     },
   }[lang];
+
+  const name = isBn ? condition.name_bn : condition.name_en;
+  const word = isBn
+    ? (condition.home_word_bn || condition.name_bn)
+    : (condition.home_word_en || condition.name_en);
+  const med = isBn ? condition.med_bn : condition.med_en;
+  const stat = isBn ? condition.stat_bn : condition.stat_en;
 
   const steps: ShowcaseStep[] = [
     // Step 1: Overview & TOC
     {
-      word: isBn ? (condition.home_word_bn || condition.name_bn) : (condition.home_word_en || condition.name_en),
+      word,
       cat: condition.category_slug,
-      ey: isBn ? category.name_bn : category.name_en,
-      title: isBn ? condition.name_bn : condition.name_en,
+      ey: `${isBn ? category.name_bn : category.name_en}${
+        med && med !== name ? ` · ${med}` : ''
+      }`,
+      title: name,
       body: (
-        <div>
-          <p className="text-sm text-[var(--muted)] leading-relaxed mb-3">
-            {isBn ? condition.short_bn : condition.short_en}
-          </p>
-
-          {/* Table of contents pills */}
-          <div className="flex flex-wrap items-center gap-1.5 pt-2 pb-3 border-t border-[rgba(43,179,177,0.2)]">
-            <span className="w-full text-[10px] font-bold uppercase tracking-wider text-[var(--aqua)] block">
-              {t.onPage}:
-            </span>
+        <>
+          <p>{isBn ? condition.short_bn : condition.short_en}</p>
+          <div className="toc">
+            <small>{isBn ? 'এই পাতায়' : 'On this page'}</small>
             {[t.what, t.symp, t.treat, t.when].map((tab, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--tint)] text-[11px] font-semibold text-[var(--ink)] border border-[rgba(43,179,177,0.25)]"
-              >
-                <i className="w-4 h-4 rounded-full bg-[var(--teal)] text-white not-italic text-[10px] grid place-items-center">
-                  {idx + 1}
-                </i>
-                <span>{tab}</span>
+              <span key={idx}>
+                <i>{idx + 1}</i>
+                {tab}
               </span>
             ))}
           </div>
-
-          <div className="flex items-center gap-3 pt-2">
+          {(condition.is_laparoscopic || stat) && (
+            <div className="meta">
+              {condition.is_laparoscopic ? (
+                <span className="badge lap">{t.lap}</span>
+              ) : null}
+              {stat ? <span className="go">✓ {stat}</span> : null}
+            </div>
+          )}
+          <div className="row">
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="btn btn-p text-xs py-2 px-4 shadow-sm"
+              className="btn btn-p"
             >
               {t.book}
             </button>
             <a
+              className="btn btn-g"
               href={settings.whatsapp_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-g text-xs py-2 px-3.5 shadow-sm text-emerald-800 border-emerald-300"
             >
-              WhatsApp
+              {t.wa}
             </a>
           </div>
-        </div>
+        </>
       ),
     },
 
@@ -133,9 +140,9 @@ export function ConditionPageClient({
       word: t.whatW,
       cat: condition.category_slug,
       ey: t.what,
-      title: isBn ? condition.name_bn : condition.name_en,
+      title: name,
       body: (
-        <p className="text-sm sm:text-base text-[var(--ink)] leading-relaxed">
+        <p style={{ fontSize: '16px', color: 'var(--ink)' }}>
           {isBn ? condition.what_bn : condition.what_en}
         </p>
       ),
@@ -148,12 +155,9 @@ export function ConditionPageClient({
       ey: t.symp,
       title: t.sympT,
       body: (
-        <ul className="flex flex-col gap-2 mt-1">
-          {(isBn ? condition.symptoms_bn : condition.symptoms_en).map((symp, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-[var(--ink)] font-medium">
-              <span className="w-2 h-2 rounded-full bg-[var(--aqua)] mt-1.5 flex-shrink-0" />
-              <span>{symp}</span>
-            </li>
+        <ul>
+          {(isBn ? condition.symptoms_bn : condition.symptoms_en).map((s, idx) => (
+            <li key={idx}>{s}</li>
           ))}
         </ul>
       ),
@@ -166,62 +170,131 @@ export function ConditionPageClient({
       ey: t.treat,
       title: t.treatT,
       body: (
-        <div>
-          <ol className="flex flex-col gap-2.5 mt-1">
+        <>
+          <ol>
             {(isBn ? condition.treat_bn : condition.treat_en).map((step, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[var(--ink)] font-medium">
-                <span className="w-5 h-5 rounded-lg bg-gradient-to-br from-[var(--aqua)] to-[var(--teal)] text-white text-xs font-bold grid place-items-center flex-shrink-0">
-                  {idx + 1}
-                </span>
-                <span>{step}</span>
-              </li>
+              <li key={idx}>{step}</li>
             ))}
           </ol>
-
-          {condition.stat_en && (
-            <div className="mt-4 p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-xs font-bold text-[var(--teal)] flex items-center gap-2">
-              <span>✓</span>
-              <span>{isBn ? condition.stat_bn : condition.stat_en}</span>
+          {stat && (
+            <div className="meta">
+              <span className="go">✓ {stat}</span>
             </div>
           )}
-        </div>
+        </>
       ),
     },
 
-    // Step 5: When to see a doctor (Alert card)
+    // Step 5: When to see a doctor
     {
       word: t.whenW,
       cat: condition.category_slug,
+      alert: true,
       ey: t.when,
       title: t.whenT,
-      alert: true,
       body: (
-        <div>
-          <p className="text-sm text-[var(--ink)] font-medium leading-relaxed">
+        <>
+          <p style={{ fontSize: '16px', color: 'var(--ink)' }}>
             {isBn ? condition.when_bn : condition.when_en}
           </p>
-          <div className="flex gap-2 mt-4">
+          <div className="row">
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="btn btn-p text-xs py-2 px-4 shadow-sm"
+              className="btn btn-p"
             >
               {t.book}
             </button>
             <a
-              href={`tel:${settings.phone_serial}`}
-              className="btn btn-g text-xs py-2 px-4 shadow-sm"
+              className="btn btn-g"
+              href={settings.whatsapp_url}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              {settings.phone_serial}
+              {t.wa}
             </a>
           </div>
-        </div>
+        </>
       ),
     },
   ];
 
+  const relList = relatedConditions.filter((o) => o.slug !== condition.slug);
+
+  useEffect(() => {
+    // 1. Reveal observer for .rv elements
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+          } else if (e.boundingClientRect.top > 0) {
+            e.target.classList.remove('in');
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    document.querySelectorAll<HTMLElement>('.rv').forEach((el) => {
+      if (el.closest('.cards')) {
+        const parent = el.parentNode;
+        if (parent) {
+          const idx = Array.from(parent.children).indexOf(el);
+          el.style.transitionDelay = `${(idx % 6) * 0.06}s`;
+        }
+      }
+      io.observe(el);
+    });
+
+    // 2. Stacking Sections (.stk) logic matching site.js K.stack([cta, relSec])
+    const stackEls = [ctaRef.current, relSecRef.current].filter(
+      Boolean
+    ) as HTMLElement[];
+
+    stackEls.forEach((el, i) => {
+      el.classList.add('stk');
+      el.classList.toggle('stk-up', i > 0);
+      el.style.zIndex = String(10 + i);
+    });
+
+    let animId: number;
+    const drawStack = () => {
+      const H = window.innerHeight;
+      stackEls.forEach((el, i) => {
+        const nx = stackEls[i + 1];
+        if (!nx) {
+          el.style.position = '';
+          el.style.transform = '';
+          el.style.opacity = '';
+          return;
+        }
+        el.style.position = 'sticky';
+        el.style.top = `${Math.min(0, H - el.offsetHeight)}px`;
+        const p = Math.min(1, Math.max(0, 1 - nx.getBoundingClientRect().top / H));
+        el.style.transform = p ? `scale(${1 - 0.06 * p})` : '';
+        el.style.opacity = p ? String(1 - 0.45 * p) : '';
+      });
+      animId = requestAnimationFrame(drawStack);
+    };
+
+    animId = requestAnimationFrame(drawStack);
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(animId);
+      stackEls.forEach((el) => {
+        el.classList.remove('stk', 'stk-up');
+        el.style.position = '';
+        el.style.transform = '';
+        el.style.opacity = '';
+        el.style.zIndex = '';
+      });
+    };
+  }, [lang, condition.slug]);
+
   return (
-    <div className="relative min-h-screen bg-white">
+    <>
       <Navbar
         categories={categories}
         serialPhone={settings.phone_serial}
@@ -234,104 +307,118 @@ export function ConditionPageClient({
         mode="hero"
         heroImg={condition.image_url || `/img/conditions/${condition.slug}.webp`}
         crumb={
-          <div className="flex items-center justify-center gap-1.5 text-xs text-[var(--teal)] font-bold">
-            <Link href="/conditions-treatments" className="hover:underline">
-              {t.all}
-            </Link>
-            <span>/</span>
-            <Link href={`/conditions-treatments/${category.slug}`} className="hover:underline">
+          <>
+            <Link href="/conditions-treatments">{t.all}</Link>
+            &nbsp;/&nbsp;
+            <Link href={`/conditions-treatments/${category.slug}`}>
               {isBn ? category.name_bn : category.name_en}
             </Link>
-            <span>/</span>
-            <span>{isBn ? condition.name_bn : condition.name_en}</span>
-          </div>
+          </>
         }
       />
 
-      {/* Related Conditions in this Area */}
-      {relatedConditions.length > 0 && (
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[var(--tint)] border-t border-[rgba(43,179,177,0.25)]">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-10 text-center sm:text-left">
-              <span className="text-xs font-bold uppercase tracking-widest text-[var(--aqua)] block">
-                {t.relEb}
-              </span>
-              <h3 className="font-heading font-extrabold text-2xl sm:text-3xl text-[var(--ink)] mt-1">
-                {t.relH}
-              </h3>
+      {/* CTA Band with Doctor Cutout */}
+      <section className="ctaband rv has-doc" id="book" ref={ctaRef}>
+        <div className="cta-stick">
+          <img
+            className="cta-doc"
+            src="/img/doctor-cta.webp"
+            alt="Dr. Fahim Foysal Kollol"
+            width={649}
+            height={1081}
+            loading="lazy"
+          />
+        </div>
+        <div className="wrap">
+          <div className="cta-big">{isBn ? 'ডাঃ কল্লোল' : 'Dr. Kollol'}</div>
+          <div className="glass cta-card">
+            <span className="incision"></span>
+            <h2 className="h2">{t.ctaH}</h2>
+            <p className="sub">{t.ctaS}</p>
+            <div className="row">
+              <button
+                type="button"
+                onClick={() => setModalOpen(true)}
+                className="btn btn-p"
+              >
+                {t.book}: {settings.phone_serial}
+              </button>
+              <a className="btn btn-g" href={`tel:${settings.phone_call}`}>
+                {t.call}
+              </a>
+              <a
+                className="btn btn-g"
+                href={settings.whatsapp_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t.wa}
+              </a>
             </div>
+          </div>
+          <div className="chambers">
+            {chambers.map((ch) => (
+              <div className="glass" key={ch.id}>
+                <small>{isBn ? ch.schedule_bn : ch.schedule_en}</small>
+                <b>{isBn ? ch.name_bn : ch.name_en}</b>
+                <p>{isBn ? ch.timing_bn : ch.timing_en}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedConditions.map((rel) => (
-                <Link
-                  key={rel.slug}
-                  href={`/conditions-treatments/${rel.category_slug}/${rel.slug}`}
-                  className="group p-5 rounded-3xl bg-white border border-[rgba(43,179,177,0.25)] shadow-sm hover:shadow-lg hover:border-[var(--teal)] transition-all flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="h-32 relative mb-3">
-                      <Image
-                        src={rel.image_url || `/img/conditions/${rel.slug}.webp`}
-                        alt={isBn ? rel.name_bn : rel.name_en}
-                        fill
-                        className="object-contain filter drop-shadow-md group-hover:scale-105 transition-transform"
-                      />
-                    </div>
-                    <h4 className="font-heading font-bold text-lg text-[var(--ink)]">
-                      {isBn ? rel.name_bn : rel.name_en}
-                    </h4>
-                    <p className="text-xs text-[var(--muted)] mt-1 line-clamp-2">
-                      {isBn ? rel.short_bn : rel.short_en}
-                    </p>
-                  </div>
-                  <div className="mt-4 pt-2 border-t border-[rgba(43,179,177,0.2)] flex justify-end">
-                    <span className="text-xs font-bold text-[var(--teal)]">
-                      {isBn ? 'বিস্তারিত দেখুন →' : 'Learn more →'}
+      {/* Related Conditions in this Anatomical Area */}
+      {relList.length > 0 && (
+        <section className="sec" id="relSec" ref={relSecRef}>
+          <div className="wrap">
+            <p className="eyebrow rv" id="relEb">
+              {t.relEb}
+            </p>
+            <h2 className="h2 rv" id="relH">
+              {t.relH}
+            </h2>
+            <div className="cards" id="rel">
+              {relList.map((item) => {
+                const itemCat =
+                  categories.find((c) => c.slug === item.category_slug) || category;
+                const itemName = isBn ? item.name_bn : item.name_en;
+                const itemMed = isBn ? item.med_bn : item.med_en;
+                return (
+                  <Link
+                    key={item.slug}
+                    className="ccard rv"
+                    href={`/conditions-treatments/${item.category_slug}/${item.slug}`}
+                  >
+                    <img
+                      className="cimg"
+                      src={item.image_url || `/img/conditions/${item.slug}.webp`}
+                      alt=""
+                      loading="lazy"
+                    />
+                    <span className="cat">{isBn ? itemCat.name_bn : itemCat.name_en}</span>
+                    <b>{itemName}</b>
+                    {itemMed && itemMed !== itemName ? (
+                      <span className="med">{itemMed}</span>
+                    ) : null}
+                    <p>{isBn ? item.short_bn : item.short_en}</p>
+                    <span className="foot">
+                      {item.is_laparoscopic ? (
+                        <span className="badge lap">
+                          {isBn ? 'ল্যাপারোস্কপিক' : 'Laparoscopic'}
+                        </span>
+                      ) : (
+                        <span></span>
+                      )}
+                      <span className="more">{t.learnMore}</span>
                     </span>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
       )}
-
-      {/* CTA Band with Doctor Cutout */}
-      <section className="relative bg-gradient-to-b from-white to-[var(--tint)] py-20 px-4 sm:px-6 lg:px-8 border-t border-[rgba(43,179,177,0.25)] text-center">
-        <div className="max-w-4xl mx-auto">
-          <span className="block w-12 h-1 bg-[var(--teal)] rounded-full mx-auto mb-4" />
-          <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-[var(--ink)] leading-snug">
-            {t.ctaH}
-          </h2>
-          <p className="text-sm text-[var(--muted)] max-w-xl mx-auto mt-2 mb-8">
-            {t.ctaS}
-          </p>
-
-          <div className="flex justify-center gap-3 flex-wrap">
-            <button
-              type="button"
-              onClick={() => setModalOpen(true)}
-              className="btn btn-p text-sm py-3 px-6 shadow-md"
-            >
-              {t.book}: {settings.phone_serial}
-            </button>
-            <a
-              href={`tel:${settings.phone_call}`}
-              className="btn btn-g text-sm py-3 px-5 shadow-sm"
-            >
-              {t.call}
-            </a>
-            <a
-              href={settings.whatsapp_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-g text-sm py-3 px-5 shadow-sm text-emerald-800 border-emerald-300 bg-emerald-50"
-            >
-              {t.wa}
-            </a>
-          </div>
-        </div>
-      </section>
 
       <Footer
         settings={settings}
@@ -352,6 +439,6 @@ export function ConditionPageClient({
         chambers={chambers}
         whatsappUrl={settings.whatsapp_url}
       />
-    </div>
+    </>
   );
 }

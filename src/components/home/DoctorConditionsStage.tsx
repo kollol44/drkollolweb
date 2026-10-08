@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
@@ -13,29 +13,13 @@ interface DoctorConditionsStageProps {
   onBookClick?: () => void;
 }
 
-const DOC = { hold: 0.05, curtain: [0.05, 0.2], svc: [0.2, 1] };
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const seg = (v: number, a: number, b: number) => clamp((v - a) / (b - a), 0, 1);
 const restH = (x: number) => {
   const b = Math.floor(x);
   const f = x - b;
   const t = clamp((f - 0.3) / 0.4, 0, 1);
   return b + t * t * (3 - 2 * t);
-};
-
-const getStageWordSize = (word: string) => {
-  const len = word.length;
-  if (len <= 8) {
-    // Short words like Piles, Hernia, পাইলস, And more, আরও অনেক
-    return 'text-[clamp(42px,8vw,126px)]';
-  } else if (len <= 15) {
-    // Medium words like Gallstones, Appendicitis, Breast Lump, Kidney Stones, পিত্তথলির পাথর
-    return 'text-[clamp(34px,6.2vw,98px)]';
-  } else {
-    // Long phrases
-    return 'text-[clamp(24px,4.5vw,72px)]';
-  }
 };
 
 export function DoctorConditionsStage({
@@ -44,118 +28,58 @@ export function DoctorConditionsStage({
   conditions,
   onBookClick,
 }: DoctorConditionsStageProps) {
-  const { lang, isBn } = useLanguage();
+  const { isBn } = useLanguage();
   const stageRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
-  const introRef = useRef<HTMLHeadingElement>(null);
-  const sideLRef = useRef<HTMLDivElement>(null);
-  const sideRRef = useRef<HTMLDivElement>(null);
-  const ctaMRef = useRef<HTMLDivElement>(null);
-  const tkrDegRef = useRef<HTMLDivElement>(null);
   const docImgRef = useRef<HTMLDivElement>(null);
+  const svcHeadRef = useRef<HTMLDivElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const wordsContainerRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
-
-  const [activeChip, setActiveChip] = useState<string>('');
-  const [statsAnimated, setStatsAnimated] = useState(false);
-  const [counts, setCounts] = useState<string[]>(profile.stats.map((s) => (isBn ? s.num_bn : s.num_en)));
+  const svcBarRef = useRef<HTMLDivElement>(null);
 
   // Filter home featured conditions & rest
-  const featured = conditions.filter((c) => c.home_order && !c.is_hidden).sort((a, b) => (a.home_order || 0) - (b.home_order || 0));
-  const rest = conditions.filter((c) => !c.home_order && !c.is_hidden);
+  const featured = useMemo(
+    () =>
+      conditions
+        .filter((c) => c.home_order && !c.is_hidden)
+        .sort((a, b) => (a.home_order || 0) - (b.home_order || 0)),
+    [conditions]
+  );
+  const rest = useMemo(() => conditions.filter((c) => !c.home_order && !c.is_hidden), [conditions]);
 
-  const svcItems = [
-    ...featured.map((c) => ({
-      word: isBn ? (c.home_word_bn || c.name_bn) : (c.home_word_en || c.name_en),
-      cat: c.category_slug,
-      c,
-      isMore: false,
-    })),
-    {
-      word: isBn ? 'আরও অনেক' : 'And more',
-      cat: '',
-      c: null,
-      isMore: true,
-    },
-  ];
+  const svcItems = useMemo(
+    () => [
+      ...featured.map((c) => ({
+        word: isBn ? (c.home_word_bn || c.name_bn) : (c.home_word_en || c.name_en),
+        cat: c.category_slug,
+        c,
+        more: false,
+      })),
+      {
+        word: isBn ? 'আরও অনেক' : 'And more',
+        cat: null,
+        c: null,
+        more: true,
+      },
+    ],
+    [featured, isBn]
+  );
 
   const sideOf = (i: number) => {
-    if (svcItems[i]?.isMore) return 0;
-    return Math.floor(i / 3) % 2 ? -1 : 1; // +1 = doctor right, card left; -1 = doctor left, card right
+    if (svcItems[i]?.more) return 0;
+    return Math.floor(i / 3) % 2 ? -1 : 1; // groups of 3 by position: right x3, left x3... +1 = doctor right, card left
   };
 
-  // Count-up animation
-  const animateStats = () => {
-    const BN = '০১২৩৪৫৬৭৮৯';
-    const toL = (s: string) => s.replace(/[০-৯]/g, (d) => String(BN.indexOf(d)));
-    const toB = (s: string) => s.replace(/\d/g, (d) => BN[parseInt(d, 10)]);
-
-    profile.stats.forEach((st, idx) => {
-      const txt = isBn ? st.num_bn : st.num_en;
-      const bnMatch = /[০-৯]/.test(txt);
-      const match = toL(txt).match(/[\d,]+/);
-      if (!match) return;
-
-      const numVal = parseInt(match[0].replace(/,/g, ''), 10);
-      const pre = toL(txt).slice(0, match.index);
-      const suf = toL(txt).slice((match.index || 0) + match[0].length);
-      const t0 = performance.now();
-      const dur = 900;
-
-      const step = (t: number) => {
-        const k = Math.min(1, Math.max(0, (t - t0) / dur));
-        const val = Math.round(numVal * (1 - Math.pow(1 - k, 3)));
-        let str = pre + val.toLocaleString('en-US') + suf;
-        const res = bnMatch ? toB(str) : str;
-
-        setCounts((prev) => {
-          const next = [...prev];
-          next[idx] = res;
-          return next;
-        });
-
-        if (k < 1) {
-          requestAnimationFrame(step);
-        }
-      };
-      requestAnimationFrame(step);
-    });
-  };
-
-  useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !statsAnimated) {
-            setStatsAnimated(true);
-            animateStats();
-          } else if (!entry.isIntersecting && entry.boundingClientRect.top > 0) {
-            setStatsAnimated(false);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-
-    observer.observe(stage);
-    return () => observer.disconnect();
-  }, [isBn, statsAnimated]);
-
-  // Main scroll driver for doctor & conditions stage
+  // Main scroll loop for swinging doctor and scrolling condition cards
   useEffect(() => {
     const stage = stageRef.current;
     const docImg = docImgRef.current;
-    const introEl = introRef.current;
-    const sideL = sideLRef.current;
-    const sideR = sideRRef.current;
-    const ctaM = ctaMRef.current;
-    const tkrDeg = tkrDegRef.current;
+    const svcHead = svcHeadRef.current;
+    const chipsEl = chipsRef.current;
     const wordsContainer = wordsContainerRef.current;
     const cardsContainer = cardsContainerRef.current;
+    const svcBar = svcBarRef.current;
 
     if (!stage || !docImg) return;
 
@@ -164,51 +88,62 @@ export function DoctorConditionsStage({
     const docState = (i: number) => {
       const sd = sideOf(i);
       if (!sd) return { x: 0, s: 1, y: 0 };
-      const H = docImg.offsetHeight || 600;
+      const H = docImg.offsetHeight || 720;
       const vh = window.innerHeight;
       const S = Math.max(1.6, (0.76 * vh) / (0.42 * H));
       const top0 = vh - H;
       return { x: sd * window.innerWidth * 0.27, s: S, y: vh * 0.24 - (top0 + 0.015 * H * S) };
     };
 
-    const onScroll = () => {
-      const r = stage.getBoundingClientRect();
-      const q = clamp(-r.top / (stage.offsetHeight - 2 * window.innerHeight), 0, 1);
+    const fitWords = () => {
+      if (!wordsContainerRef.current) return;
+      const words = Array.from(wordsContainerRef.current.children) as HTMLElement[];
+      const mob = window.innerWidth < 860;
+      const vw = window.innerWidth;
       const vh = window.innerHeight;
+
+      words.forEach((w, i) => {
+        w.style.removeProperty('--fs');
+        const isMore = !!svcItems[i]?.more;
+        const base = parseFloat(window.getComputedStyle(w).fontSize) || 120;
+        const wd = w.scrollWidth;
+
+        if (mob) {
+          // Mobile: watermark is centered with safe margin of 88vw
+          const max = vw * 0.88;
+          let fs = wd > max ? (base * max) / wd : base;
+          fs = Math.min(fs, vh * 0.12, 72);
+          fs = Math.max(fs, 28);
+          w.style.setProperty('--fs', `${Math.floor(fs)}px`);
+        } else {
+          // Desktop: watermark is centered on the free side at 25vw or 75vw.
+          // Max width is 42% of viewport width so it never clips either screen edge or doctor area
+          const max = vw * (isMore ? 0.90 : 0.42);
+          let fs = wd > max ? (base * max) / wd : base;
+          if (!isMore) {
+            fs = Math.min(fs, vh * 0.18);
+          }
+          fs = Math.max(fs, 36);
+          w.style.setProperty('--fs', `${Math.floor(fs)}px`);
+        }
+      });
+    };
+
+    fitWords();
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(() => fitWords());
+    }
+
+    const onDraw = () => {
+      const r = stage.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const q = clamp(-r.top / (stage.offsetHeight - vh), 0, 1);
       const mob = window.innerWidth < 860;
 
-      // 1. Curtain: intro lifts off
-      const c = seg(q, DOC.curtain[0], DOC.curtain[1]);
-      const up = -c * vh * 1.15;
-
-      if (introEl) {
-        introEl.style.transform = `translate(0, ${up * 1.1}px)`;
-        introEl.style.opacity = String(1 - seg(c, 0.55, 1));
-      }
-      if (sideL) {
-        sideL.style.transform = `translate(0, ${up}px)`;
-        sideL.style.opacity = String(1 - seg(c, 0.55, 1));
-        sideL.style.pointerEvents = c > 0.5 ? 'none' : 'auto';
-      }
-      if (sideR) {
-        sideR.style.transform = `translate(0, ${up * 0.9}px)`;
-        sideR.style.opacity = String(1 - seg(c, 0.55, 1));
-        sideR.style.pointerEvents = c > 0.5 ? 'none' : 'auto';
-      }
-      if (tkrDeg) {
-        tkrDeg.style.transform = `translate(0, ${up * 0.25}px)`;
-        tkrDeg.style.opacity = String(1 - seg(c, 0, 0.45));
-      }
-      if (ctaM) {
-        ctaM.style.transform = `translate(0, ${up * 1.2}px)`;
-        ctaM.style.opacity = String(1 - seg(c, 0.55, 1));
-        ctaM.style.pointerEvents = c > 0.5 ? 'none' : 'auto';
-      }
-
-      // 2. Treatments: Doctor swings side-to-side (laptop), cards & words scroll
-      const inS = seg(q, DOC.curtain[0] + 0.04, DOC.curtain[1] + 0.02);
       const n = svcItems.length;
-      const pos = mob ? seg(q, DOC.svc[0], DOC.svc[1]) * (n - 1) : restH(seg(q, DOC.svc[0], DOC.svc[1]) * (n - 1));
+      const pos = mob
+        ? q * (n - 1)
+        : restH(q * (n - 1));
       const stepDist = vh * (mob ? 0.34 : 0.62);
 
       if (mob) {
@@ -219,130 +154,106 @@ export function DoctorConditionsStage({
         const A = docState(a);
         const B = docState(Math.min(n - 1, a + 1));
         const e = f * f * (3 - 2 * f);
-        const C = { x: 0, s: 1, y: 0 };
-        const k = inS * inS * (3 - 2 * inS);
 
         let x = lerp(A.x, B.x, e);
-        const sc = lerp(A.s, B.s, e) - Math.sin(Math.PI * e) * (A.x && B.x && A.x !== B.x ? 0.45 : 0);
+        let sc =
+          lerp(A.s, B.s, e) -
+          Math.sin(Math.PI * e) * (A.x && B.x && A.x !== B.x ? 0.45 : 0);
         let y = lerp(A.y, B.y, e);
 
-        x = lerp(C.x, x, k);
-        y = lerp(0, y, k);
-        const finalScale = lerp(1, sc, k);
-
         docImg.style.transformOrigin = '50% 0';
-        docImg.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px) scale(${finalScale})`;
+        docImg.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px) scale(${sc})`;
       }
 
-      // Words & Cards positioning
+      if (svcHead) svcHead.style.opacity = '1';
+      if (svcBar) svcBar.style.opacity = '1';
+
       if (wordsContainer && cardsContainer) {
         const words = Array.from(wordsContainer.children) as HTMLElement[];
         const cards = Array.from(cardsContainer.children) as HTMLElement[];
+        const bars = svcBar ? (Array.from(svcBar.children) as HTMLElement[]) : [];
 
         words.forEach((w, i) => {
           const o = i - pos;
           const a = Math.abs(o);
-          w.style.transform = `translateY(calc(-50% + ${o * stepDist + (1 - inS) * vh * 0.9}px - ${
-            mob ? 14 : 10
-          }vh)) scale(${1 - Math.min(a, 1) * 0.12})`;
-          w.style.opacity = String(clamp(1 - a * 0.75, 0, 1) * inS);
+          const wx = mob ? 0 : -sideOf(i) * window.innerWidth * 0.25;
+          w.style.transform = `translate(calc(-50% + ${wx}px), calc(-50% + ${
+            o * stepDist
+          }px - ${mob ? 14 : sideOf(i) ? 14 : 8}vh)) scale(${1 - Math.min(a, 1) * 0.12})`;
+          w.style.opacity = String(clamp(1 - a * 1.35, 0, 1));
         });
 
         cards.forEach((cd, i) => {
           const o = i - pos;
           const a = Math.abs(o);
-          const co = clamp(1 - a * 1.6, 0, 1) * inS;
+          const co = clamp(1 - a * 2.4, 0, 1);
           cd.style.opacity = String(co);
-          cd.style.pointerEvents = co > 0.4 ? 'auto' : 'none';
+          cd.style.pointerEvents = co > 0.5 ? 'auto' : 'none';
+          cd.style.transform = `translateY(${o * 50}px)`;
+        });
 
-          if (svcItems[i]?.isMore) {
-            if (mob) {
-              cd.style.left = '16px';
-              cd.style.right = '16px';
-              cd.style.transform = `translate(0, ${o * 40}px)`;
-            } else {
-              cd.style.left = '50%';
-              cd.style.right = 'auto';
-              cd.style.transform = `translate(-50%, ${o * 40}px)`;
-            }
-          } else {
-            const isLeft = sideOf(i) === 1; // 1 = doctor right, card left; -1 = doctor left, card right
-            if (mob) {
-              cd.style.left = '16px';
-              cd.style.right = '16px';
-            } else if (isLeft) {
-              cd.style.left = '5vw';
-              cd.style.right = 'auto';
-            } else {
-              cd.style.left = 'auto';
-              cd.style.right = '5vw';
-            }
-            cd.style.transform = `translate(0, ${o * 40}px)`;
-          }
+        bars.forEach((b, i) => {
+          b.classList.toggle('on', Math.round(pos) === i);
         });
       }
 
-      // Active category chip
-      const curIdx = Math.round(pos);
-      if (svcItems[curIdx]?.cat) {
-        setActiveChip(svcItems[curIdx].cat);
+      // Category chip lights up
+      const cur = svcItems[Math.round(pos)];
+      if (chipsEl) {
+        chipsEl.querySelectorAll('a').forEach((a) => {
+          const on = !!cur && a.dataset.cat === cur.cat;
+          if (on && !a.classList.contains('on') && mob) {
+            chipsEl.scrollTo({
+              left: a.offsetLeft - chipsEl.clientWidth / 2 + a.offsetWidth / 2,
+              behavior: 'smooth',
+            });
+          }
+          a.classList.toggle('on', on);
+        });
       }
     };
 
-    const handleLoop = () => {
-      onScroll();
-      animId = requestAnimationFrame(handleLoop);
+    const onResize = () => {
+      fitWords();
+      onDraw();
+    };
+    window.addEventListener('resize', onResize);
+
+    const loop = () => {
+      onDraw();
+      animId = requestAnimationFrame(loop);
     };
 
-    animId = requestAnimationFrame(handleLoop);
-    return () => cancelAnimationFrame(animId);
+    animId = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', onResize);
+    };
   }, [svcItems]);
-
-  // Auto-scroll active category chip into view on mobile
-  useEffect(() => {
-    if (!activeChip || !chipsRef.current) return;
-    const chipsContainer = chipsRef.current.querySelector<HTMLElement>('.chips-scroll-container');
-    if (!chipsContainer) return;
-    const activeEl = chipsContainer.querySelector<HTMLElement>(`[data-cat="${activeChip}"]`);
-    if (activeEl && window.innerWidth < 640) {
-      const left = activeEl.offsetLeft - chipsContainer.clientWidth / 2 + activeEl.offsetWidth / 2;
-      chipsContainer.scrollTo({ left, behavior: 'smooth' });
-    }
-  }, [activeChip]);
 
   return (
     <section
       ref={stageRef}
-      className="relative z-10"
-      id="doctor"
+      className="doc"
+      id="conditions"
       style={{
-        height: `calc(${svcItems.length} * 80vh + 330vh)`,
-        background: `linear-gradient(180deg, rgba(238,247,246,0) 0, rgba(238,247,246,0) 4vh, var(--tint) 95vh, var(--tint) 100%), var(--edge-row, #f2f2f1)`,
+        height: `calc(${svcItems.length} * 75vh + 100vh)`,
       }}
     >
-      <div ref={pinRef} className="sticky top-0 h-[100vh] h-[100svh] overflow-hidden">
-        {/* Soft Radial Ambient Glow */}
-        <div className="absolute left-1/2 top-[58%] -translate-x-1/2 -translate-y-1/2 w-[min(80vw,860px)] aspect-square rounded-full bg-radial from-[rgba(43,179,177,0.26)] via-[rgba(43,179,177,0.08)] to-transparent pointer-events-none" />
+      <div ref={pinRef} className="pin">
+        <div className="glow" />
 
-        {/* Phase 2: Category Chips Bar (Placed cleanly at top) */}
-        <div
-          ref={chipsRef}
-          className="absolute inset-x-0 top-[74px] sm:top-[78px] z-[10] text-center flex flex-col items-center gap-1 sm:gap-1.5 px-3 pointer-events-auto"
-        >
-          <span className="font-bold text-[10px] sm:text-[11px] tracking-wider uppercase text-[var(--teal)] px-3 py-0.5 rounded-full bg-white/85 backdrop-blur-md border border-[rgba(43,179,177,0.25)] shadow-xs shrink-0">
+        {/* Category Chips & Section Title */}
+        <div ref={svcHeadRef} className="svc-head" id="svcHead" style={{ opacity: 1 }}>
+          <span>
             {isBn ? 'যেসব রোগের চিকিৎসা করেন ডাঃ কল্লোল' : 'Conditions Dr. Kollol treats'}
           </span>
-          <div className="chips-scroll-container flex justify-start sm:justify-center items-center flex-nowrap sm:flex-wrap gap-1 sm:gap-1.5 w-full max-w-[min(980px,96vw)] px-2 py-0.5 overflow-x-auto no-scrollbar scroll-smooth">
+          <div ref={chipsRef} className="svc-chips" id="svcChips">
             {categories.map((c) => (
               <Link
                 key={c.slug}
                 data-cat={c.slug}
                 href={`/conditions-treatments/${c.slug}`}
-                className={`shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold transition-all backdrop-blur-md ${
-                  activeChip === c.slug
-                    ? 'bg-[var(--teal)] text-white shadow-sm ring-2 ring-[var(--teal)]/20'
-                    : 'bg-white/85 text-[var(--teal)] border border-[rgba(43,179,177,0.3)] hover:bg-white'
-                }`}
               >
                 {isBn ? c.name_bn : c.name_en}
               </Link>
@@ -350,182 +261,68 @@ export function DoctorConditionsStage({
           </div>
         </div>
 
-        {/* Phase 1: Giant Intro Word (Placed cleanly BELOW Category Chips) */}
-        <h2
-          ref={introRef}
-          className="absolute inset-x-0 top-[134px] sm:top-[max(16vh,144px)] text-center z-[1] whitespace-nowrap font-heading font-extrabold text-[clamp(36px,8.5vw,144px)] leading-[0.95] tracking-tight will-change-transform select-none pointer-events-none px-4"
-        >
-          <span className="inline-block bg-gradient-to-b from-[var(--teal)] via-[var(--teal)]/80 to-[rgba(43,179,177,0.35)] bg-clip-text text-transparent">
-            {isBn ? profile.intro_word_bn : profile.intro_word_en}
-          </span>
-        </h2>
-
-        {/* Background Giant Words Container */}
-        <div ref={wordsContainerRef} className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
+        {/* Giant Condition Words Background Container */}
+        <div ref={wordsContainerRef} className="svc-words" id="svcWords">
           {svcItems.map((item, idx) => (
-            <div
-              key={idx}
-              className={`absolute inset-x-0 top-1/2 w-full text-center whitespace-nowrap will-change-transform font-heading font-extrabold ${getStageWordSize(
-                item.word
-              )} leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/40 via-[var(--teal)]/25 to-[rgba(43,179,177,0.1)] bg-clip-text text-transparent opacity-0 select-none px-4 max-w-full`}
-            >
+            <div key={idx} className="svc-word">
               {item.word}
             </div>
           ))}
         </div>
 
-        {/* Pinned Doctor Cutout (Swings & Zooms) */}
-        <div
-          ref={docImgRef}
-          className="absolute left-1/2 bottom-0 h-[min(65vh,520px)] sm:h-[min(80vh,740px)] aspect-[624/1126] -translate-x-1/2 z-[2] pointer-events-none will-change-transform"
-        >
+        {/* Doctor Image Cutout */}
+        <div ref={docImgRef} className="doc-img">
           <Image
             src="/img/doctor.webp"
-            alt="Dr. Fahim Foysal Kollol, Surgeon"
+            alt="Dr. Fahim Foysal Kollol, surgeon, in green scrubs"
             width={624}
             height={1126}
             priority
-            className="w-full h-full object-contain filter drop-shadow-[0_24px_36px_rgba(6,47,49,0.22)]"
           />
         </div>
 
-        {/* Left Side: Profile & Credentials (Phase 1) */}
-        <div
-          ref={sideLRef}
-          className="absolute top-[34%] sm:top-[60%] -translate-y-1/2 left-4 right-4 sm:right-auto sm:left-[4.5vw] z-[3] text-center sm:text-left sm:w-[min(32vw,430px)] will-change-transform"
-        >
-          <h3 className="font-heading font-bold text-2xl sm:text-[clamp(28px,2.9vw,50px)] leading-[1.08] tracking-tight text-[var(--ink)]">
-            {isBn ? profile.name_bn : profile.name_en}
-          </h3>
-          <p className="font-sans font-semibold text-xs sm:text-[clamp(14px,1.25vw,18px)] text-[var(--teal)] mt-1.5 sm:mt-2 leading-snug">
-            {isBn ? profile.role_bn : profile.role_en}
-          </p>
-
-          <div className="flex flex-wrap justify-center sm:justify-start gap-1 sm:gap-1.5 mt-2.5 sm:mt-3.5">
-            {profile.degrees_badges.map((deg, idx) => (
-              <span
-                key={idx}
-                className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-white/80 border border-[rgba(43,179,177,0.3)] text-[11px] sm:text-xs font-semibold text-[var(--ink)] shadow-xs"
-              >
-                {deg}
-              </span>
-            ))}
-          </div>
-
-          <p className="text-[11px] sm:text-xs font-normal leading-relaxed text-[var(--muted)] mt-2 sm:mt-3 max-w-sm mx-auto sm:mx-0">
-            {isBn ? profile.post_bn : profile.post_en}
-          </p>
-
-          <div className="mt-4 sm:mt-5 hidden sm:block">
-            <div className="flex gap-2.5 flex-wrap">
-              {onBookClick ? (
-                <button type="button" onClick={onBookClick} className="btn btn-p text-sm py-2.5 px-5">
-                  {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
-                </button>
-              ) : (
-                <a href="tel:01750529252" className="btn btn-p text-sm py-2.5 px-5">
-                  {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
-                </a>
-              )}
-              <a href="tel:01670879100" className="btn btn-g text-sm py-2.5 px-4">
-                {isBn ? 'কল করুন' : 'Call now'}
-              </a>
-            </div>
-            <p
-              className="text-xs font-medium text-[var(--muted)] mt-3"
-              dangerouslySetInnerHTML={{
-                __html: isBn ? profile.chambers_summary_bn : profile.chambers_summary_en,
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Right Side: 6 Statistics with Count-Up (Phase 1) - Desktop */}
-        <div
-          ref={sideRRef}
-          className="hidden sm:block absolute top-[60%] -translate-y-1/2 right-[4.5vw] z-[3] w-[min(32vw,430px)] will-change-transform"
-        >
-          <div className="grid grid-cols-2 gap-3">
-            {profile.stats.map((st, idx) => (
-              <div
-                key={idx}
-                className="p-3.5 sm:p-4 rounded-2xl bg-white/75 backdrop-blur-md border border-[rgba(43,179,177,0.28)] shadow-[0_14px_34px_-18px_rgba(6,47,49,0.3)]"
-              >
-                <b className="block font-heading font-extrabold text-[clamp(22px,2vw,32px)] leading-none text-[var(--teal)]">
-                  {counts[idx] || (isBn ? st.num_bn : st.num_en)}
-                </b>
-                <span className="block mt-1.5 text-xs font-medium leading-snug text-[var(--muted)]">
-                  {isBn ? st.label_bn : st.label_en}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Degrees Infinite Ticker (Bottom of Phase 1) */}
-        <div
-          ref={tkrDegRef}
-          className="absolute inset-x-0 bottom-0 z-[4] py-3 bg-white/75 backdrop-blur-md border-t border-[rgba(43,179,177,0.25)] tkr will-change-transform"
-        >
-          <div className="trk" style={{ '--dur': '35s' } as React.CSSProperties}>
-            {profile.degrees_ticker.map((item, idx) => (
-              <span key={idx} className="inline-flex items-center gap-4 px-5 text-sm font-bold text-[var(--teal)]">
-                <span>{isBn ? item.bn : item.en}</span>
-                <span className="text-[var(--aqua)] text-xs">✦</span>
-              </span>
-            ))}
-            {/* Repeated for seamless loop */}
-            {profile.degrees_ticker.map((item, idx) => (
-              <span key={`dup-${idx}`} className="inline-flex items-center gap-4 px-5 text-sm font-bold text-[var(--teal)]">
-                <span>{isBn ? item.bn : item.en}</span>
-                <span className="text-[var(--aqua)] text-xs">✦</span>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Phase 2: Condition Glass Cards */}
-        <div ref={cardsContainerRef} className="absolute inset-0 pointer-events-none z-[3]">
+        {/* Treatments Glass Cards */}
+        <div ref={cardsContainerRef} id="svcCards">
           {svcItems.map((item, idx) => {
-            // When sideOf(idx) === 1: Doctor swings to RIGHT (+X), so card MUST be on LEFT
-            // When sideOf(idx) === -1: Doctor swings to LEFT (-X), so card MUST be on RIGHT
-            const isCardLeft = sideOf(idx) === 1;
-
-            if (item.isMore) {
+            if (item.more) {
               return (
-                <div
-                  key="more"
-                  className="absolute bottom-20 sm:bottom-10 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[560px] sm:max-w-[560px] max-h-[62vh] sm:max-h-[65vh] overflow-y-auto p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/92 backdrop-blur-2xl border border-[rgba(43,179,177,0.35)] shadow-2xl pointer-events-auto opacity-0 will-change-transform"
-                >
-                  <span className="text-xs font-bold uppercase tracking-wider text-[var(--aqua)]">
-                    {isBn ? 'সব রোগ ও চিকিৎসা' : 'All conditions & treatments'}
-                  </span>
-                  <h4 className="font-heading font-extrabold text-xl sm:text-2xl text-[var(--ink)] mt-1">
-                    {isBn ? 'ডাঃ কল্লোল আরও যেসব রোগের চিকিৎসা করেন' : 'More conditions Dr. Kollol treats'}
-                  </h4>
-
-                  <div className="flex flex-wrap gap-1.5 my-3.5 max-w-full">
+                <div key="more" className="svc-card r more">
+                  <small>{isBn ? 'সব রোগ ও চিকিৎসা' : 'All conditions & treatments'}</small>
+                  <b>
+                    {isBn
+                      ? 'ডাঃ কল্লোল আরও যেসব রোগের চিকিৎসা করেন'
+                      : 'More conditions Dr. Kollol treats'}
+                  </b>
+                  <div className="tags">
                     {rest.map((c) => (
                       <Link
                         key={c.slug}
                         href={`/conditions-treatments/${c.category_slug}/${c.slug}`}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium text-[var(--ink)] bg-white border border-[rgba(43,179,177,0.3)] hover:bg-[var(--tint)] truncate max-w-full"
                       >
                         {isBn ? c.name_bn : c.name_en}
                       </Link>
                     ))}
+                    <Link className="plus" href="/conditions-treatments">
+                      +{rest.length - 6 > 0 ? rest.length - 6 : 4}
+                    </Link>
                   </div>
-
-                  <p className="text-xs text-[var(--muted)] mb-4">
-                    {isBn ? 'কোন রোগ বুঝতে পারছেন না? একবার দেখিয়ে নিন।' : 'Not sure what you have? Come for a consultation.'}
+                  <p style={{ marginTop: '12px' }}>
+                    {isBn
+                      ? 'কোন রোগ বুঝতে পারছেন না? একবার দেখিয়ে নিন।'
+                      : 'Not sure what you have? Come for a check-up.'}
                   </p>
-
-                  <div className="flex gap-2 flex-wrap sm:flex-nowrap">
-                    <a href="tel:01750529252" className="btn btn-p text-xs py-2.5 px-4 flex-1 text-center font-bold whitespace-nowrap">
-                      {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
-                    </a>
-                    <Link href="/conditions-treatments" className="btn btn-g text-xs py-2.5 px-4 flex-1 text-center font-bold whitespace-nowrap">
-                      {isBn ? 'সব রোগ দেখুন →' : 'All conditions →'}
+                  <div className="row">
+                    {onBookClick ? (
+                      <button type="button" onClick={onBookClick} className="btn btn-p">
+                        {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
+                      </button>
+                    ) : (
+                      <a href="tel:01750529252" className="btn btn-p">
+                        {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
+                      </a>
+                    )}
+                    <Link href="/conditions-treatments" className="btn btn-g">
+                      {isBn ? 'সব রোগ ও চিকিৎসা' : 'All conditions & treatments'}
                     </Link>
                   </div>
                 </div>
@@ -533,51 +330,42 @@ export function DoctorConditionsStage({
             }
 
             const c = item.c!;
+            const isLeft = Math.floor(idx / 3) % 2 === 0;
+            const cat = categories.find((ct) => ct.slug === c.category_slug);
+
             return (
               <Link
                 key={c.slug}
+                className={`svc-card ${isLeft ? 'l' : 'r'}`}
                 href={`/conditions-treatments/${c.category_slug}/${c.slug}`}
-                className="absolute bottom-20 sm:bottom-12 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-[min(48vw,620px)] sm:max-w-[620px] p-4 sm:p-6 rounded-3xl bg-white/90 backdrop-blur-2xl border border-[rgba(43,179,177,0.3)] shadow-[0_20px_45px_-20px_rgba(6,47,49,0.35)] pointer-events-auto opacity-0 will-change-transform sm:grid sm:grid-cols-12 sm:gap-5 items-center transition-shadow hover:shadow-2xl"
               >
-                {/* Floating condition image */}
-                <div className="sm:col-span-5 h-24 sm:h-52 relative mb-2 sm:mb-0">
-                  <Image
-                    src={c.image_url || `/img/conditions/${c.slug}.webp`}
-                    alt={isBn ? c.name_bn : c.name_en}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 240px"
-                    className="object-contain filter drop-shadow-[0_18px_26px_rgba(6,47,49,0.3)]"
-                  />
-                </div>
-
-                <div className="sm:col-span-7 flex flex-col gap-1.5">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--aqua)]">
-                    {isBn ? categories.find((cat) => cat.slug === c.category_slug)?.name_bn : categories.find((cat) => cat.slug === c.category_slug)?.name_en}
-                  </span>
-                  <h4 className="font-heading font-extrabold text-xl sm:text-2xl text-[var(--ink)] leading-snug">
-                    {isBn ? c.name_bn : c.name_en}
-                  </h4>
-                  <p className="text-xs sm:text-sm text-[var(--muted)] line-clamp-2 leading-relaxed">
-                    {isBn ? c.short_bn : c.short_en}
-                  </p>
-
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-[rgba(43,179,177,0.2)]">
-                    {c.is_laparoscopic ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-[var(--teal)] bg-[var(--tint)] border border-[rgba(43,179,177,0.3)]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--aqua)]" />
-                        {isBn ? 'ল্যাপারোস্কপিক' : 'Laparoscopic'}
-                      </span>
-                    ) : (
-                      <span />
-                    )}
-                    <span className="text-xs font-bold text-[var(--teal)] flex items-center gap-1">
-                      {isBn ? 'বিস্তারিত →' : 'Learn more →'}
-                    </span>
-                  </div>
-                </div>
+                <img
+                  className="ci"
+                  src={c.image_url || `/img/conditions/${c.slug}.webp?v=2`}
+                  alt={isBn ? c.name_bn : c.name_en}
+                  loading="lazy"
+                />
+                <small>{cat ? (isBn ? cat.name_bn : cat.name_en) : ''}</small>
+                <b>{isBn ? c.name_bn : c.name_en}</b>
+                <p>{isBn ? c.short_bn : c.short_en}</p>
+                <span className="meta">
+                  {c.is_laparoscopic ? (
+                    <span className="lapb">{isBn ? 'ল্যাপারোস্কপিক' : 'Laparoscopic'}</span>
+                  ) : (
+                    <span />
+                  )}
+                  <span className="go">{isBn ? 'বিস্তারিত →' : 'Learn more →'}</span>
+                </span>
               </Link>
             );
           })}
+        </div>
+
+        {/* Dots Indicator */}
+        <div ref={svcBarRef} className="svc-bar" id="svcBar">
+          {svcItems.map((_, i) => (
+            <i key={i} />
+          ))}
         </div>
       </div>
     </section>

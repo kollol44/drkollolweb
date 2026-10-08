@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MobileStickyBar } from '@/components/MobileStickyBar';
@@ -34,10 +33,10 @@ export function ConditionsHubClient({
       introEy: 'Find your problem',
       introT: 'Every condition, explained simply.',
       introP:
-        'Scroll to see the conditions Dr. Kollol treats — or jump to an anatomical area below. Each page explains the condition in simple words and how he treats it.',
+        'Scroll to see the conditions Dr. Kollol treats — or jump to an area below. Each page explains the problem in simple words and how he treats it.',
       browse: 'Browse by area',
       n: 'conditions',
-      learnMore: 'Learn more →',
+      learnMore: 'Learn more',
       ctaH: 'Don’t wait. Talk to your surgeon.',
       ctaS: 'Call for a serial or come to the chamber — Dr. Kollol will explain your problem and the right treatment.',
       book: 'Book a serial',
@@ -53,7 +52,7 @@ export function ConditionsHubClient({
         'স্ক্রল করে দেখুন ডাঃ কল্লোল কোন কোন রোগের চিকিৎসা করেন, অথবা নিচে ক্ষেত্র অনুযায়ী খুঁজুন। প্রতিটা পেজে রোগটা আর তার চিকিৎসা সহজ ভাষায় বোঝানো আছে।',
       browse: 'ক্ষেত্র অনুযায়ী খুঁজুন',
       n: 'টি রোগ',
-      learnMore: 'বিস্তারিত →',
+      learnMore: 'বিস্তারিত',
       ctaH: 'দেরি করবেন না। সার্জনের সাথে কথা বলুন।',
       ctaS: 'সিরিয়ালের জন্য কল করুন বা চেম্বারে আসুন — ডাঃ কল্লোল আপনার সমস্যা ও সঠিক চিকিৎসা বুঝিয়ে বলবেন।',
       book: 'সিরিয়াল নিন',
@@ -62,32 +61,36 @@ export function ConditionsHubClient({
     },
   }[lang];
 
-  // Showcase steps: intro + conditions
+  // List of conditions in category order matching prototype
+  const list = categories.flatMap((cat) =>
+    conditions.filter((cond) => cond.category_slug === cat.slug)
+  );
+
   const steps: ShowcaseStep[] = [
     {
       word: t.giant,
       ey: t.introEy,
       title: t.introT,
       body: (
-        <div>
-          <p className="text-sm text-[var(--muted)] leading-relaxed">{t.introP}</p>
-          <div className="flex gap-2.5 mt-4">
+        <>
+          <p>{t.introP}</p>
+          <div className="row">
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="btn btn-p text-xs py-2 px-4 shadow-sm"
+              className="btn btn-p"
             >
               {t.book}
             </button>
-            <a href="#browse-areas" className="btn btn-g text-xs py-2 px-4 shadow-sm">
+            <a className="btn btn-g" href="#cats">
               {t.browse}
             </a>
           </div>
-        </div>
+        </>
       ),
     },
-    ...conditions.map((c) => {
-      const cat = categories.find((cat) => cat.slug === c.category_slug);
+    ...list.map((c) => {
+      const cat = categories.find((k) => k.slug === c.category_slug);
       return {
         word: isBn ? (c.home_word_bn || c.name_bn) : (c.home_word_en || c.name_en),
         cat: c.category_slug,
@@ -98,33 +101,120 @@ export function ConditionsHubClient({
           alt: isBn ? c.name_bn : c.name_en,
         },
         body: (
-          <div>
-            <p className="text-sm text-[var(--muted)] leading-relaxed line-clamp-2">
-              {isBn ? c.short_bn : c.short_en}
-            </p>
-            <div className="flex items-center justify-between mt-3 pt-2 border-t border-[rgba(43,179,177,0.2)]">
+          <>
+            <p>{isBn ? c.short_bn : c.short_en}</p>
+            <div className="meta">
               {c.is_laparoscopic ? (
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[var(--tint)] text-[var(--teal)] border border-[rgba(43,179,177,0.3)]">
+                <span className="badge lap">
                   {isBn ? 'ল্যাপারোস্কপিক' : 'Laparoscopic'}
                 </span>
               ) : (
-                <span />
+                <span></span>
               )}
               <Link
+                className="go"
                 href={`/conditions-treatments/${c.category_slug}/${c.slug}`}
-                className="text-xs font-bold text-[var(--teal)] hover:underline"
               >
-                {t.learnMore}
+                {t.learnMore} →
               </Link>
             </div>
-          </div>
+          </>
         ),
       };
     }),
   ];
 
+  useEffect(() => {
+    // 1. Reveal observer for .rv elements
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+          } else if (e.boundingClientRect.top > 0) {
+            e.target.classList.remove('in');
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    const observe = () => {
+      document.querySelectorAll<HTMLElement>('.rv').forEach((el) => {
+        if (el.closest('.cards')) {
+          const parent = el.parentNode;
+          if (parent) {
+            const idx = Array.from(parent.children).indexOf(el);
+            el.style.transitionDelay = `${(idx % 6) * 0.06}s`;
+          }
+        }
+        io.observe(el);
+      });
+    };
+
+    // 2. Upward drift for [data-drift] giant words
+    const drift = () => {
+      document.querySelectorAll<HTMLElement>('[data-drift]').forEach((el) => {
+        const parent = el.parentElement;
+        if (!parent) return;
+        const r = parent.getBoundingClientRect();
+        const k = Number(el.dataset.drift) || 0.18;
+        el.style.transform = `translateY(${Math.min(0, r.top) * k}px)`;
+      });
+    };
+
+    // 3. Spy on sections to toggle active chip
+    const sp = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            document.querySelectorAll('#chips .chip').forEach((a) => {
+              a.classList.toggle('on', a.getAttribute('href') === `#${e.target.id}`);
+            });
+          }
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
+    );
+
+    document.querySelectorAll('#cats section').forEach((s) => sp.observe(s));
+
+    // 4. Fit swords
+    const fitSwords = () => {
+      document.querySelectorAll<HTMLElement>('.sword').forEach((s) => {
+        s.style.fontSize = '';
+        const base = parseFloat(getComputedStyle(s).fontSize);
+        const max = window.innerWidth * (window.innerWidth < 860 ? 0.9 : 0.88);
+        if (s.scrollWidth > max) {
+          s.style.fontSize = `${Math.floor((base * max) / s.scrollWidth)}px`;
+        }
+      });
+    };
+
+    observe();
+    drift();
+    fitSwords();
+
+    if (document.fonts) {
+      document.fonts.ready.then(fitSwords);
+    }
+
+    const onScroll = () => requestAnimationFrame(drift);
+    const onResize = () => fitSwords();
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      io.disconnect();
+      sp.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [lang, conditions]);
+
   return (
-    <div className="relative min-h-screen bg-white">
+    <>
       <Navbar
         categories={categories}
         serialPhone={settings.phone_serial}
@@ -144,107 +234,87 @@ export function ConditionsHubClient({
       />
 
       {/* Sticky Chip Navigation Bar */}
-      <div id="browse-areas" className="sticky top-20 z-30 py-3 bg-white/80 backdrop-blur-md border-y border-[rgba(43,179,177,0.25)]">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-start md:justify-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {categories.map((c) => (
-            <a
-              key={c.slug}
-              href={`#area-${c.slug}`}
-              className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap bg-white text-[var(--teal)] border border-[rgba(43,179,177,0.3)] hover:bg-[var(--teal)] hover:text-white transition-all shadow-sm"
-            >
-              {isBn ? c.name_bn : c.name_en}
-            </a>
-          ))}
+      <div className="chipbar">
+        <div className="wrap">
+          <div className="chips" id="chips">
+            {categories.map((c) => (
+              <a key={c.slug} className="chip" href={`#${c.slug}`}>
+                {isBn ? c.name_bn : c.name_en}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* 7 Organ-Based Category Sections with Cards */}
-      <main className="py-12">
-        {categories.map((c, idx) => {
-          const catConditions = conditions.filter((item) => item.category_slug === c.slug);
-          const isEven = idx % 2 === 0;
+      {/* Main Categories Section */}
+      <main id="cats">
+        {categories.map((c, i) => {
+          const items = conditions.filter((item) => item.category_slug === c.slug);
+          const num = isBn
+            ? String(items.length).replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)])
+            : items.length;
 
           return (
             <section
+              className={`sec ${i % 2 ? 'tint' : ''}`}
+              id={c.slug}
               key={c.slug}
-              id={`area-${c.slug}`}
-              className={`py-16 px-4 sm:px-6 lg:px-8 ${isEven ? 'bg-white' : 'bg-[var(--tint)]'}`}
             >
-              <div className="max-w-7xl mx-auto">
-                {/* Header with big category name */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 border-b border-[rgba(43,179,177,0.25)] pb-6">
-                  <div>
-                    <span className="text-xs font-bold uppercase tracking-widest text-[var(--aqua)] block">
-                      {isBn ? `ক্ষেত্র ০${idx + 1}` : `Area 0${idx + 1}`}
-                    </span>
-                    <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-[var(--teal)] mt-1">
-                      {isBn ? c.name_bn : c.name_en}
-                    </h2>
-                    <p className="text-sm text-[var(--muted)] mt-1 max-w-xl">
-                      {isBn ? c.desc_bn : c.desc_en}
-                    </p>
-                  </div>
-
-                  <Link
-                    href={`/conditions-treatments/${c.slug}`}
-                    className="btn btn-g text-xs py-2 px-4 whitespace-nowrap self-start md:self-end"
-                  >
-                    {isBn ? `${catConditions.length} ${t.n} দেখুন →` : `View all ${catConditions.length} ${t.n} →`}
+              <div className="wrap">
+                <div style={{ overflow: 'hidden' }}>
+                  <p className="sword" data-drift=".18">
+                    {isBn ? c.name_bn : c.name_en}
+                  </p>
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    gap: '20px',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <p className="sub rv" style={{ margin: 0 }}>
+                    {isBn ? c.desc_bn : c.desc_en}
+                  </p>
+                  <Link className="chip rv" href={`/conditions-treatments/${c.slug}`}>
+                    {num} {t.n} →
                   </Link>
                 </div>
-
-                {/* Condition Cards Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {catConditions.map((cond) => (
-                    <Link
-                      key={cond.slug}
-                      href={`/conditions-treatments/${c.slug}/${cond.slug}`}
-                      className="group p-6 rounded-3xl bg-white border border-[rgba(43,179,177,0.25)] shadow-[0_16px_36px_-24px_rgba(6,47,49,0.3)] hover:shadow-xl hover:border-[var(--teal)] transition-all duration-300 flex flex-col justify-between"
-                    >
-                      <div>
-                        {/* Floating Condition Illustration */}
-                        <div className="h-36 relative mb-4">
-                          <Image
-                            src={cond.image_url || `/img/conditions/${cond.slug}.webp`}
-                            alt={isBn ? cond.name_bn : cond.name_en}
-                            fill
-                            className="object-contain filter drop-shadow-[0_14px_20px_rgba(6,47,49,0.22)] group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </div>
-
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--aqua)] block">
-                          {isBn ? c.name_bn : c.name_en}
+                <div className="cards">
+                  {items.map((item) => {
+                    const name = isBn ? item.name_bn : item.name_en;
+                    const med = isBn ? item.med_bn : item.med_en;
+                    return (
+                      <Link
+                        key={item.slug}
+                        className="ccard rv"
+                        href={`/conditions-treatments/${c.slug}/${item.slug}`}
+                      >
+                        <img
+                          className="cimg"
+                          src={item.image_url || `/img/conditions/${item.slug}.webp`}
+                          alt=""
+                          loading="lazy"
+                        />
+                        <span className="cat">{isBn ? c.name_bn : c.name_en}</span>
+                        <b>{name}</b>
+                        {med && med !== name ? <span className="med">{med}</span> : null}
+                        <p>{isBn ? item.short_bn : item.short_en}</p>
+                        <span className="foot">
+                          {item.is_laparoscopic ? (
+                            <span className="badge lap">
+                              {isBn ? 'ল্যাপারোস্কপিক' : 'Laparoscopic'}
+                            </span>
+                          ) : (
+                            <span></span>
+                          )}
+                          <span className="more">{t.learnMore}</span>
                         </span>
-
-                        <h3 className="font-heading font-bold text-xl text-[var(--ink)] mt-1 leading-snug">
-                          {isBn ? cond.name_bn : cond.name_en}
-                        </h3>
-
-                        {cond.med_en && (
-                          <span className="text-xs font-medium text-[var(--muted)] block mt-0.5">
-                            {isBn ? cond.med_bn : cond.med_en}
-                          </span>
-                        )}
-
-                        <p className="text-xs sm:text-sm text-[var(--muted)] mt-2 leading-relaxed line-clamp-2">
-                          {isBn ? cond.short_bn : cond.short_en}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-5 pt-3 border-t border-[rgba(43,179,177,0.18)]">
-                        {cond.is_laparoscopic ? (
-                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[var(--tint)] text-[var(--teal)] border border-[rgba(43,179,177,0.3)]">
-                            {isBn ? 'ল্যাপারোস্কপিক' : 'Laparoscopic'}
-                          </span>
-                        ) : (
-                          <span />
-                        )}
-                        <span className="text-xs font-bold text-[var(--teal)] group-hover:translate-x-1 transition-transform">
-                          {t.learnMore}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             </section>
@@ -252,56 +322,38 @@ export function ConditionsHubClient({
         })}
       </main>
 
-      {/* CTA Band with 3 Chambers */}
-      <section className="relative bg-gradient-to-b from-white to-[var(--tint)] py-20 px-4 sm:px-6 lg:px-8 border-t border-[rgba(43,179,177,0.25)] text-center">
-        <div className="max-w-4xl mx-auto">
-          <span className="block w-12 h-1 bg-[var(--teal)] rounded-full mx-auto mb-4" />
-          <h2 className="font-heading font-extrabold text-3xl sm:text-4xl text-[var(--ink)] leading-snug">
-            {t.ctaH}
-          </h2>
-          <p className="text-sm text-[var(--muted)] max-w-xl mx-auto mt-2 mb-8">
-            {t.ctaS}
-          </p>
-
-          <div className="flex justify-center gap-3 flex-wrap">
+      {/* CTA Band */}
+      <section className="ctaband rv" id="book">
+        <div className="wrap">
+          <span className="incision"></span>
+          <h2 className="h2">{t.ctaH}</h2>
+          <p className="sub">{t.ctaS}</p>
+          <div className="row">
             <button
               type="button"
               onClick={() => setModalOpen(true)}
-              className="btn btn-p text-sm py-3 px-6 shadow-md"
+              className="btn btn-p"
             >
               {t.book}: {settings.phone_serial}
             </button>
-            <a
-              href={`tel:${settings.phone_call}`}
-              className="btn btn-g text-sm py-3 px-5 shadow-sm"
-            >
+            <a className="btn btn-g" href={`tel:${settings.phone_call}`}>
               {t.call}
             </a>
             <a
+              className="btn btn-g"
               href={settings.whatsapp_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-g text-sm py-3 px-5 shadow-sm text-emerald-800 border-emerald-300 bg-emerald-50"
             >
               {t.wa}
             </a>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left mt-12">
+          <div className="chambers">
             {chambers.map((ch) => (
-              <div
-                key={ch.id}
-                className="p-4 rounded-2xl bg-white/80 border border-[rgba(43,179,177,0.25)] shadow-sm"
-              >
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--aqua)] block">
-                  {isBn ? ch.schedule_bn : ch.schedule_en}
-                </span>
-                <h4 className="font-heading font-bold text-sm text-[var(--ink)] mt-1">
-                  {isBn ? ch.name_bn : ch.name_en}
-                </h4>
-                <p className="text-xs text-[var(--muted)] mt-1">
-                  {isBn ? ch.timing_bn : ch.timing_en}
-                </p>
+              <div className="glass" key={ch.id}>
+                <small>{isBn ? ch.schedule_bn : ch.schedule_en}</small>
+                <b>{isBn ? ch.name_bn : ch.name_en}</b>
+                <p>{isBn ? ch.timing_bn : ch.timing_en}</p>
               </div>
             ))}
           </div>
@@ -327,6 +379,6 @@ export function ConditionsHubClient({
         chambers={chambers}
         whatsappUrl={settings.whatsapp_url}
       />
-    </div>
+    </>
   );
 }

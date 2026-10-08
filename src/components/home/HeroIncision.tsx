@@ -211,16 +211,17 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
         em.style.height = y - 84 - 2 + 'px';
       }
 
-      const lines = em.querySelectorAll<HTMLElement>('.emerge-line');
-      const gap = phone() ? 12 : 16;
-      const box = em.clientHeight;
-      const bottomPad = phone() ? 24 : 38;
-      let bottom = bottomPad;
+      const lines = Array.from(em.querySelectorAll<HTMLElement>('.ln'));
+      if (!lines.length) return;
 
-      const rest = Array.from(lines)
+      const gap = phone() ? 14 : 20;
+      const box = em.clientHeight;
+      let bottom = phone() ? 8 : 16;
+
+      const rest = [...lines]
         .reverse()
         .map((el) => {
-          const h = el.offsetHeight;
+          const h = el.offsetHeight || (el.classList.contains('t-h') ? 90 : el.classList.contains('t-sub') ? 35 : 30);
           const top = box - bottom - h;
           bottom += h + gap;
           return [el, top] as const;
@@ -251,10 +252,10 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
         em.style.clipPath = 'none';
       }
 
-      const lines = em.querySelectorAll<HTMLElement>('.emerge-line');
+      const lines = Array.from(em.querySelectorAll<HTMLElement>('.ln'));
       lines.forEach((el) => {
-        const gIdx = parseInt(el.dataset.group || '1', 10) - 1;
-        const [a, b] = STORY.groups[gIdx] || [0, 1];
+        const g = parseInt(el.dataset.g || '1', 10) - 1;
+        const [a, b] = STORY.groups[g] || [0, 1];
         const e = ease(seg(p, a, b));
         const top = parseFloat(el.dataset.top || '0');
         const y = lerp(box, top, e);
@@ -263,7 +264,7 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
         el.style.top = '0';
         el.style.opacity = e <= 0 ? '0' : String(0.25 + 0.75 * e);
         el.style.filter = e < 1 ? `blur(${(1 - e) * 3}px)` : 'none';
-        if (!el.classList.contains('cue-link')) {
+        if (!el.classList.contains('t-cue')) {
           el.style.color = e < 1 ? `rgb(${Math.round(lerp(158, 6, e))},${Math.round(lerp(18, 47, e))},${Math.round(lerp(27, 49, e))})` : '';
         }
       });
@@ -360,7 +361,7 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
       if (C && cx) {
         const t = timeAt(pS);
         const i = clamp(Math.round(t * fps), 0, C.n - 1);
-        const key = mode + i + '|' + pS.toFixed(4) + '|' + window.innerWidth + 'x' + window.innerHeight;
+        const key = mode + i + '|' + pS.toFixed(4) + '|' + window.innerWidth + 'x' + window.innerHeight + '|' + (isBn ? 'bn' : 'en');
 
         if (key !== lastKey) {
           lastKey = key;
@@ -384,6 +385,12 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
       animId = requestAnimationFrame(tick);
     }
 
+    if (document.fonts) {
+      document.fonts.ready.then(() => {
+        lastKey = '';
+      });
+    }
+
     const handleResize = () => {
       const m: 'wide' | 'tall' = window.innerWidth / window.innerHeight < 0.9 ? 'tall' : 'wide';
       if (m !== mode) {
@@ -401,7 +408,7 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animId);
     };
-  }, []);
+  }, [isBn]);
 
   return (
     <section ref={heroRef} className="relative h-[290vh] z-10" id="hero">
@@ -409,34 +416,30 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block" />
 
         {/* Emergent text rising out of the incision */}
-        <div ref={emergeRef} className="absolute overflow-hidden pointer-events-none" id="em">
+        <div ref={emergeRef} className="emerge" id="em">
           <div
-            className="emerge-line absolute inset-x-0 font-heading font-extrabold text-[clamp(28px,3.3vw,56px)] leading-[1.08] tracking-tight will-change-transform"
-            data-group="1"
+            className="ln t-h"
+            data-g="1"
             dangerouslySetInnerHTML={{ __html: isBn ? heroData.h1_bn : heroData.h1_en }}
           />
           <div
-            className="emerge-line absolute inset-x-0 font-sans font-medium text-[clamp(16px,1.4vw,23px)] leading-relaxed text-[var(--muted)] will-change-transform"
-            data-group="2"
+            className="ln t-sub"
+            data-g="2"
             dangerouslySetInnerHTML={{ __html: isBn ? heroData.h2_bn : heroData.h2_en }}
           />
           <a
             href="#doctor"
-            className="emerge-line cue-link pointer-events-auto inline-flex items-center gap-2.5 font-semibold text-[clamp(13px,1vw,15px)] text-[var(--teal)] tracking-wide"
-            data-group="3"
+            className="ln t-cue"
+            data-g="3"
           >
             <span>{isBn ? heroData.meet_cta_bn : heroData.meet_cta_en}</span>
-            <i className="w-8 h-8 rounded-full border border-[var(--aqua)] grid place-items-center not-italic animate-bounce text-sm">
-              ↓
-            </i>
+            <i>↓</i>
           </a>
         </div>
 
         {/* Scroll cue indicator */}
-        <div ref={cueRef} className="absolute left-1/2 bottom-6 -translate-x-1/2 flex flex-col items-center gap-1.5 font-sans font-medium text-xs text-[#6a8c8d]">
-          <div className="cue">
-            <b />
-          </div>
+        <div ref={cueRef} className="cue" id="cue">
+          <b />
           <span>{isBn ? heroData.scroll_cue_bn : heroData.scroll_cue_en}</span>
         </div>
 
@@ -444,7 +447,8 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
         {loadingProgress < 100 && (
           <div
             ref={loaderRef}
-            className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-[var(--aqua)] to-[var(--teal)] transition-all duration-200 z-20"
+            className="loader"
+            id="ld"
             style={{ width: `${loadingProgress}%` }}
           />
         )}

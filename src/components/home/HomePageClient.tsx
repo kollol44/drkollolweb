@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { HeroIncision } from '@/components/home/HeroIncision';
+import { MeetYourSurgeonHero } from '@/components/home/MeetYourSurgeonHero';
 import { DoctorConditionsStage } from '@/components/home/DoctorConditionsStage';
 import { SerialStepsSection } from '@/components/home/SerialStepsSection';
 import { ReviewsSection } from '@/components/home/ReviewsSection';
@@ -66,7 +67,17 @@ export function HomePageClient({
       {/* 1. Hero with scroll-scrubbed incision video & bleeding cut line */}
       <HeroIncision heroData={heroSection} />
 
-      {/* 2 & 3. Meet Your Surgeon + Swinging Doctor Conditions Pinned Stage */}
+      {/* 2. Meet Your Surgeon Hero (exact layout matching screenshot and About hero) */}
+      <MeetYourSurgeonHero
+        profile={surgeonProfile}
+        serialPhone={siteSettings.phone_serial}
+        callPhone={siteSettings.phone_call}
+        onBookClick={() => setModalOpen(true)}
+        id="doctor"
+        headingLevel="h2"
+      />
+
+      {/* 3. Conditions & Treatments Swinging Doctor Pinned Stage */}
       <DoctorConditionsStage
         profile={surgeonProfile}
         categories={categories}
