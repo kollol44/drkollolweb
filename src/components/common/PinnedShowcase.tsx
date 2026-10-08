@@ -31,6 +31,20 @@ const rest = (x: number) => {
   return b + t * t * (3 - 2 * t);
 };
 
+const getWordSizeClass = (word: string) => {
+  const len = word.length;
+  if (len <= 8) {
+    // Short words like Piles, Hernia, পাইলস, স্তন
+    return 'text-[clamp(44px,8.5vw,130px)]';
+  } else if (len <= 15) {
+    // Medium words like Gallstones, Fistula, রোগ ও চিকিৎসা, কিডনির পাথর
+    return 'text-[clamp(34px,6.2vw,98px)]';
+  } else {
+    // Long phrases like "Conditions & Treatments", "Gallbladder & Bile Duct"
+    return 'text-[clamp(24px,4.5vw,72px)]';
+  }
+};
+
 export function PinnedShowcase({
   steps,
   mode = 'default',
@@ -77,12 +91,12 @@ export function PinnedShowcase({
       const step = window.innerHeight * (mob ? 0.36 : 0.6);
       const cur = Math.round(pos);
 
-      // Words motion - always centered horizontally to prevent right-edge spill
+      // Words motion - centered horizontally across viewport
       const words = Array.from(wordsEl.children) as HTMLElement[];
       words.forEach((w, i) => {
         const o = i - pos;
         const a = Math.abs(o);
-        w.style.transform = `translate(-50%, calc(-50% + ${o * step}px)) scale(${1 - Math.min(a, 1) * 0.1})`;
+        w.style.transform = `translateY(calc(-50% + ${o * step}px)) scale(${1 - Math.min(a, 1) * 0.1})`;
         w.style.opacity = String(Math.max(0, 1 - a * (mode === 'hero' || mode === 'swap' ? 1.5 : 0.75)));
       });
 
@@ -172,7 +186,9 @@ export function PinnedShowcase({
           {steps.map((st, i) => (
             <div
               key={i}
-              className="absolute left-1/2 top-[26%] sm:top-[28%] -translate-x-1/2 text-center whitespace-nowrap will-change-transform font-heading font-extrabold text-[clamp(28px,5vw,90px)] leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/38 via-[var(--teal)]/22 to-[rgba(43,179,177,0.06)] bg-clip-text text-transparent opacity-0 select-none max-w-[92vw] overflow-hidden truncate"
+              className={`absolute inset-x-0 top-[26%] sm:top-[28%] text-center whitespace-nowrap will-change-transform font-heading font-extrabold ${getWordSizeClass(
+                st.word
+              )} leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/38 via-[var(--teal)]/22 to-[rgba(43,179,177,0.06)] bg-clip-text text-transparent opacity-0 select-none px-4 max-w-full`}
             >
               {st.word}
             </div>

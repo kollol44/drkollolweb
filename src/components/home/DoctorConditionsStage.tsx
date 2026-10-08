@@ -24,6 +24,20 @@ const restH = (x: number) => {
   return b + t * t * (3 - 2 * t);
 };
 
+const getStageWordSize = (word: string) => {
+  const len = word.length;
+  if (len <= 8) {
+    // Short words like Piles, Hernia, পাইলস, And more, আরও অনেক
+    return 'text-[clamp(42px,8vw,126px)]';
+  } else if (len <= 15) {
+    // Medium words like Gallstones, Appendicitis, Breast Lump, Kidney Stones, পিত্তথলির পাথর
+    return 'text-[clamp(34px,6.2vw,98px)]';
+  } else {
+    // Long phrases
+    return 'text-[clamp(24px,4.5vw,72px)]';
+  }
+};
+
 export function DoctorConditionsStage({
   profile,
   categories,
@@ -228,7 +242,7 @@ export function DoctorConditionsStage({
         words.forEach((w, i) => {
           const o = i - pos;
           const a = Math.abs(o);
-          w.style.transform = `translate(-50%, calc(-50% + ${o * stepDist + (1 - inS) * vh * 0.9}px - ${
+          w.style.transform = `translateY(calc(-50% + ${o * stepDist + (1 - inS) * vh * 0.9}px - ${
             mob ? 14 : 10
           }vh)) scale(${1 - Math.min(a, 1) * 0.12})`;
           w.style.opacity = String(clamp(1 - a * 0.75, 0, 1) * inS);
@@ -295,7 +309,7 @@ export function DoctorConditionsStage({
         {/* Phase 1: Giant Intro Word */}
         <h2
           ref={introRef}
-          className="absolute inset-x-0 top-[max(11vh,84px)] text-center z-[1] whitespace-nowrap font-heading font-extrabold text-[clamp(44px,9vw,160px)] leading-[0.95] tracking-tight will-change-transform select-none pointer-events-none"
+          className="absolute inset-x-0 top-[max(11vh,84px)] text-center z-[1] whitespace-nowrap font-heading font-extrabold text-[clamp(44px,9vw,160px)] leading-[0.95] tracking-tight will-change-transform select-none pointer-events-none px-4"
         >
           <span className="inline-block bg-gradient-to-b from-[var(--teal)] via-[var(--teal)]/80 to-[rgba(43,179,177,0.35)] bg-clip-text text-transparent">
             {isBn ? profile.intro_word_bn : profile.intro_word_en}
@@ -332,7 +346,9 @@ export function DoctorConditionsStage({
           {svcItems.map((item, idx) => (
             <div
               key={idx}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center whitespace-nowrap will-change-transform font-heading font-extrabold text-[clamp(26px,5vw,90px)] leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/40 via-[var(--teal)]/25 to-[rgba(43,179,177,0.1)] bg-clip-text text-transparent opacity-0 select-none max-w-[92vw] overflow-hidden truncate"
+              className={`absolute inset-x-0 top-1/2 w-full text-center whitespace-nowrap will-change-transform font-heading font-extrabold ${getStageWordSize(
+                item.word
+              )} leading-[0.92] tracking-tight bg-gradient-to-b from-[var(--teal)]/40 via-[var(--teal)]/25 to-[rgba(43,179,177,0.1)] bg-clip-text text-transparent opacity-0 select-none px-4 max-w-full`}
             >
               {item.word}
             </div>
