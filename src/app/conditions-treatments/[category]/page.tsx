@@ -46,13 +46,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   if (!cat) notFound();
 
   const categoryConditions = allConditions.filter((c) => c.category_slug === slug);
-  const otherCategories = categories.filter((c) => c.slug !== slug);
 
   return (
     <CategoryPageClient
       category={cat}
       conditions={categoryConditions}
-      allCategories={otherCategories}
+      allCategories={categories}
       settings={settings}
       chambers={chambers}
     />

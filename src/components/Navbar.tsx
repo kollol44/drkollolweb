@@ -6,9 +6,10 @@ import { usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Category } from '@/types/database';
+import { DEFAULT_CATEGORIES } from '@/lib/content/default-data';
 
 interface NavbarProps {
-  categories: Category[];
+  categories?: Category[];
   serialPhone?: string;
   onBookClick?: () => void;
 }
@@ -63,6 +64,16 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
     },
   }[lang];
 
+  // Guarantee all 7 core categories are always present and properly sorted
+  const categoryMap = new Map<string, Category>();
+  DEFAULT_CATEGORIES.forEach((c) => categoryMap.set(c.slug, c));
+  if (categories && Array.isArray(categories)) {
+    categories.forEach((c) => categoryMap.set(c.slug, c));
+  }
+  const allNavCategories = Array.from(categoryMap.values()).sort(
+    (a, b) => (a.sort_order ?? 99) - (b.sort_order ?? 99)
+  );
+
   return (
     <>
       <header className="nav">
@@ -90,11 +101,18 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
               {navLinks.services}
             </button>
             <div className="dd-menu">
-              <Link className="all" href="/conditions-treatments">
+              <Link
+                className={`all ${pathname === '/conditions-treatments' ? 'on' : ''}`}
+                href="/conditions-treatments"
+              >
                 {navLinks.all}
               </Link>
-              {categories.map((c) => (
-                <Link key={c.slug} href={`/conditions-treatments/${c.slug}`}>
+              {allNavCategories.map((c) => (
+                <Link
+                  key={c.slug}
+                  href={`/conditions-treatments/${c.slug}`}
+                  className={pathname === `/conditions-treatments/${c.slug}` ? 'on' : ''}
+                >
                   {isBn ? c.name_bn : c.name_en}
                 </Link>
               ))}
@@ -196,7 +214,7 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
           <div className="sheet-acc-content">
             <div className="sheet-acc-inner">
               <Link
-                className="sub all"
+                className={`sub all ${pathname === '/conditions-treatments' ? 'active' : ''}`}
                 href="/conditions-treatments"
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -206,20 +224,23 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
                 <span>{navLinks.all}</span>
                 <span className="arrow-hint">→</span>
               </Link>
-              {categories.map((c) => (
-                <Link
-                  key={c.slug}
-                  className="sub"
-                  href={`/conditions-treatments/${c.slug}`}
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setMobileServicesOpen(false);
-                  }}
-                >
-                  <span className="sub-dot" />
-                  <span>{isBn ? c.name_bn : c.name_en}</span>
-                </Link>
-              ))}
+              {allNavCategories.map((c) => {
+                const isCatActive = pathname === `/conditions-treatments/${c.slug}`;
+                return (
+                  <Link
+                    key={c.slug}
+                    className={`sub ${isCatActive ? 'active' : ''}`}
+                    href={`/conditions-treatments/${c.slug}`}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setMobileServicesOpen(false);
+                    }}
+                  >
+                    <span className="sub-dot" />
+                    <span>{isBn ? c.name_bn : c.name_en}</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>

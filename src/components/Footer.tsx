@@ -4,10 +4,11 @@ import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Category, Chamber, SiteSettings } from '@/types/database';
+import { DEFAULT_CATEGORIES } from '@/lib/content/default-data';
 
 interface FooterProps {
   settings: SiteSettings;
-  categories: Category[];
+  categories?: Category[];
   chambers: Chamber[];
 }
 
@@ -62,6 +63,16 @@ export function Footer({ settings, categories, chambers }: FooterProps) {
       creditUrl: 'https://benzadid.com',
     },
   }[lang];
+
+  // Guarantee all 7 core categories are always present in footer
+  const categoryMap = new Map<string, Category>();
+  DEFAULT_CATEGORIES.forEach((c) => categoryMap.set(c.slug, c));
+  if (categories && Array.isArray(categories)) {
+    categories.forEach((c) => categoryMap.set(c.slug, c));
+  }
+  const allFooterCategories = Array.from(categoryMap.values()).sort(
+    (a, b) => (a.sort_order ?? 99) - (b.sort_order ?? 99)
+  );
 
   return (
     <footer className="relative z-20 bg-gradient-to-b from-[#EEF7F6] via-[#E1F3F2] to-[#D4EEEE] text-[var(--ink)] border-t border-[rgba(43,179,177,0.3)] pt-16 pb-12 overflow-hidden">
@@ -152,7 +163,7 @@ export function Footer({ settings, categories, chambers }: FooterProps) {
               {content.areas}
             </h4>
             <ul className="flex flex-col gap-2 text-sm text-[var(--ink)] font-medium">
-              {categories.map((c) => (
+              {allFooterCategories.map((c) => (
                 <li key={c.slug}>
                   <Link
                     href={`/conditions-treatments/${c.slug}`}
