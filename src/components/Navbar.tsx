@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Category } from '@/types/database';
 
@@ -16,6 +17,7 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
   const { lang, setLang, isBn } = useLanguage();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
@@ -33,6 +35,7 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
   useEffect(() => {
     setDropdownOpen(false);
     setMobileMenuOpen(false);
+    setMobileServicesOpen(false);
   }, [pathname]);
 
   const navLinks = {
@@ -145,24 +148,108 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
         </div>
       </header>
 
-      {/* Mobile Drawer Sheet */}
+      {/* Mobile Drawer Backdrop & Sheet */}
+      {mobileMenuOpen && (
+        <div
+          className="sheet-backdrop"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileServicesOpen(false);
+          }}
+          aria-hidden="true"
+        />
+      )}
       <div className={`sheet ${mobileMenuOpen ? 'open' : ''}`}>
-        <Link href="/">{navLinks.home}</Link>
-        <Link href={pathname === '/' ? '/#doctor' : '/about'}>{navLinks.about}</Link>
-        <Link href="/conditions-treatments">{navLinks.services}</Link>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {categories.map((c) => (
-            <Link key={c.slug} className="sub" href={`/conditions-treatments/${c.slug}`}>
-              {isBn ? c.name_bn : c.name_en}
-            </Link>
-          ))}
+        <Link
+          href="/"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileServicesOpen(false);
+          }}
+        >
+          {navLinks.home}
+        </Link>
+        <Link
+          href={pathname === '/' ? '/#doctor' : '/about'}
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileServicesOpen(false);
+          }}
+        >
+          {navLinks.about}
+        </Link>
+
+        {/* Collapsible Mobile Dropdown for Conditions & Treatments */}
+        <div className={`sheet-acc ${mobileServicesOpen ? 'open' : ''}`}>
+          <button
+            type="button"
+            className="sheet-acc-trigger"
+            onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+            aria-expanded={mobileServicesOpen}
+          >
+            <span>{navLinks.services}</span>
+            <ChevronDown
+              size={18}
+              className={`sheet-acc-arrow ${mobileServicesOpen ? 'rotated' : ''}`}
+            />
+          </button>
+          <div className="sheet-acc-content">
+            <div className="sheet-acc-inner">
+              <Link
+                className="sub all"
+                href="/conditions-treatments"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setMobileServicesOpen(false);
+                }}
+              >
+                <span>{navLinks.all}</span>
+                <span className="arrow-hint">→</span>
+              </Link>
+              {categories.map((c) => (
+                <Link
+                  key={c.slug}
+                  className="sub"
+                  href={`/conditions-treatments/${c.slug}`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setMobileServicesOpen(false);
+                  }}
+                >
+                  <span className="sub-dot" />
+                  <span>{isBn ? c.name_bn : c.name_en}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
-        <Link href="/blogs">{navLinks.blogs}</Link>
-        <Link href="/contact">{navLinks.contact}</Link>
+
+        <Link
+          href="/blogs"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileServicesOpen(false);
+          }}
+        >
+          {navLinks.blogs}
+        </Link>
+        <Link
+          href="/contact"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileServicesOpen(false);
+          }}
+        >
+          {navLinks.contact}
+        </Link>
         <a
           href="tel:01670879100"
           className="btn btn-p"
-          style={{ marginTop: '6px' }}
+          style={{ marginTop: '8px' }}
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileServicesOpen(false);
+          }}
         >
           {navLinks.call}
         </a>

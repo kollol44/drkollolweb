@@ -24,10 +24,40 @@ export function MeetYourSurgeonHero({
 }: MeetYourSurgeonHeroProps) {
   const { isBn } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
+  const introRef = useRef<HTMLHeadingElement>(null);
 
   const [counts, setCounts] = useState<string[]>(
     profile.stats.map((s) => (isBn ? s.num_bn : s.num_en))
   );
+
+  // Dynamic font scaling for mobile so "Meet Your Surgeon" is never cut off
+  useEffect(() => {
+    const fitIntro = () => {
+      const el = introRef.current;
+      if (!el) return;
+      const mob = window.innerWidth < 860;
+      if (!mob) {
+        el.style.removeProperty('--fs');
+        return;
+      }
+      el.style.removeProperty('--fs');
+      const base = parseFloat(window.getComputedStyle(el).fontSize) || 32;
+      const wd = el.scrollWidth;
+      const maxW = window.innerWidth * 0.90;
+      if (wd > maxW) {
+        let fs = (base * maxW) / wd;
+        fs = Math.max(fs, 18);
+        el.style.setProperty('--fs', `${Math.floor(fs)}px`);
+      }
+    };
+
+    fitIntro();
+    window.addEventListener('resize', fitIntro);
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(fitIntro);
+    }
+    return () => window.removeEventListener('resize', fitIntro);
+  }, [isBn, profile.intro_word_en, profile.intro_word_bn]);
 
   // Count-up animation for stats numbers when section enters viewport
   useEffect(() => {
@@ -90,8 +120,12 @@ export function MeetYourSurgeonHero({
       <div className="glow" />
 
       {/* Giant Intro Heading Watermark */}
-      <IntroHeading className="intro rv in">
-        <span>{isBn ? 'ইনিই আপনার সার্জন' : 'Meet Your Surgeon'}</span>
+      <IntroHeading ref={introRef as any} className="intro rv in">
+        <span>
+          {isBn
+            ? profile.intro_word_bn || 'ইনিই আপনার সার্জন'
+            : profile.intro_word_en || 'Meet Your Surgeon'}
+        </span>
       </IntroHeading>
 
       {/* Center Doctor Image with Gentle Floating Animation */}

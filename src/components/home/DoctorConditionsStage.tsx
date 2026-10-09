@@ -189,7 +189,7 @@ export function DoctorConditionsStage({
           const co = clamp(1 - a * 2.4, 0, 1);
           cd.style.opacity = String(co);
           cd.style.pointerEvents = co > 0.5 ? 'auto' : 'none';
-          cd.style.transform = `translateY(${o * 50}px)`;
+          cd.style.transform = `translateY(${o * (mob ? 30 : 50)}px)`;
         });
 
         bars.forEach((b, i) => {

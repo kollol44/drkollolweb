@@ -201,6 +201,35 @@ export function SerialStepsSection({ steps, profile, onBookClick }: SerialStepsS
   const BNd = (n: number | string) =>
     String(n).replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[parseInt(d, 10)]);
 
+  // Dynamically scale heading on mobile so "যেভাবে সিরিয়াল নেবেন" never clips
+  useEffect(() => {
+    const fitHsH = () => {
+      const el = hsHRef.current;
+      if (!el) return;
+      const mob = window.innerWidth < 860;
+      if (!mob) {
+        el.style.removeProperty('--fs');
+        return;
+      }
+      el.style.removeProperty('--fs');
+      const base = parseFloat(window.getComputedStyle(el).fontSize) || 28;
+      const wd = el.scrollWidth;
+      const maxW = window.innerWidth * 0.90;
+      if (wd > maxW) {
+        let fs = (base * maxW) / wd;
+        fs = Math.max(fs, 18);
+        el.style.setProperty('--fs', `${Math.floor(fs)}px`);
+      }
+    };
+
+    fitHsH();
+    window.addEventListener('resize', fitHsH);
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(fitHsH);
+    }
+    return () => window.removeEventListener('resize', fitHsH);
+  }, [lang, t.hsH]);
+
   useEffect(() => {
     const serialEl = serialSectionRef.current;
     const cardsEl = hsCardsRef.current;
