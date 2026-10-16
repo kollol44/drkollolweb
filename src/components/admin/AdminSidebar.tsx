@@ -16,6 +16,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Radio,
+  Film,
 } from 'lucide-react';
 import type { Appointment, Condition, Chamber, BlogPost } from '@/types/database';
 
@@ -26,9 +27,11 @@ interface AdminSidebarProps {
   conditions: Condition[];
   chambers: Chamber[];
   blogs: BlogPost[];
+  galleryPhotosCount?: number;
   mobileOpen: boolean;
   onCloseMobile: () => void;
 }
+
 
 interface NavGroup {
   groupLabel: string;
@@ -49,6 +52,7 @@ export function AdminSidebar({
   conditions,
   chambers,
   blogs,
+  galleryPhotosCount,
   mobileOpen,
   onCloseMobile,
 }: AdminSidebarProps) {
@@ -109,6 +113,14 @@ export function AdminSidebar({
       groupLabel: 'Identity & Reputation',
       items: [
         {
+          id: 'gallery',
+          label: 'Gallery & Videos',
+          shortDesc: 'Photos & video library',
+          icon: Film,
+          badge: galleryPhotosCount !== undefined ? `${galleryPhotosCount}` : null,
+          badgeVariant: 'teal',
+        },
+        {
           id: 'heroProfile',
           label: 'Hero & Doctor Profile',
           shortDesc: 'Headline, bio & surgery stats',
@@ -122,6 +134,7 @@ export function AdminSidebar({
         },
       ],
     },
+
     {
       groupLabel: 'Platform & Security',
       items: [

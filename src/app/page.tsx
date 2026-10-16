@@ -10,6 +10,8 @@ import {
   getReviews,
   getFaqs,
   getBlogs,
+  getGalleryPhotos,
+  getGalleryVideos,
 } from '@/lib/content/service';
 import { HomePageClient } from '@/components/home/HomePageClient';
 
@@ -27,6 +29,8 @@ export default async function HomePage() {
     reviews,
     faqs,
     blogs,
+    galleryPhotos,
+    galleryVideos,
   ] = await Promise.all([
     getSiteSettings(),
     getHeroSection(),
@@ -38,6 +42,8 @@ export default async function HomePage() {
     getReviews(),
     getFaqs(),
     getBlogs(),
+    getGalleryPhotos(),
+    getGalleryVideos(),
   ]);
 
   return (
@@ -52,6 +58,9 @@ export default async function HomePage() {
       reviews={reviews}
       faqs={faqs}
       blogs={blogs}
+      galleryPhotos={galleryPhotos}
+      galleryVideos={galleryVideos}
     />
   );
 }
+

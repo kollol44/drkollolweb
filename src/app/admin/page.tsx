@@ -14,6 +14,7 @@ import { AdminConditions } from '@/components/admin/AdminConditions';
 import { AdminChambers } from '@/components/admin/AdminChambers';
 import { AdminBlogs } from '@/components/admin/AdminBlogs';
 import { AdminFaqsReviews } from '@/components/admin/AdminFaqsReviews';
+import { AdminGallery } from '@/components/admin/AdminGallery';
 
 import type {
   SiteSettings,
@@ -26,6 +27,8 @@ import type {
   FAQ,
   BlogPost,
   Appointment,
+  GalleryPhoto,
+  GalleryVideo,
 } from '@/types/database';
 
 const tabTitles: Record<string, string> = {
@@ -34,6 +37,7 @@ const tabTitles: Record<string, string> = {
   conditions: 'Clinical Conditions (26)',
   chambers: 'Chambers & Visiting Hours',
   blogs: 'Medical Articles & Blogs',
+  gallery: 'Photo Gallery & Video Library',
   heroProfile: 'Hero & Doctor Profile',
   faqsReviews: 'FAQs & Patient Reviews',
   settings: 'Global Site Settings',
@@ -66,6 +70,8 @@ export default function AdminDashboardPage() {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
+  const [galleryVideos, setGalleryVideos] = useState<GalleryVideo[]>([]);
 
   // Fetch all CMS content
   const loadDashboardData = useCallback(async () => {
@@ -87,6 +93,8 @@ export default function AdminDashboardPage() {
         setFaqs(json.data.faqs || []);
         setBlogs(json.data.blogs || []);
         setAppointments(json.data.appointments || []);
+        setGalleryPhotos(json.data.galleryPhotos || []);
+        setGalleryVideos(json.data.galleryVideos || []);
       }
     } catch {
       showToast('Failed to connect to CMS backend service.', 'error');
@@ -229,6 +237,74 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleSaveGalleryPhoto = async (newPhoto: GalleryPhoto) => {
+    const ok = await saveSection('galleryPhoto', newPhoto);
+    if (ok) {
+      setGalleryPhotos((prev) => {
+        const idx = prev.findIndex((p) => p.id === newPhoto.id);
+        if (idx >= 0) {
+          const clone = [...prev];
+          clone[idx] = newPhoto;
+          return clone;
+        }
+        return [...prev, newPhoto];
+      });
+    }
+  };
+
+  const handleDeleteGalleryPhoto = async (id: string) => {
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section: 'galleryPhoto', id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setGalleryPhotos((prev) => prev.filter((p) => p.id !== id));
+        showToast('Photo removed successfully.');
+      } else {
+        showToast(data.message || 'Error deleting photo.', 'error');
+      }
+    } catch {
+      showToast('Network error while deleting photo.', 'error');
+    }
+  };
+
+  const handleSaveGalleryVideo = async (newVideo: GalleryVideo) => {
+    const ok = await saveSection('galleryVideo', newVideo);
+    if (ok) {
+      setGalleryVideos((prev) => {
+        const idx = prev.findIndex((v) => v.id === newVideo.id);
+        if (idx >= 0) {
+          const clone = [...prev];
+          clone[idx] = newVideo;
+          return clone;
+        }
+        return [...prev, newVideo];
+      });
+    }
+  };
+
+  const handleDeleteGalleryVideo = async (id: string) => {
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section: 'galleryVideo', id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setGalleryVideos((prev) => prev.filter((v) => v.id !== id));
+        showToast('Video removed successfully.');
+      } else {
+        showToast(data.message || 'Error deleting video.', 'error');
+      }
+    } catch {
+      showToast('Network error while deleting video.', 'error');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#EEF7F6]/40 flex items-center justify-center">
@@ -280,6 +356,7 @@ export default function AdminDashboardPage() {
           conditions={conditions}
           chambers={chambers}
           blogs={blogs}
+          galleryPhotosCount={galleryPhotos.length}
           mobileOpen={mobileMenuOpen}
           onCloseMobile={() => setMobileMenuOpen(false)}
         />
@@ -335,6 +412,17 @@ export default function AdminDashboardPage() {
                 blogs={blogs}
                 categories={categories}
                 onSaveBlog={handleSaveBlog}
+              />
+            )}
+
+            {activeTab === 'gallery' && (
+              <AdminGallery
+                photos={galleryPhotos}
+                videos={galleryVideos}
+                onSavePhoto={handleSaveGalleryPhoto}
+                onDeletePhoto={handleDeleteGalleryPhoto}
+                onSaveVideo={handleSaveGalleryVideo}
+                onDeleteVideo={handleDeleteGalleryVideo}
               />
             )}
 

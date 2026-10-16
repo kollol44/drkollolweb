@@ -25,6 +25,7 @@ export function Footer({ settings, categories, chambers }: FooterProps) {
       home: 'Home',
       about: 'About Surgeon',
       treatments: 'Conditions & Treatments',
+      gallery: 'Media & Videos',
       blogs: 'Health Blogs',
       contact: 'Chambers & Contact',
       areas: 'Surgical Disciplines',
@@ -48,6 +49,7 @@ export function Footer({ settings, categories, chambers }: FooterProps) {
       home: 'হোম',
       about: 'সার্জন পরিচিতি',
       treatments: 'রোগ ও চিকিৎসা তালিকা',
+      gallery: 'ফটো ও ভিডিও গ্যালারি',
       blogs: 'স্বাস্থ্য ব্লগ',
       contact: 'চেম্বার ও যোগাযোগ',
       areas: 'চিকিৎসার ক্ষেত্রসমূহ',
@@ -142,6 +144,11 @@ export function Footer({ settings, categories, chambers }: FooterProps) {
               <li>
                 <Link href="/conditions-treatments" className="hover:text-[var(--teal)] transition-colors">
                   {content.treatments}
+                </Link>
+              </li>
+              <li>
+                <Link href="/gallery" className="hover:text-[var(--teal)] transition-colors">
+                  {content.gallery}
                 </Link>
               </li>
               <li>

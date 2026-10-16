@@ -28,6 +28,12 @@ import {
   deleteBlog,
   getAppointments,
   updateAppointmentStatus,
+  getGalleryPhotos,
+  saveGalleryPhoto,
+  deleteGalleryPhoto,
+  getGalleryVideos,
+  saveGalleryVideo,
+  deleteGalleryVideo,
 } from '@/lib/content/service';
 
 export async function GET(req: NextRequest) {
@@ -37,6 +43,7 @@ export async function GET(req: NextRequest) {
   if (!session) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
+
 
   const [
     siteSettings,
@@ -50,6 +57,8 @@ export async function GET(req: NextRequest) {
     faqs,
     blogs,
     appointments,
+    galleryPhotos,
+    galleryVideos,
   ] = await Promise.all([
     getSiteSettings(),
     getHeroSection(),
@@ -62,6 +71,8 @@ export async function GET(req: NextRequest) {
     getFaqs(),
     getAllBlogsAdmin(),
     getAppointments(),
+    getGalleryPhotos(),
+    getGalleryVideos(),
   ]);
 
   return NextResponse.json({
@@ -78,6 +89,8 @@ export async function GET(req: NextRequest) {
       faqs,
       blogs,
       appointments,
+      galleryPhotos,
+      galleryVideos,
     },
   });
 }
@@ -121,6 +134,12 @@ export async function PUT(req: NextRequest) {
       case 'blog':
         await saveBlog(payload);
         break;
+      case 'galleryPhoto':
+        await saveGalleryPhoto(payload);
+        break;
+      case 'galleryVideo':
+        await saveGalleryVideo(payload);
+        break;
       case 'appointmentStatus':
         await updateAppointmentStatus(payload.id, payload.status);
         break;
@@ -131,6 +150,7 @@ export async function PUT(req: NextRequest) {
     // Automatically revalidate root layout & all nested static pages for instantaneous reflection
     try {
       revalidatePath('/', 'layout');
+      revalidatePath('/gallery');
     } catch (e) {
       console.warn('Revalidation notice:', e);
     }
@@ -169,12 +189,19 @@ export async function DELETE(req: NextRequest) {
       case 'blog':
         if (slug) await deleteBlog(slug);
         break;
+      case 'galleryPhoto':
+        if (id) await deleteGalleryPhoto(String(id));
+        break;
+      case 'galleryVideo':
+        if (id) await deleteGalleryVideo(String(id));
+        break;
       default:
         return NextResponse.json({ success: false, message: 'Unknown section for delete.' }, { status: 400 });
     }
 
     try {
       revalidatePath('/', 'layout');
+      revalidatePath('/gallery');
     } catch (e) {
       console.warn('Revalidation notice:', e);
     }
@@ -185,3 +212,4 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ success: false, message: 'Failed to delete content.' }, { status: 500 });
   }
 }
+

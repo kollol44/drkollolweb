@@ -180,3 +180,41 @@ export interface Appointment {
   source?: string;
   created_at?: string;
 }
+
+export type GalleryCategory =
+  | 'ot'
+  | 'chamber'
+  | 'camp'
+  | 'conference'
+  | 'patient'
+  | 'general';
+
+export interface GalleryPhoto {
+  id: string;
+  title_en: string;
+  title_bn: string;
+  caption_en?: string;
+  caption_bn?: string;
+  image_url: string;
+  category: GalleryCategory;
+  sort_order: number;
+  is_featured: boolean;
+  created_at?: string;
+}
+
+export interface GalleryVideo {
+  id: string;
+  title_en: string;
+  title_bn: string;
+  description_en?: string;
+  description_bn?: string;
+  video_url: string;
+  video_type: 'youtube' | 'facebook';
+  video_id?: string;
+  thumbnail_url?: string;
+  category?: string;
+  sort_order: number;
+  is_featured: boolean;
+  created_at?: string;
+}
+

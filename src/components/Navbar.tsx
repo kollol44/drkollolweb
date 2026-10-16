@@ -46,6 +46,7 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
       about: 'About the Doctor',
       services: 'Conditions & Treatments',
       all: 'All conditions & treatments',
+      gallery: 'Gallery',
       blogs: 'Blogs',
       contact: 'Contact',
       book: 'Book a serial',
@@ -57,6 +58,7 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
       about: 'ডাক্তার সম্পর্কে',
       services: 'রোগ ও চিকিৎসা',
       all: 'সব রোগ ও চিকিৎসা',
+      gallery: 'গ্যালারি',
       blogs: 'ব্লগ',
       contact: 'যোগাযোগ',
       book: 'সিরিয়াল নিন',
@@ -119,6 +121,9 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
             </div>
           </div>
 
+          <Link href="/gallery" className={pathname === '/gallery' ? 'on' : ''}>
+            {navLinks.gallery}
+          </Link>
           <Link href="/blogs" className={pathname.startsWith('/blogs') ? 'on' : ''}>
             {navLinks.blogs}
           </Link>
@@ -245,6 +250,16 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
           </div>
         </div>
 
+        <Link
+          href="/gallery"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            setMobileServicesOpen(false);
+          }}
+          className={pathname === '/gallery' ? 'active' : ''}
+        >
+          {navLinks.gallery}
+        </Link>
         <Link
           href="/blogs"
           onClick={() => {

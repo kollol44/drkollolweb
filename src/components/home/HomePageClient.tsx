@@ -25,6 +25,8 @@ import {
   Review,
   FAQ,
   BlogPost,
+  GalleryPhoto,
+  GalleryVideo,
 } from '@/types/database';
 
 interface HomePageClientProps {
@@ -38,6 +40,8 @@ interface HomePageClientProps {
   reviews: Review[];
   faqs: FAQ[];
   blogs: BlogPost[];
+  galleryPhotos?: GalleryPhoto[];
+  galleryVideos?: GalleryVideo[];
 }
 
 export function HomePageClient({
@@ -51,6 +55,8 @@ export function HomePageClient({
   reviews,
   faqs,
   blogs,
+  galleryPhotos,
+  galleryVideos,
 }: HomePageClientProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -87,10 +93,11 @@ export function HomePageClient({
       <ReviewsSection reviews={reviews} />
 
       {/* 6. Medical Explanation Videos */}
-      <VideosSection />
+      <VideosSection videos={galleryVideos} />
 
       {/* 7. Clinical Practice Gallery */}
-      <GallerySection />
+      <GallerySection photos={galleryPhotos} />
+
 
       {/* 8. Common FAQ Accordion */}
       <FaqSection faqs={faqs} />
