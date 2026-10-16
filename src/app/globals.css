@@ -43,7 +43,7 @@ html {
 html, body {
   margin: 0;
   padding: 0;
-  background: #ffffff;
+  background: #F6F6F6;
   color: var(--ink);
   font-family: var(--fb);
   -webkit-font-smoothing: antialiased;
@@ -570,7 +570,7 @@ canvas#cv {
 .doc {
   position: relative;
   height: calc(var(--n, 8) * 80vh + 330vh);
-  background: linear-gradient(180deg, rgba(238, 247, 246, 0) 0, rgba(238, 247, 246, 0) 4vh, var(--tint) 95vh, var(--tint) 100%), var(--edge-row, #f2f2f1);
+  background: #F6F6F6;
 }
 .pin, .doc-hero {
   position: relative;
@@ -585,7 +585,7 @@ canvas#cv {
   will-change: transform, opacity;
 }
 .doc-hero {
-  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(43, 179, 177, 0.16), transparent 70%), linear-gradient(180deg, #fff, var(--tint));
+  background: #F6F6F6;
 }
 .glow {
   position: absolute;
@@ -1168,7 +1168,7 @@ canvas#cv {
   z-index: 6;
   margin-top: -100vh;
   height: calc(3 * 95vh + 100vh);
-  background: #fff;
+  background: #F6F6F6;
   border-radius: 34px 34px 0 0;
   box-shadow: 0 -30px 60px -30px rgba(6, 47, 49, 0.4);
 }
@@ -1191,7 +1191,7 @@ canvas#cv {
   height: 100svh;
   overflow: hidden;
   border-radius: 34px 34px 0 0;
-  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(43, 179, 177, 0.16), transparent 70%), linear-gradient(180deg, #fff, var(--tint));
+  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(43, 179, 177, 0.16), transparent 70%), #F6F6F6;
 }
 .tkr-num {
   position: absolute;
@@ -1460,11 +1460,11 @@ canvas#cv {
 .hx {
   position: relative;
   z-index: 6;
-  background: #fff;
+  background: #F6F6F6;
   padding: 13vh 0;
 }
 .hx.tint {
-  background: var(--tint);
+  background: #F6F6F6;
 }
 .hx .wrap {
   width: min(1180px, 100% - 32px);
@@ -1924,7 +1924,7 @@ canvas#cv {
   border: 0;
   border-radius: 22px;
   box-shadow: 0 20px 44px -26px rgba(6, 47, 49, 0.42);
-  background: var(--tint);
+  background: #F6F6F6;
 }
 .v-map .note {
   margin-top: 10px;

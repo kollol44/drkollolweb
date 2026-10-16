@@ -87,7 +87,7 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
             {navLinks.home}
           </Link>
           <Link
-            href={pathname === '/' ? '/#doctor' : '/about'}
+            href="/about"
             className={pathname === '/about' ? 'on' : ''}
           >
             {navLinks.about}
@@ -188,7 +188,7 @@ export function Navbar({ categories, serialPhone = '01750529252', onBookClick }:
           {navLinks.home}
         </Link>
         <Link
-          href={pathname === '/' ? '/#doctor' : '/about'}
+          href="/about"
           onClick={() => {
             setMobileMenuOpen(false);
             setMobileServicesOpen(false);

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { HeroIncision } from '@/components/home/HeroIncision';
-import { MeetYourSurgeonHero } from '@/components/home/MeetYourSurgeonHero';
 import { DoctorConditionsStage } from '@/components/home/DoctorConditionsStage';
 import { SerialStepsSection } from '@/components/home/SerialStepsSection';
 import { ReviewsSection } from '@/components/home/ReviewsSection';
@@ -56,7 +55,7 @@ export function HomePageClient({
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="relative min-h-screen bg-white">
+    <div className="relative min-h-screen bg-[#F6F6F6]">
       {/* Navbar with Book a Serial action */}
       <Navbar
         categories={categories}
@@ -67,21 +66,13 @@ export function HomePageClient({
       {/* 1. Hero with scroll-scrubbed incision video & bleeding cut line */}
       <HeroIncision heroData={heroSection} />
 
-      {/* 2. Meet Your Surgeon Hero (exact layout matching screenshot and About hero) */}
-      <MeetYourSurgeonHero
-        profile={surgeonProfile}
-        serialPhone={siteSettings.phone_serial}
-        callPhone={siteSettings.phone_call}
-        onBookClick={() => setModalOpen(true)}
-        id="doctor"
-        headingLevel="h2"
-      />
-
-      {/* 3. Conditions & Treatments Swinging Doctor Pinned Stage */}
+      {/* 2. Meet Your Surgeon & Conditions Swinging Doctor Pinned Stage (unified single doctor image) */}
       <DoctorConditionsStage
         profile={surgeonProfile}
         categories={categories}
         conditions={conditions}
+        serialPhone={siteSettings.phone_serial}
+        callPhone={siteSettings.phone_call}
         onBookClick={() => setModalOpen(true)}
       />
 

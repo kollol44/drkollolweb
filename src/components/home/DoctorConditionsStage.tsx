@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '@/context/LanguageContext';
@@ -10,11 +10,14 @@ interface DoctorConditionsStageProps {
   profile: SurgeonProfile;
   categories: Category[];
   conditions: Condition[];
+  serialPhone?: string;
+  callPhone?: string;
   onBookClick?: () => void;
 }
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const seg = (v: number, a: number, b: number) => clamp((v - a) / (b - a), 0, 1);
 const restH = (x: number) => {
   const b = Math.floor(x);
   const f = x - b;
@@ -22,21 +25,130 @@ const restH = (x: number) => {
   return b + t * t * (3 - 2 * t);
 };
 
+const DOC_TIMING = {
+  hold: 0.05,
+  curtain: [0.05, 0.20] as [number, number],
+  svc: [0.20, 1.0] as [number, number],
+};
+
 export function DoctorConditionsStage({
   profile,
   categories,
   conditions,
+  serialPhone = '01750529252',
+  callPhone = '01670879100',
   onBookClick,
 }: DoctorConditionsStageProps) {
   const { isBn } = useLanguage();
+
+  // Refs for pinned stage container
   const stageRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const docImgRef = useRef<HTMLDivElement>(null);
+
+  // Refs for Intro phase
+  const introRef = useRef<HTMLHeadingElement>(null);
+  const sideLRef = useRef<HTMLDivElement>(null);
+  const sideRRef = useRef<HTMLDivElement>(null);
+  const tkrDegRef = useRef<HTMLDivElement>(null);
+  const ctaMRef = useRef<HTMLDivElement>(null);
+
+  // Refs for Treatments phase
   const svcHeadRef = useRef<HTMLDivElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const wordsContainerRef = useRef<HTMLDivElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const svcBarRef = useRef<HTMLDivElement>(null);
+
+  // Stats number count-up state
+  const [counts, setCounts] = useState<string[]>(
+    profile.stats.map((s) => (isBn ? s.num_bn : s.num_en))
+  );
+
+  useEffect(() => {
+    setCounts(profile.stats.map((s) => (isBn ? s.num_bn : s.num_en)));
+  }, [isBn, profile.stats]);
+
+  // Count-up animation when section is in view
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const BN = '০১২৩৪৫৬৭৮৯';
+    const toL = (s: string) => s.replace(/[০-৯]/g, (d) => String(BN.indexOf(d)));
+    const toB = (s: string) => s.replace(/\d/g, (d) => BN[parseInt(d, 10)]);
+
+    const countUp = () => {
+      profile.stats.forEach((st, idx) => {
+        const txt = isBn ? st.num_bn : st.num_en;
+        const bnMatch = /[০-৯]/.test(txt);
+        const match = toL(txt).match(/[\d,]+/);
+        if (!match) return;
+
+        const numVal = parseInt(match[0].replace(/,/g, ''), 10);
+        const prefix = toL(txt).slice(0, match.index);
+        const suffix = toL(txt).slice((match.index || 0) + match[0].length);
+        const start = performance.now();
+        const dur = 900;
+
+        const step = (t: number) => {
+          const k = Math.min(1, Math.max(0, (t - start) / dur));
+          const val = Math.round(numVal * (1 - Math.pow(1 - k, 3)));
+          const res = prefix + val.toLocaleString('en-US') + suffix;
+          setCounts((prev) => {
+            const arr = [...prev];
+            arr[idx] = bnMatch ? toB(res) : res;
+            return arr;
+          });
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            countUp();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    io.observe(stage);
+    return () => io.disconnect();
+  }, [isBn, profile.stats]);
+
+  // Dynamic font scaling for mobile Intro title so "Meet Your Surgeon" never clips
+  useEffect(() => {
+    const fitIntro = () => {
+      const el = introRef.current;
+      if (!el) return;
+      const mob = window.innerWidth < 860;
+      if (!mob) {
+        el.style.removeProperty('--fs');
+        return;
+      }
+      el.style.removeProperty('--fs');
+      const base = parseFloat(window.getComputedStyle(el).fontSize) || 32;
+      const wd = el.scrollWidth;
+      const maxW = window.innerWidth * 0.90;
+      if (wd > maxW) {
+        let fs = (base * maxW) / wd;
+        fs = Math.max(fs, 18);
+        el.style.setProperty('--fs', `${Math.floor(fs)}px`);
+      }
+    };
+
+    fitIntro();
+    window.addEventListener('resize', fitIntro);
+    if (typeof document !== 'undefined' && document.fonts) {
+      document.fonts.ready.then(fitIntro);
+    }
+    return () => window.removeEventListener('resize', fitIntro);
+  }, [isBn, profile.intro_word_en, profile.intro_word_bn]);
 
   // Filter home featured conditions & rest
   const featured = useMemo(
@@ -66,15 +178,21 @@ export function DoctorConditionsStage({
     [featured, isBn]
   );
 
+  // Group of 3 by position: right x3, left x3... +1 = doctor right, card left
   const sideOf = (i: number) => {
     if (svcItems[i]?.more) return 0;
-    return Math.floor(i / 3) % 2 ? -1 : 1; // groups of 3 by position: right x3, left x3... +1 = doctor right, card left
+    return Math.floor(i / 3) % 2 ? -1 : 1;
   };
 
-  // Main scroll loop for swinging doctor and scrolling condition cards
+  // Main scroll loop coordinating Intro lift, single doctor move/scale, and treatments
   useEffect(() => {
     const stage = stageRef.current;
     const docImg = docImgRef.current;
+    const introEl = introRef.current;
+    const sideL = sideLRef.current;
+    const sideR = sideRRef.current;
+    const tkrDeg = tkrDegRef.current;
+    const ctaM = ctaMRef.current;
     const svcHead = svcHeadRef.current;
     const chipsEl = chipsRef.current;
     const wordsContainer = wordsContainerRef.current;
@@ -109,15 +227,12 @@ export function DoctorConditionsStage({
         const wd = w.scrollWidth;
 
         if (mob) {
-          // Mobile: watermark is centered with safe margin of 88vw
           const max = vw * 0.88;
           let fs = wd > max ? (base * max) / wd : base;
           fs = Math.min(fs, vh * 0.12, 72);
           fs = Math.max(fs, 28);
           w.style.setProperty('--fs', `${Math.floor(fs)}px`);
         } else {
-          // Desktop: watermark is centered on the free side at 25vw or 75vw.
-          // Max width is 42% of viewport width so it never clips either screen edge or doctor area
           const max = vw * (isMore ? 0.90 : 0.42);
           let fs = wd > max ? (base * max) / wd : base;
           if (!isMore) {
@@ -137,13 +252,44 @@ export function DoctorConditionsStage({
     const onDraw = () => {
       const r = stage.getBoundingClientRect();
       const vh = window.innerHeight;
-      const q = clamp(-r.top / (stage.offsetHeight - vh), 0, 1);
-      const mob = window.innerWidth < 860;
+      const vw = window.innerWidth;
+      // Scroll progress across the whole doctor section
+      const q = clamp(-r.top / (stage.offsetHeight - 2 * vh), 0, 1);
+      const mob = vw < 860;
 
+      /* 1) Curtain / Intro lift: intro text, qualifications, stats, and ticker lift off */
+      const c = seg(q, DOC_TIMING.curtain[0], DOC_TIMING.curtain[1]);
+      const up = -c * vh * 1.15;
+
+      if (introEl) {
+        introEl.style.transform = `translateY(${up * 1.1}px)`;
+        introEl.style.opacity = String(1 - seg(c, 0.55, 1));
+      }
+      if (sideL) {
+        sideL.style.transform = `translateY(${up}px)`;
+        sideL.style.opacity = String(1 - seg(c, 0.55, 1));
+        sideL.style.pointerEvents = c > 0.5 ? 'none' : 'auto';
+      }
+      if (sideR) {
+        sideR.style.transform = `translateY(${up * 0.9}px)`;
+        sideR.style.opacity = String(1 - seg(c, 0.55, 1));
+      }
+      if (tkrDeg) {
+        tkrDeg.style.transform = `translateY(${up * 0.25}px)`;
+        tkrDeg.style.opacity = String(1 - seg(c, 0, 0.45));
+      }
+      if (ctaM) {
+        ctaM.style.transform = `translateY(${up * 1.2}px)`;
+        ctaM.style.opacity = String(1 - seg(c, 0.55, 1));
+        ctaM.style.pointerEvents = c > 0.5 ? 'none' : 'auto';
+      }
+
+      /* 2) Treatments appear and the SINGLE doctor image scales/moves to the side */
+      const inS = seg(q, DOC_TIMING.curtain[0] + 0.04, DOC_TIMING.curtain[1] + 0.02);
       const n = svcItems.length;
       const pos = mob
-        ? q * (n - 1)
-        : restH(q * (n - 1));
+        ? seg(q, DOC_TIMING.svc[0], DOC_TIMING.svc[1]) * (n - 1)
+        : restH(seg(q, DOC_TIMING.svc[0], DOC_TIMING.svc[1]) * (n - 1));
       const stepDist = vh * (mob ? 0.34 : 0.62);
 
       if (mob) {
@@ -154,6 +300,8 @@ export function DoctorConditionsStage({
         const A = docState(a);
         const B = docState(Math.min(n - 1, a + 1));
         const e = f * f * (3 - 2 * f);
+        const C = { x: 0, s: 1, y: 0 };
+        const k = inS * inS * (3 - 2 * inS);
 
         let x = lerp(A.x, B.x, e);
         let sc =
@@ -161,12 +309,17 @@ export function DoctorConditionsStage({
           Math.sin(Math.PI * e) * (A.x && B.x && A.x !== B.x ? 0.45 : 0);
         let y = lerp(A.y, B.y, e);
 
+        // Transition from intro (center, scale 1) into treatments swinging positions
+        x = lerp(C.x, x, k);
+        sc = lerp(1, sc, k);
+        y = lerp(0, y, k);
+
         docImg.style.transformOrigin = '50% 0';
         docImg.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px) scale(${sc})`;
       }
 
-      if (svcHead) svcHead.style.opacity = '1';
-      if (svcBar) svcBar.style.opacity = '1';
+      if (svcHead) svcHead.style.opacity = String(inS);
+      if (svcBar) svcBar.style.opacity = String(inS);
 
       if (wordsContainer && cardsContainer) {
         const words = Array.from(wordsContainer.children) as HTMLElement[];
@@ -176,17 +329,17 @@ export function DoctorConditionsStage({
         words.forEach((w, i) => {
           const o = i - pos;
           const a = Math.abs(o);
-          const wx = mob ? 0 : -sideOf(i) * window.innerWidth * 0.25;
+          const wx = mob ? 0 : -sideOf(i) * vw * 0.25;
           w.style.transform = `translate(calc(-50% + ${wx}px), calc(-50% + ${
-            o * stepDist
+            o * stepDist + (1 - inS) * vh * 0.9
           }px - ${mob ? 14 : sideOf(i) ? 14 : 8}vh)) scale(${1 - Math.min(a, 1) * 0.12})`;
-          w.style.opacity = String(clamp(1 - a * 1.35, 0, 1));
+          w.style.opacity = String(clamp(1 - a * 0.75, 0, 1) * inS);
         });
 
         cards.forEach((cd, i) => {
           const o = i - pos;
           const a = Math.abs(o);
-          const co = clamp(1 - a * 2.4, 0, 1);
+          const co = clamp(1 - a * 2.4, 0, 1) * inS;
           cd.style.opacity = String(co);
           cd.style.pointerEvents = co > 0.5 ? 'auto' : 'none';
           cd.style.transform = `translateY(${o * (mob ? 30 : 50)}px)`;
@@ -197,7 +350,7 @@ export function DoctorConditionsStage({
         });
       }
 
-      // Category chip lights up
+      // Category chip lights up as user scrolls
       const cur = svcItems[Math.round(pos)];
       if (chipsEl) {
         chipsEl.querySelectorAll('a').forEach((a) => {
@@ -235,16 +388,125 @@ export function DoctorConditionsStage({
     <section
       ref={stageRef}
       className="doc"
-      id="conditions"
+      id="doctor"
       style={{
-        height: `calc(${svcItems.length} * 75vh + 100vh)`,
+        height: `calc(${svcItems.length} * 80vh + 330vh)`,
       }}
     >
       <div ref={pinRef} className="pin">
         <div className="glow" />
 
+        {/* --- INTRO PHASE ELEMENTS --- */}
+        {/* Giant Intro Heading Watermark */}
+        <h2 ref={introRef} className="intro rv in">
+          <span>
+            {isBn
+              ? profile.intro_word_bn || 'ইনিই আপনার সার্জন'
+              : profile.intro_word_en || 'Meet Your Surgeon'}
+          </span>
+        </h2>
+
+        {/* Left Side: Doctor Qualifications & Actions */}
+        <div ref={sideLRef} className="side l">
+          <h3 className="name rv in">{isBn ? profile.name_bn : profile.name_en}</h3>
+          <p className="role rv in">{isBn ? profile.role_bn : profile.role_en}</p>
+          <div className="deg rv in">
+            {profile.degrees_badges.map((deg, i) => (
+              <span key={i}>{deg}</span>
+            ))}
+          </div>
+          <p className="post rv in">{isBn ? profile.post_bn : profile.post_en}</p>
+          <div className="cta rv in">
+            <div className="row">
+              {onBookClick ? (
+                <button
+                  type="button"
+                  onClick={onBookClick}
+                  className="btn btn-p"
+                >
+                  {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
+                </button>
+              ) : (
+                <a href={`tel:${serialPhone}`} className="btn btn-p">
+                  {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
+                </a>
+              )}
+              <a href={`tel:${callPhone}`} className="btn btn-g">
+                {isBn ? 'কল করুন' : 'Call now'}
+              </a>
+            </div>
+            <p
+              dangerouslySetInnerHTML={{
+                __html: isBn ? profile.chambers_summary_bn : profile.chambers_summary_en,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Right Side: 6 Verified Surgical Experience Stats */}
+        <div ref={sideRRef} className="side r">
+          <div className="stats">
+            {profile.stats.map((st, i) => (
+              <div key={i} className="stat rv in">
+                <b>{counts[i] || (isBn ? st.num_bn : st.num_en)}</b>
+                <span>{isBn ? st.label_bn : st.label_en}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom: Infinite Scrolling Degrees & Recognition Ticker */}
+        <div ref={tkrDegRef} className="tkr tkr-deg">
+          <div className="trk" style={{ '--dur': '35s' } as React.CSSProperties}>
+            {profile.degrees_ticker.map((item, idx) => (
+              <span key={idx} className="it">
+                <span>{isBn ? item.bn : item.en}</span>
+                <span className="sep">✦</span>
+              </span>
+            ))}
+            {profile.degrees_ticker.map((item, idx) => (
+              <span key={`dup-${idx}`} className="it">
+                <span>{isBn ? item.bn : item.en}</span>
+                <span className="sep">✦</span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile-Only CTA Button */}
+        <div ref={ctaMRef} className="cta-m">
+          {onBookClick ? (
+            <button
+              type="button"
+              onClick={onBookClick}
+              className="btn btn-p"
+            >
+              {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
+            </button>
+          ) : (
+            <a href={`tel:${serialPhone}`} className="btn btn-p">
+              {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
+            </a>
+          )}
+          <a href={`tel:${callPhone}`} className="btn btn-g">
+            {isBn ? 'কল করুন' : 'Call now'}
+          </a>
+        </div>
+
+        {/* --- SINGLE DOCTOR IMAGE (Transitions smoothly from Intro to Treatments) --- */}
+        <div ref={docImgRef} className="doc-img">
+          <Image
+            src="/img/doctor.webp"
+            alt="Dr. Fahim Foysal Kollol, surgeon, in green scrubs"
+            width={624}
+            height={1126}
+            priority
+          />
+        </div>
+
+        {/* --- CONDITIONS & TREATMENTS PHASE ELEMENTS --- */}
         {/* Category Chips & Section Title */}
-        <div ref={svcHeadRef} className="svc-head" id="svcHead" style={{ opacity: 1 }}>
+        <div ref={svcHeadRef} className="svc-head" id="svcHead" style={{ opacity: 0 }}>
           <span>
             {isBn ? 'যেসব রোগের চিকিৎসা করেন ডাঃ কল্লোল' : 'Conditions Dr. Kollol treats'}
           </span>
@@ -264,21 +526,10 @@ export function DoctorConditionsStage({
         {/* Giant Condition Words Background Container */}
         <div ref={wordsContainerRef} className="svc-words" id="svcWords">
           {svcItems.map((item, idx) => (
-            <div key={idx} className="svc-word">
+            <div key={idx} className="svc-word" style={{ opacity: 0 }}>
               {item.word}
             </div>
           ))}
-        </div>
-
-        {/* Doctor Image Cutout */}
-        <div ref={docImgRef} className="doc-img">
-          <Image
-            src="/img/doctor.webp"
-            alt="Dr. Fahim Foysal Kollol, surgeon, in green scrubs"
-            width={624}
-            height={1126}
-            priority
-          />
         </div>
 
         {/* Treatments Glass Cards */}
@@ -286,7 +537,7 @@ export function DoctorConditionsStage({
           {svcItems.map((item, idx) => {
             if (item.more) {
               return (
-                <div key="more" className="svc-card r more">
+                <div key="more" className="svc-card r more" style={{ opacity: 0, pointerEvents: 'none' }}>
                   <small>{isBn ? 'সব রোগ ও চিকিৎসা' : 'All conditions & treatments'}</small>
                   <b>
                     {isBn
@@ -317,7 +568,7 @@ export function DoctorConditionsStage({
                         {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
                       </button>
                     ) : (
-                      <a href="tel:01750529252" className="btn btn-p">
+                      <a href={`tel:${serialPhone}`} className="btn btn-p">
                         {isBn ? 'সিরিয়াল নিন' : 'Book a serial'}
                       </a>
                     )}
@@ -338,6 +589,7 @@ export function DoctorConditionsStage({
                 key={c.slug}
                 className={`svc-card ${isLeft ? 'l' : 'r'}`}
                 href={`/conditions-treatments/${c.category_slug}/${c.slug}`}
+                style={{ opacity: 0, pointerEvents: 'none' }}
               >
                 <img
                   className="ci"
@@ -362,7 +614,7 @@ export function DoctorConditionsStage({
         </div>
 
         {/* Dots Indicator */}
-        <div ref={svcBarRef} className="svc-bar" id="svcBar">
+        <div ref={svcBarRef} className="svc-bar" id="svcBar" style={{ opacity: 0 }}>
           {svcItems.map((_, i) => (
             <i key={i} />
           ))}

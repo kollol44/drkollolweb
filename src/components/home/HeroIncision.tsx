@@ -367,9 +367,16 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
           lastKey = key;
           const bm = frameBitmap(i);
           if (bm) {
-            cx.fillStyle = '#fff';
+            cx.fillStyle = '#F6F6F6';
             cx.fillRect(0, 0, window.innerWidth, window.innerHeight);
             cx.drawImage(bm, view.ox, view.oy, W * view.s, H * view.s);
+
+            const fadeH = 50;
+            const fadeG = cx.createLinearGradient(0, window.innerHeight - fadeH, 0, window.innerHeight);
+            fadeG.addColorStop(0, 'rgba(246, 246, 246, 0)');
+            fadeG.addColorStop(1, 'rgba(246, 246, 246, 1)');
+            cx.fillStyle = fadeG;
+            cx.fillRect(0, window.innerHeight - fadeH, window.innerWidth, fadeH);
           }
           const tip = drawCut(i / fps);
           placeText();
@@ -412,7 +419,7 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
 
   return (
     <section ref={heroRef} className="relative h-[290vh] z-10" id="hero">
-      <div className="sticky top-0 h-[100vh] h-[100svh] overflow-hidden bg-white">
+      <div className="sticky top-0 h-[100vh] h-[100svh] overflow-hidden bg-[#F6F6F6]">
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block" />
 
         {/* Emergent text rising out of the incision */}

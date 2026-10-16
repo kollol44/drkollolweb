@@ -215,7 +215,7 @@ export function AboutPageClient({
   const currentCh = t.ch[selectedChamberIdx] || t.ch[0];
 
   return (
-    <div className="relative min-h-screen bg-white">
+    <div className="relative min-h-screen bg-[#F6F6F6]">
       <Navbar
         categories={categories}
         serialPhone={settings.phone_serial}
