@@ -562,9 +562,18 @@ export async function getGalleryPhotos(): Promise<GalleryPhoto[]> {
         .select('*')
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
-        memGalleryPhotos = data as GalleryPhoto[];
-        return memGalleryPhotos;
+      if (!error && data) {
+        if (data.length > 0) {
+          memGalleryPhotos = data as GalleryPhoto[];
+          return memGalleryPhotos;
+        } else {
+          // Auto-seed initial default gallery photos if table is empty
+          const { error: seedErr } = await supabase.from('gallery_photos').upsert(DEFAULT_GALLERY_PHOTOS);
+          if (!seedErr) {
+            memGalleryPhotos = [...DEFAULT_GALLERY_PHOTOS];
+            return memGalleryPhotos;
+          }
+        }
       }
     } catch (e) {
       console.warn('Falling back to mem gallery photos:', e);
@@ -591,13 +600,50 @@ export async function saveGalleryPhoto(photo: GalleryPhoto): Promise<GalleryPhot
   if (supabase) {
     try {
       const { error } = await supabase.from('gallery_photos').upsert(photoToSave);
-      if (error) console.error('Supabase saveGalleryPhoto error:', error);
+      if (error) {
+        console.error('Supabase saveGalleryPhoto error:', error);
+        throw error;
+      }
     } catch (e) {
       console.error('Supabase saveGalleryPhoto exception:', e);
+      throw e;
     }
   }
 
   return photoToSave;
+}
+
+export async function saveGalleryPhotosBulk(photosList: GalleryPhoto[]): Promise<GalleryPhoto[]> {
+  const prepared: GalleryPhoto[] = photosList.map((photo, idx) => ({
+    ...photo,
+    id: photo.id || 'photo_' + (Date.now() + idx) + '_' + Math.random().toString(36).substring(2, 7),
+    created_at: photo.created_at || new Date().toISOString(),
+  }));
+
+  for (const item of prepared) {
+    const existingIdx = memGalleryPhotos.findIndex((p) => p.id === item.id);
+    if (existingIdx >= 0) {
+      memGalleryPhotos[existingIdx] = item;
+    } else {
+      memGalleryPhotos.push(item);
+    }
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from('gallery_photos').upsert(prepared);
+      if (error) {
+        console.error('Supabase saveGalleryPhotosBulk error:', error);
+        throw error;
+      }
+    } catch (e) {
+      console.error('Supabase saveGalleryPhotosBulk exception:', e);
+      throw e;
+    }
+  }
+
+  return prepared;
 }
 
 export async function deleteGalleryPhoto(id: string): Promise<boolean> {
@@ -607,9 +653,13 @@ export async function deleteGalleryPhoto(id: string): Promise<boolean> {
   if (supabase) {
     try {
       const { error } = await supabase.from('gallery_photos').delete().eq('id', id);
-      if (error) console.error('Supabase deleteGalleryPhoto error:', error);
+      if (error) {
+        console.error('Supabase deleteGalleryPhoto error:', error);
+        throw error;
+      }
     } catch (e) {
       console.error('Supabase deleteGalleryPhoto exception:', e);
+      throw e;
     }
   }
   return true;
@@ -628,9 +678,18 @@ export async function getGalleryVideos(): Promise<GalleryVideo[]> {
         .select('*')
         .order('sort_order', { ascending: true })
         .order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
-        memGalleryVideos = data as GalleryVideo[];
-        return memGalleryVideos;
+      if (!error && data) {
+        if (data.length > 0) {
+          memGalleryVideos = data as GalleryVideo[];
+          return memGalleryVideos;
+        } else {
+          // Auto-seed initial default videos if table is empty
+          const { error: seedErr } = await supabase.from('gallery_videos').upsert(DEFAULT_GALLERY_VIDEOS);
+          if (!seedErr) {
+            memGalleryVideos = [...DEFAULT_GALLERY_VIDEOS];
+            return memGalleryVideos;
+          }
+        }
       }
     } catch (e) {
       console.warn('Falling back to mem gallery videos:', e);
@@ -657,9 +716,13 @@ export async function saveGalleryVideo(video: GalleryVideo): Promise<GalleryVide
   if (supabase) {
     try {
       const { error } = await supabase.from('gallery_videos').upsert(videoToSave);
-      if (error) console.error('Supabase saveGalleryVideo error:', error);
+      if (error) {
+        console.error('Supabase saveGalleryVideo error:', error);
+        throw error;
+      }
     } catch (e) {
       console.error('Supabase saveGalleryVideo exception:', e);
+      throw e;
     }
   }
 
@@ -673,9 +736,13 @@ export async function deleteGalleryVideo(id: string): Promise<boolean> {
   if (supabase) {
     try {
       const { error } = await supabase.from('gallery_videos').delete().eq('id', id);
-      if (error) console.error('Supabase deleteGalleryVideo error:', error);
+      if (error) {
+        console.error('Supabase deleteGalleryVideo error:', error);
+        throw error;
+      }
     } catch (e) {
       console.error('Supabase deleteGalleryVideo exception:', e);
+      throw e;
     }
   }
   return true;

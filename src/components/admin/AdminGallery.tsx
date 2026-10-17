@@ -27,6 +27,7 @@ interface AdminGalleryProps {
   photos: GalleryPhoto[];
   videos: GalleryVideo[];
   onSavePhoto: (photo: GalleryPhoto) => Promise<void>;
+  onSavePhotosBulk?: (photos: GalleryPhoto[]) => Promise<void>;
   onDeletePhoto: (id: string) => Promise<void>;
   onSaveVideo: (video: GalleryVideo) => Promise<void>;
   onDeleteVideo: (id: string) => Promise<void>;
@@ -41,10 +42,46 @@ const CATEGORY_LABELS: Record<GalleryCategory, { en: string; bn: string }> = {
   general: { en: 'Clinical Practice', bn: 'সাধারণ ক্লিনিক্যাল' },
 };
 
+function cleanTitleFromFileName(
+  fileName: string,
+  index: number,
+  category: GalleryCategory
+): { en: string; bn: string } {
+  const nameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
+  const cat = CATEGORY_LABELS[category] || CATEGORY_LABELS.ot;
+
+  const isCameraCode =
+    /^(IMG|DSC|PHOTO|PIC|IMAGE|PXP|WP|SCREENSHOT)[-_0-9]/i.test(nameWithoutExt) ||
+    /^\d+$/.test(nameWithoutExt);
+
+  if (isCameraCode || nameWithoutExt.trim().length < 3) {
+    return {
+      en: `${cat.en} Photo ${index + 1}`,
+      bn: `${cat.bn} ছবি ${index + 1}`,
+    };
+  }
+
+  const humanized = nameWithoutExt
+    .replace(/[-_.]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const enTitle = humanized
+    .split(' ')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+
+  return {
+    en: enTitle,
+    bn: `${cat.bn} — ${enTitle}`,
+  };
+}
+
 export function AdminGallery({
   photos,
   videos,
   onSavePhoto,
+  onSavePhotosBulk,
   onDeletePhoto,
   onSaveVideo,
   onDeleteVideo,
@@ -72,6 +109,22 @@ export function AdminGallery({
     is_featured: true,
   });
 
+  // Bulk Upload state
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [bulkCategory, setBulkCategory] = useState<GalleryCategory>('ot');
+  const [bulkFeatured, setBulkFeatured] = useState<boolean>(true);
+  const [bulkUploading, setBulkUploading] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState<{
+    total: number;
+    current: number;
+    currentName: string;
+    success: number;
+    error: number;
+  } | null>(null);
+  const [bulkComplete, setBulkComplete] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+
   // Video state
   const [editingVideo, setEditingVideo] = useState<GalleryVideo | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -93,6 +146,107 @@ export function AdminGallery({
   // Delete confirmations
   const [itemToDelete, setItemToDelete] = useState<{ type: 'photo' | 'video'; id: string; title: string } | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // ----------------------------------------------------------------------------------
+  // Bulk Upload Handlers
+  // ----------------------------------------------------------------------------------
+  const handleOpenBulkModal = () => {
+    setBulkFiles([]);
+    setBulkProgress(null);
+    setBulkComplete(false);
+    setBulkCategory(photoFilter !== 'all' ? (photoFilter as GalleryCategory) : 'ot');
+    setBulkFeatured(true);
+    setIsBulkModalOpen(true);
+  };
+
+  const handleAddBulkFiles = (fileList: FileList | File[]) => {
+    const filesArray = Array.from(fileList).filter((f) => f.type.startsWith('image/'));
+    if (filesArray.length === 0) return;
+
+    setBulkFiles((prev) => {
+      const existingKeys = new Set(prev.map((f) => `${f.name}_${f.size}`));
+      const newUnique = filesArray.filter((f) => !existingKeys.has(`${f.name}_${f.size}`));
+      return [...prev, ...newUnique];
+    });
+  };
+
+  const handleRemoveBulkFile = (index: number) => {
+    setBulkFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleStartBulkUpload = async () => {
+    if (bulkFiles.length === 0 || bulkUploading) return;
+
+    setBulkUploading(true);
+    setBulkComplete(false);
+
+    const maxOrder = photos.reduce((max, p) => Math.max(max, p.sort_order || 0), 0);
+    const successfullyUploaded: GalleryPhoto[] = [];
+
+    for (let i = 0; i < bulkFiles.length; i++) {
+      const file = bulkFiles[i];
+      setBulkProgress({
+        total: bulkFiles.length,
+        current: i + 1,
+        currentName: file.name,
+        success: successfullyUploaded.length,
+        error: i - successfullyUploaded.length,
+      });
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch('/api/admin/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success && data.url) {
+          const titles = cleanTitleFromFileName(file.name, i, bulkCategory);
+          const newPhoto: GalleryPhoto = {
+            id: 'photo_' + (Date.now() + i) + '_' + Math.random().toString(36).substring(2, 7),
+            title_en: titles.en,
+            title_bn: titles.bn,
+            caption_en: '',
+            caption_bn: '',
+            image_url: data.url,
+            category: bulkCategory,
+            sort_order: maxOrder + i + 1,
+            is_featured: bulkFeatured,
+            created_at: new Date().toISOString(),
+          };
+          successfullyUploaded.push(newPhoto);
+        } else {
+          console.error(`Upload failed for ${file.name}:`, data?.message);
+        }
+      } catch (err) {
+        console.error(`Network error for ${file.name}:`, err);
+      }
+    }
+
+    // Save batch to database
+    if (successfullyUploaded.length > 0) {
+      if (onSavePhotosBulk) {
+        await onSavePhotosBulk(successfullyUploaded);
+      } else {
+        for (const p of successfullyUploaded) {
+          await onSavePhoto(p);
+        }
+      }
+    }
+
+    setBulkProgress({
+      total: bulkFiles.length,
+      current: bulkFiles.length,
+      currentName: 'Finished',
+      success: successfullyUploaded.length,
+      error: bulkFiles.length - successfullyUploaded.length,
+    });
+    setBulkUploading(false);
+    setBulkComplete(true);
+  };
 
   // ----------------------------------------------------------------------------------
   // Photo Handlers
@@ -336,14 +490,25 @@ export function AdminGallery({
               })}
             </div>
 
-            <button
-              type="button"
-              onClick={() => handleOpenPhotoModal()}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#0B6E73] to-[#2BB3B1] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Upload New Photo</span>
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleOpenBulkModal()}
+                className="inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-[#EEF7F6] text-[#0B6E73] border border-[#0B6E73]/25 text-xs font-bold hover:bg-[#0B6E73] hover:text-white transition-all shadow-xs"
+              >
+                <Layers className="w-4 h-4" />
+                <span>Bulk Upload Photos</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleOpenPhotoModal()}
+                className="inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#0B6E73] to-[#2BB3B1] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Upload Single</span>
+              </button>
+            </div>
           </div>
 
           {/* Photos Grid: 4 columns on large screens matching website specification */}
@@ -359,6 +524,7 @@ export function AdminGallery({
                     src={photo.image_url}
                     alt={photo.title_en}
                     fill
+                    unoptimized={Boolean(photo.image_url?.startsWith('data:'))}
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -557,6 +723,275 @@ export function AdminGallery({
       )}
 
       {/* ---------------------------------------------------------------------------------- */}
+      {/* BULK PHOTO UPLOAD MODAL */}
+      {/* ---------------------------------------------------------------------------------- */}
+      {isBulkModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-gray-100 my-8 animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-[#EEF7F6] text-[#0B6E73] grid place-items-center">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-base font-serif text-[#062F31]">
+                    Bulk Upload Clinical Photos
+                  </h3>
+                  <p className="text-[11px] text-[#3F6668]">
+                    Upload multiple photos at once. Auto-optimized to WebP and saved directly to the database.
+                  </p>
+                </div>
+              </div>
+              {!bulkUploading && (
+                <button
+                  type="button"
+                  onClick={() => setIsBulkModalOpen(false)}
+                  className="p-1.5 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Modal Body */}
+            {bulkComplete ? (
+              /* Success Complete View */
+              <div className="py-8 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 grid place-items-center mx-auto animate-in zoom-in">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-[#062F31]">
+                    Bulk Upload Completed!
+                  </h4>
+                  <p className="text-xs text-[#3F6668] mt-1 max-w-md mx-auto">
+                    Successfully optimized and saved <strong className="text-emerald-700 font-bold">{bulkProgress?.success || 0}</strong> photos to the gallery database.
+                  </p>
+                  {bulkProgress && bulkProgress.error > 0 && (
+                    <p className="text-xs text-rose-600 mt-1">
+                      {bulkProgress.error} photos failed to upload.
+                    </p>
+                  )}
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-[#EEF7F6]/60 border border-[#2BB3B1]/30 max-w-md mx-auto text-left flex items-start gap-2.5">
+                  <Sparkles className="w-4 h-4 text-[#0B6E73] shrink-0 mt-0.5" />
+                  <p className="text-[11px] text-[#062F31] leading-relaxed">
+                    <strong>Quick Tip:</strong> All photos have been auto-titled and categorized into <em>{CATEGORY_LABELS[bulkCategory]?.en}</em>. Click the pencil (edit) icon on any photo in the gallery grid to customize titles or add detailed captions anytime.
+                  </p>
+                </div>
+
+                <div className="pt-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsBulkModalOpen(false);
+                      setBulkComplete(false);
+                      setBulkFiles([]);
+                    }}
+                    className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-[#0B6E73] to-[#2BB3B1] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  >
+                    Done & View Gallery
+                  </button>
+                </div>
+              </div>
+            ) : bulkUploading ? (
+              /* Uploading in Progress View */
+              <div className="py-8 space-y-5">
+                <div className="text-center space-y-2">
+                  <div className="w-12 h-12 rounded-full border-4 border-[#0B6E73] border-t-transparent animate-spin mx-auto" />
+                  <h4 className="text-sm font-bold text-[#062F31]">
+                    Uploading & Optimizing Photos...
+                  </h4>
+                  <p className="text-xs text-[#3F6668]">
+                    Processing {bulkProgress?.current} of {bulkProgress?.total}
+                    {bulkProgress?.currentName && ` (${bulkProgress.currentName})`}
+                  </p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="space-y-1.5 max-w-md mx-auto">
+                  <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#0B6E73] to-[#2BB3B1] transition-all duration-300"
+                      style={{
+                        width: `${Math.round(((bulkProgress?.current || 0) / (bulkProgress?.total || 1)) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[10px] text-[#3F6668] font-medium">
+                    <span>
+                      {Math.round(((bulkProgress?.current || 0) / (bulkProgress?.total || 1)) * 100)}% Completed
+                    </span>
+                    <span>
+                      Success: {bulkProgress?.success || 0}
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-center text-amber-700 bg-amber-50 rounded-xl p-2.5 max-w-md mx-auto border border-amber-200">
+                  Please keep this window open while WebP optimization and cloud upload are running.
+                </p>
+              </div>
+            ) : (
+              /* File Selection & Configuration View */
+              <div className="space-y-4 mt-4">
+                {/* Dropzone */}
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragOver(true);
+                  }}
+                  onDragLeave={() => setIsDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragOver(false);
+                    if (e.dataTransfer.files) handleAddBulkFiles(e.dataTransfer.files);
+                  }}
+                  className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all ${
+                    isDragOver
+                      ? 'border-[#0B6E73] bg-[#EEF7F6]'
+                      : 'border-[#2BB3B1]/40 bg-[#EEF7F6]/30 hover:bg-[#EEF7F6]/50'
+                  }`}
+                >
+                  <UploadCloud className="w-10 h-10 text-[#0B6E73] mx-auto mb-2 opacity-80" />
+                  <p className="text-xs font-bold text-[#062F31]">
+                    Drag and drop multiple photos here
+                  </p>
+                  <p className="text-[11px] text-[#3F6668] mt-0.5">
+                    JPG, PNG, or WebP images (Auto-converted & compressed to WebP)
+                  </p>
+
+                  <label className="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-xl bg-white border border-[#0B6E73]/30 text-[#0B6E73] text-xs font-bold hover:bg-[#EEF7F6] transition-colors cursor-pointer shadow-xs">
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Choose Multiple Images</span>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files) handleAddBulkFiles(e.target.files);
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {/* Selected Files Preview List */}
+                {bulkFiles.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-[#062F31]">
+                        Selected Photos ({bulkFiles.length}):
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setBulkFiles([])}
+                        className="text-[11px] text-rose-600 hover:underline font-medium cursor-pointer"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+
+                    <div className="max-h-44 overflow-y-auto space-y-1.5 p-2 rounded-xl bg-gray-50 border border-gray-200">
+                      {bulkFiles.map((f, idx) => (
+                        <div
+                          key={`${f.name}_${idx}`}
+                          className="flex items-center justify-between gap-2 p-1.5 px-2.5 rounded-lg bg-white border border-gray-100 text-xs"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="w-5 h-5 rounded-md bg-[#EEF7F6] text-[#0B6E73] text-[10px] font-bold grid place-items-center shrink-0">
+                              {idx + 1}
+                            </span>
+                            <span className="truncate text-[#062F31] font-medium text-[11px]">
+                              {f.name}
+                            </span>
+                            <span className="text-[10px] text-gray-400 shrink-0">
+                              ({(f.size / 1024).toFixed(0)} KB)
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveBulkFile(idx)}
+                            className="p-1 text-gray-400 hover:text-rose-600 rounded-md transition-colors shrink-0 cursor-pointer"
+                            title="Remove from batch"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Batch Settings */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-gray-100">
+                  <div>
+                    <label className="block text-xs font-bold text-[#062F31] mb-1">
+                      Target Clinical Category *
+                    </label>
+                    <select
+                      value={bulkCategory}
+                      onChange={(e) => setBulkCategory(e.target.value as GalleryCategory)}
+                      className="w-full text-xs rounded-xl border border-gray-200 p-2.5 bg-white text-[#062F31] font-medium focus:ring-2 focus:ring-[#0B6E73]/30 focus:border-[#0B6E73] outline-hidden"
+                    >
+                      {(Object.keys(CATEGORY_LABELS) as GalleryCategory[]).map((cat) => (
+                        <option key={cat} value={cat}>
+                          {CATEGORY_LABELS[cat].en} ({CATEGORY_LABELS[cat].bn})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex items-end pb-1">
+                    <label className="flex items-center gap-2 text-xs font-semibold text-[#062F31] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={bulkFeatured}
+                        onChange={(e) => setBulkFeatured(e.target.checked)}
+                        className="rounded-sm border-gray-300 text-[#0B6E73] focus:ring-[#0B6E73] w-4 h-4"
+                      />
+                      <span>Feature in Homepage Gallery</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => setIsBulkModalOpen(false)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={bulkFiles.length === 0}
+                    onClick={handleStartBulkUpload}
+                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold shadow-md transition-all ${
+                      bulkFiles.length > 0
+                        ? 'bg-gradient-to-r from-[#0B6E73] to-[#2BB3B1] text-white hover:shadow-lg hover:scale-102 cursor-pointer'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+                    }`}
+                  >
+                    <UploadCloud className="w-4 h-4" />
+                    <span>
+                      {bulkFiles.length > 0
+                        ? `Upload All (${bulkFiles.length} Photos)`
+                        : 'Upload All Photos'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ---------------------------------------------------------------------------------- */}
       {/* PHOTO UPLOAD / EDIT MODAL */}
       {/* ---------------------------------------------------------------------------------- */}
       {isPhotoModalOpen && (
@@ -592,6 +1027,7 @@ export function AdminGallery({
                           src={photoForm.image_url}
                           alt="Preview"
                           fill
+                          unoptimized={Boolean(photoForm.image_url?.startsWith('data:'))}
                           className="object-cover"
                         />
                       </div>

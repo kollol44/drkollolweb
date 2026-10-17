@@ -8,12 +8,14 @@ import { cookies } from 'next/headers';
  * Does not call cookies(), preventing build-time dynamic context errors on Vercel.
  */
 export async function createServerSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  // Use service role key if configured for full server access, otherwise anon key
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    'https://pvnhymckyxnwiluvajlc.supabase.co';
+  // Use service role key if configured for full server access, otherwise anon key or project service role fallback
   const supabaseKey =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    '';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2bmh5bWNreXhud2lsdXZhamxjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTExMjI3NywiZXhwIjoyMTA2Njg4Mjc3fQ.ZVCyRNtTWhr0-qKOq8dB73GcIbZV01xPj6yjji89iv8';
 
   if (!supabaseUrl || !supabaseKey) {
     return null;

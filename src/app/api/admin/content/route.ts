@@ -30,6 +30,7 @@ import {
   updateAppointmentStatus,
   getGalleryPhotos,
   saveGalleryPhoto,
+  saveGalleryPhotosBulk,
   deleteGalleryPhoto,
   getGalleryVideos,
   saveGalleryVideo,
@@ -136,6 +137,9 @@ export async function PUT(req: NextRequest) {
         break;
       case 'galleryPhoto':
         await saveGalleryPhoto(payload);
+        break;
+      case 'galleryPhotosBulk':
+        await saveGalleryPhotosBulk(payload);
         break;
       case 'galleryVideo':
         await saveGalleryVideo(payload);

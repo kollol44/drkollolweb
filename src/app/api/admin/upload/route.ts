@@ -129,19 +129,14 @@ export async function POST(req: NextRequest) {
     const randomSuffix = crypto.randomBytes(6).toString('hex');
     const safeName = `gallery_${Date.now()}_${randomSuffix}.webp`;
 
-    // 6. Persistence: Local Storage Fallback
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'gallery');
-    await fs.mkdir(uploadDir, { recursive: true });
-    const localFilePath = path.join(uploadDir, safeName);
-    await fs.writeFile(localFilePath, optimizedBuffer);
+    let publicUrl = '';
 
-    let publicUrl = `/uploads/gallery/${safeName}`;
-
-    // 7. Optional Supabase Storage Bucket sync
+    // 6. Primary Persistence: Supabase Cloud Storage (Bucket: 'gallery')
+    // Dedicated cloud storage for serverless platforms like Vercel
     try {
       const supabase = await createServerSupabaseClient();
       if (supabase) {
-        const { data: uploadData, error: uploadErr } = await supabase.storage
+        let { data: uploadData, error: uploadErr } = await supabase.storage
           .from('gallery')
           .upload(safeName, optimizedBuffer, {
             contentType: 'image/webp',
@@ -149,16 +144,49 @@ export async function POST(req: NextRequest) {
             upsert: true,
           });
 
+        // Auto-create bucket if missing and retry
+        if (uploadErr && (uploadErr.message?.includes('Bucket not found') || (uploadErr as any).statusCode === 404)) {
+          await supabase.storage.createBucket('gallery', { public: true });
+          const retry = await supabase.storage
+            .from('gallery')
+            .upload(safeName, optimizedBuffer, {
+              contentType: 'image/webp',
+              cacheControl: '31536000',
+              upsert: true,
+            });
+          uploadData = retry.data;
+          uploadErr = retry.error;
+        }
+
         if (!uploadErr && uploadData) {
           const { data: pubData } = supabase.storage.from('gallery').getPublicUrl(safeName);
           if (pubData?.publicUrl) {
             publicUrl = pubData.publicUrl;
           }
+        } else if (uploadErr) {
+          console.warn('Supabase storage upload error:', uploadErr);
         }
       }
     } catch (sbErr) {
-      // Supabase storage bucket may not exist; local upload serves as bulletproof source
-      console.warn('Supabase storage upload skipped or failed, using local storage path:', sbErr);
+      console.warn('Supabase storage exception:', sbErr);
+    }
+
+    // 7. Fallback A: Local Storage (Local development only - safe for serverless)
+    if (!publicUrl) {
+      try {
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'gallery');
+        await fs.mkdir(uploadDir, { recursive: true });
+        const localFilePath = path.join(uploadDir, safeName);
+        await fs.writeFile(localFilePath, optimizedBuffer);
+        publicUrl = `/uploads/gallery/${safeName}`;
+      } catch (fsErr) {
+        console.warn('Local filesystem write failed (read-only environment like Vercel):', fsErr);
+      }
+    }
+
+    // 8. Fallback B: Base64 WebP Data URL (Ultimate fallback if storage and disk fail)
+    if (!publicUrl) {
+      publicUrl = `data:image/webp;base64,${optimizedBuffer.toString('base64')}`;
     }
 
     const savedPercent = Math.max(0, ((rawBuffer.length - optimizedBuffer.length) / rawBuffer.length) * 100).toFixed(1);

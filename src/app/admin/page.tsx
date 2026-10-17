@@ -252,6 +252,24 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleSaveGalleryPhotosBulk = async (newPhotos: GalleryPhoto[]) => {
+    const ok = await saveSection('galleryPhotosBulk', newPhotos);
+    if (ok) {
+      setGalleryPhotos((prev) => {
+        const next = [...prev];
+        for (const item of newPhotos) {
+          const idx = next.findIndex((p) => p.id === item.id);
+          if (idx >= 0) {
+            next[idx] = item;
+          } else {
+            next.push(item);
+          }
+        }
+        return next;
+      });
+    }
+  };
+
   const handleDeleteGalleryPhoto = async (id: string) => {
     try {
       const res = await fetch('/api/admin/content', {
@@ -420,6 +438,7 @@ export default function AdminDashboardPage() {
                 photos={galleryPhotos}
                 videos={galleryVideos}
                 onSavePhoto={handleSaveGalleryPhoto}
+                onSavePhotosBulk={handleSaveGalleryPhotosBulk}
                 onDeletePhoto={handleDeleteGalleryPhoto}
                 onSaveVideo={handleSaveGalleryVideo}
                 onDeleteVideo={handleDeleteGalleryVideo}
