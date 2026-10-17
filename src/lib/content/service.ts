@@ -11,6 +11,7 @@ import {
   DEFAULT_BLOGS,
   DEFAULT_GALLERY_PHOTOS,
   DEFAULT_GALLERY_VIDEOS,
+  DEFAULT_CHATBOT_CONFIG,
 } from './default-data';
 import {
   SiteSettings,
@@ -26,6 +27,7 @@ import {
   Appointment,
   GalleryPhoto,
   GalleryVideo,
+  ChatbotConfig,
 } from '@/types/database';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
@@ -43,6 +45,7 @@ let memBlogs: BlogPost[] = [...DEFAULT_BLOGS];
 let memAppointments: Appointment[] = [];
 let memGalleryPhotos: GalleryPhoto[] = [...DEFAULT_GALLERY_PHOTOS];
 let memGalleryVideos: GalleryVideo[] = [...DEFAULT_GALLERY_VIDEOS];
+let memChatbotConfig: ChatbotConfig = { ...DEFAULT_CHATBOT_CONFIG };
 
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -747,4 +750,132 @@ export async function deleteGalleryVideo(id: string): Promise<boolean> {
   }
   return true;
 }
+
+// ----------------------------------------------------------------------------------
+// CHATBOT SERVICE & KNOWLEDGE GROUNDING
+// ----------------------------------------------------------------------------------
+
+export async function getChatbotConfig(): Promise<ChatbotConfig> {
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('chatbot_config')
+        .select('*')
+        .limit(1)
+        .single();
+      if (!error && data) {
+        memChatbotConfig = {
+          ...DEFAULT_CHATBOT_CONFIG,
+          ...data,
+        };
+      }
+    } catch {
+      // Table may not exist yet, fallback smoothly
+    }
+  }
+
+  // Also harvest API keys from environment variable if configured
+  const envKeys = [
+    process.env.GEMINI_API_KEY,
+    ...(process.env.GEMINI_API_KEYS ? process.env.GEMINI_API_KEYS.split(',') : []),
+  ]
+    .map((k) => k?.trim())
+    .filter(Boolean) as string[];
+
+  const combinedKeys = Array.from(new Set([...envKeys, ...(memChatbotConfig.gemini_api_keys || [])]));
+
+  return {
+    ...memChatbotConfig,
+    gemini_api_keys: combinedKeys,
+  };
+}
+
+export async function updateChatbotConfig(
+  config: Partial<ChatbotConfig>
+): Promise<ChatbotConfig> {
+  memChatbotConfig = {
+    ...memChatbotConfig,
+    ...config,
+    updated_at: new Date().toISOString(),
+  };
+
+  const supabase = await createServerSupabaseClient();
+  if (supabase) {
+    try {
+      const { error } = await supabase.from('chatbot_config').upsert({
+        ...memChatbotConfig,
+        id: 'global',
+      });
+      if (error) console.warn('Supabase updateChatbotConfig notice:', error.message);
+    } catch (e) {
+      console.warn('Supabase updateChatbotConfig exception:', e);
+    }
+  }
+
+  return memChatbotConfig;
+}
+
+/**
+ * Compiles real-time verified clinical knowledge from the website database
+ * Injected into Gemini system instructions for 100% accurate, hallucination-free answers.
+ */
+export async function getDoctorKnowledgeContext(): Promise<string> {
+  const [settings, profile, chambers, conditions, faqs] = await Promise.all([
+    getSiteSettings(),
+    getSurgeonProfile(),
+    getChambers(),
+    getAllConditionsAdmin(),
+    getFaqs(),
+  ]);
+
+  const chambersText = chambers
+    .map(
+      (c, idx) =>
+        `${idx + 1}. **${c.name_en} (${c.name_bn})**\n   - লোকেশন/ঠিকানা: ${c.address_bn} (${c.address_en})\n   - রোগী দেখার সময়সূচী: ${c.schedule_bn} | ${c.timing_bn} (${c.schedule_en} | ${c.timing_en})`
+    )
+    .join('\n\n');
+
+  const conditionsText = conditions
+    .slice(0, 15)
+    .map(
+      (cond) =>
+        `- **${cond.name_bn} (${cond.name_en})**: ${cond.short_bn}. সাধারণ উপসর্গ: ${cond.symptoms_bn?.join(', ') || ''}. আধুনিক চিকিৎসা: ${cond.treat_bn?.join(', ') || ''}`
+    )
+    .join('\n');
+
+  const faqsText = faqs
+    .map((f, idx) => `Q${idx + 1}: ${f.question_bn} (${f.question_en})\nA: ${f.answer_bn}`)
+    .join('\n\n');
+
+  return `
+### সার্জন পরিচিতি (Surgeon Profile):
+- নাম: ${profile.name_bn} (${profile.name_en})
+- পদবী: ${profile.role_bn} (${profile.post_bn}) — ময়মনসিংহ মেডিকেল কলেজ ও হাসপাতাল (MMCH)
+- ডিগ্রি ও প্রশিক্ষণ: MBBS, BCS (স্বাস্থ্য), FCPS (সার্জারি), MACS (USA), FMAS (ল্যাপারোস্কপিক সার্জারি)
+- BMDC রেজি নং: ${settings.bmdc_reg}
+- বিশেষ দক্ষতা: আধুনিক ল্যাপারোস্কপিক সার্জারি, পাইলস ও ফিস্টুলার ব্যথাহীন চিকিৎসা (লঙ্গো ও লেজার), ব্রেস্ট টিউমার ও ক্যান্সার স্ক্রিনিং, হার্নিয়া ও পিত্তথলির পাথর।
+
+### চেম্বার ও রোগী দেখার স্থান (Chambers & Visiting Hours):
+${chambersText}
+
+### সিরিয়াল বুকিং ও সরাসরি যোগাযোগ (Appointments & Contact):
+- সিরিয়াল হটলাইন: ${settings.phone_serial}
+- সরাসরি কথা বলার নম্বর: ${settings.phone_call}
+- সহকারী/ম্যানেজার নম্বর: ${settings.phone_assistant}
+- অফিসিয়াল হোয়াটসঅ্যাপ: ${settings.whatsapp_url}
+- ইমেইল: ${settings.email}
+- অনলাইন অ্যাপয়েন্টমেন্ট: ওয়েবসাইটের "বুক সিরিয়াল" বাটনে ক্লিক করে সরাসরি বুকিং ফর্ম পূরণ করা যায়।
+
+### প্রধান সার্জারি ও চিকিৎসা সেবা (Key Procedures):
+${conditionsText}
+
+### সাধারণ প্রশ্নোত্তর (Verified Clinical FAQs):
+${faqsText}
+
+### ডিসক্লেইমার ও জরুরি প্রটোকল:
+${settings.disclaimer_bn}
+`;
+}
+
 

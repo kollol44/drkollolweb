@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Radio,
   Film,
+  Bot,
 } from 'lucide-react';
 import type { Appointment, Condition, Chamber, BlogPost } from '@/types/database';
 
@@ -138,6 +139,14 @@ export function AdminSidebar({
     {
       groupLabel: 'Platform & Security',
       items: [
+        {
+          id: 'chatbot',
+          label: 'AI Medical Assistant',
+          shortDesc: 'Gemini AI & Instant triage',
+          icon: Bot,
+          badge: 'Hybrid AI',
+          badgeVariant: 'teal',
+        },
         {
           id: 'settings',
           label: 'Global Site Settings',

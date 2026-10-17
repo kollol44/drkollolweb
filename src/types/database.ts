@@ -218,3 +218,19 @@ export interface GalleryVideo {
   created_at?: string;
 }
 
+export interface ChatbotConfig {
+  id: string;
+  is_enabled: boolean;
+  gemini_api_keys: string[];
+  active_key_index: number;
+  welcome_message_en: string;
+  welcome_message_bn: string;
+  suggested_questions_en: string[];
+  suggested_questions_bn: string[];
+  max_tokens_per_reply?: number;
+  temperature?: number;
+  rate_limit_per_minute?: number;
+  updated_at?: string;
+}
+
+

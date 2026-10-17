@@ -15,6 +15,7 @@ import { AdminChambers } from '@/components/admin/AdminChambers';
 import { AdminBlogs } from '@/components/admin/AdminBlogs';
 import { AdminFaqsReviews } from '@/components/admin/AdminFaqsReviews';
 import { AdminGallery } from '@/components/admin/AdminGallery';
+import { AdminChatbot } from '@/components/admin/AdminChatbot';
 
 import type {
   SiteSettings,
@@ -40,6 +41,7 @@ const tabTitles: Record<string, string> = {
   gallery: 'Photo Gallery & Video Library',
   heroProfile: 'Hero & Doctor Profile',
   faqsReviews: 'FAQs & Patient Reviews',
+  chatbot: 'AI Medical Assistant (Gemini & Triage)',
   settings: 'Global Site Settings',
 };
 
@@ -452,6 +454,10 @@ export default function AdminDashboardPage() {
                 onSaveFaq={handleSaveFaq}
                 onSaveReview={handleSaveReview}
               />
+            )}
+
+            {activeTab === 'chatbot' && (
+              <AdminChatbot onShowToast={showToast} />
             )}
 
             {activeTab === 'settings' && siteSettings && (

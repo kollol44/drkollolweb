@@ -3,6 +3,7 @@ import { Fraunces, Inter, Anek_Bangla, Hind_Siliguri } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { Preloader } from '@/components/Preloader';
+import { ChatWidget } from '@/components/chat/ChatWidget';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -101,6 +102,7 @@ export default function RootLayout({
         <LanguageProvider>
           <Preloader />
           {children}
+          <ChatWidget />
         </LanguageProvider>
       </body>
     </html>

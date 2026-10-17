@@ -11,6 +11,7 @@ import {
   BlogPost,
   GalleryPhoto,
   GalleryVideo,
+  ChatbotConfig,
 } from '@/types/database';
 
 
@@ -1597,4 +1598,29 @@ export const DEFAULT_GALLERY_VIDEOS: GalleryVideo[] = [
     created_at: '2026-10-01T11:45:00Z',
   },
 ];
+
+export const DEFAULT_CHATBOT_CONFIG: ChatbotConfig = {
+  id: 'global',
+  is_enabled: true,
+  gemini_api_keys: [],
+  active_key_index: 0,
+  welcome_message_en: "Hello! I am Dr. Fahim Foysal Kollol's digital assistant. How may I assist you regarding chamber locations, visiting hours, serial booking, or surgical procedures today?",
+  welcome_message_bn: 'আসসালামু আলাইকুম। আমি ডাঃ ফাহিম ফয়সাল কল্লোলের ডিজিটাল ক্লিনিক্যাল অ্যাসিস্ট্যান্ট। চেম্বার, সময়সূচী, সিরিয়াল বুকিং বা সার্জারি চিকিৎসার তথ্যে কীভাবে সাহায্য করতে পারি?',
+  suggested_questions_en: [
+    "Where are Dr. Kollol's chambers & visiting hours?",
+    'How do I book a serial for consultation?',
+    'What laparoscopic & piles surgeries are available?',
+    'What is the emergency contact & WhatsApp number?',
+  ],
+  suggested_questions_bn: [
+    'ডাঃ কল্লোলের চেম্বার কোথায় ও সময়সূচী কী?',
+    'ডাক্তার দেখানোর সিরিয়াল কীভাবে নিব?',
+    'ল্যাপারোস্কপিক ও পাইলস চিকিৎসার তথ্য',
+    'জরুরি যোগাযোগ ও হোয়াটসঅ্যাপ নম্বর',
+  ],
+  max_tokens_per_reply: 400,
+  temperature: 0.2,
+  rate_limit_per_minute: 10,
+};
+
 
