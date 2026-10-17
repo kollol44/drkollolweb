@@ -443,11 +443,14 @@ export function ChatWidget() {
     setIsTyping(true);
 
     try {
-      // Build brief conversation history
-      const history = messages.slice(-4).map((m) => ({
-        role: m.sender === 'user' ? ('user' as const) : ('model' as const),
-        text: m.text,
-      }));
+      // Build brief conversation history (excluding initial static welcome message)
+      const history = messages
+        .filter((m) => !m.id.startsWith('welcome'))
+        .slice(-6)
+        .map((m) => ({
+          role: m.sender === 'user' ? ('user' as const) : ('model' as const),
+          text: m.text,
+        }));
 
       const res = await fetch('/api/chat', {
         method: 'POST',

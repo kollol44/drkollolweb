@@ -762,16 +762,22 @@ export async function getChatbotConfig(): Promise<ChatbotConfig> {
       const { data, error } = await supabase
         .from('chatbot_config')
         .select('*')
-        .limit(1)
-        .single();
+        .eq('id', 'default')
+        .maybeSingle();
+
       if (!error && data) {
         memChatbotConfig = {
           ...DEFAULT_CHATBOT_CONFIG,
           ...data,
+          id: 'default',
+          is_enabled: data.is_active ?? true,
+          is_active: data.is_active ?? true,
+          gemini_model: data.gemini_model || 'gemini-2.5-flash',
+          gemini_api_keys: Array.isArray(data.gemini_api_keys) ? data.gemini_api_keys : [],
         };
       }
-    } catch {
-      // Table may not exist yet, fallback smoothly
+    } catch (e) {
+      console.warn('Supabase getChatbotConfig notice:', e);
     }
   }
 
@@ -783,7 +789,10 @@ export async function getChatbotConfig(): Promise<ChatbotConfig> {
     .map((k) => k?.trim())
     .filter(Boolean) as string[];
 
-  const combinedKeys = Array.from(new Set([...envKeys, ...(memChatbotConfig.gemini_api_keys || [])]));
+  // Database keys take precedence, combined with env keys
+  const combinedKeys = Array.from(
+    new Set([...(memChatbotConfig.gemini_api_keys || []), ...envKeys])
+  );
 
   return {
     ...memChatbotConfig,
@@ -794,22 +803,78 @@ export async function getChatbotConfig(): Promise<ChatbotConfig> {
 export async function updateChatbotConfig(
   config: Partial<ChatbotConfig>
 ): Promise<ChatbotConfig> {
+  const isEnabled =
+    config.is_enabled !== undefined
+      ? config.is_enabled
+      : config.is_active !== undefined
+      ? config.is_active
+      : (memChatbotConfig.is_enabled ?? true);
+
+  const updatedKeys =
+    config.gemini_api_keys !== undefined
+      ? config.gemini_api_keys
+      : (memChatbotConfig.gemini_api_keys || []);
+
+  const updatedModel =
+    config.gemini_model || memChatbotConfig.gemini_model || 'gemini-2.5-flash';
+
   memChatbotConfig = {
     ...memChatbotConfig,
     ...config,
+    id: 'default',
+    is_enabled: isEnabled,
+    is_active: isEnabled,
+    gemini_api_keys: updatedKeys,
+    gemini_model: updatedModel,
     updated_at: new Date().toISOString(),
   };
 
   const supabase = await createServerSupabaseClient();
   if (supabase) {
     try {
-      const { error } = await supabase.from('chatbot_config').upsert({
-        ...memChatbotConfig,
-        id: 'global',
-      });
-      if (error) console.warn('Supabase updateChatbotConfig notice:', error.message);
+      const dbPayload = {
+        id: 'default',
+        is_active: isEnabled,
+        gemini_api_keys: updatedKeys,
+        gemini_model: updatedModel,
+        welcome_message_en:
+          memChatbotConfig.welcome_message_en || DEFAULT_CHATBOT_CONFIG.welcome_message_en,
+        welcome_message_bn:
+          memChatbotConfig.welcome_message_bn || DEFAULT_CHATBOT_CONFIG.welcome_message_bn,
+        doctor_context_extra: memChatbotConfig.doctor_context_extra || '',
+        max_tokens_per_response:
+          memChatbotConfig.max_tokens_per_reply ??
+          memChatbotConfig.max_tokens_per_response ??
+          600,
+        temperature: memChatbotConfig.temperature ?? 0.3,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data, error } = await supabase
+        .from('chatbot_config')
+        .upsert(dbPayload)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase updateChatbotConfig error:', error.message);
+        throw error;
+      }
+
+      if (data) {
+        memChatbotConfig = {
+          ...memChatbotConfig,
+          ...data,
+          id: 'default',
+          is_enabled: data.is_active ?? true,
+          is_active: data.is_active ?? true,
+          gemini_api_keys: Array.isArray(data.gemini_api_keys) ? data.gemini_api_keys : [],
+          gemini_model: data.gemini_model || 'gemini-2.5-flash',
+        };
+      }
     } catch (e) {
-      console.warn('Supabase updateChatbotConfig exception:', e);
+      console.error('Supabase updateChatbotConfig exception:', e);
+      throw e;
     }
   }
 

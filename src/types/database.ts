@@ -221,6 +221,7 @@ export interface GalleryVideo {
 export interface ChatbotConfig {
   id: string;
   is_enabled: boolean;
+  is_active?: boolean;
   gemini_api_keys: string[];
   active_key_index: number;
   gemini_model?: string;
@@ -229,7 +230,9 @@ export interface ChatbotConfig {
   suggested_questions_en: string[];
   suggested_questions_bn: string[];
   max_tokens_per_reply?: number;
+  max_tokens_per_response?: number;
   temperature?: number;
+  doctor_context_extra?: string;
   rate_limit_per_minute?: number;
   updated_at?: string;
 }

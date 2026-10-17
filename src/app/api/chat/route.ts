@@ -102,20 +102,39 @@ export async function POST(req: NextRequest) {
 ${knowledgeBase}
 `.trim();
 
-    // 6. Build Conversation Payload for Gemini
+    // 6. Build Clean, Valid Conversation Payload for Gemini (Strict Google GenAI Schema)
     const contents: Array<{ role: 'user' | 'model'; parts: [{ text: string }] }> = [];
 
-    // Include last 2 turns of conversation history for natural follow-ups if valid
     if (Array.isArray(body.conversationHistory)) {
-      const sanitizedHistory = body.conversationHistory.slice(-4);
+      const sanitizedHistory = body.conversationHistory.slice(-6);
+      let startedWithUser = false;
+
       for (const item of sanitizedHistory) {
-        if (item.text && typeof item.text === 'string') {
-          contents.push({
-            role: item.role === 'model' ? 'model' : 'user',
-            parts: [{ text: item.text.slice(0, 300) }],
-          });
+        if (!item.text || typeof item.text !== 'string') continue;
+        const role: 'user' | 'model' = item.role === 'model' ? 'model' : 'user';
+
+        // Google Gemini API rejects any multi-turn history that starts with 'model'
+        if (!startedWithUser) {
+          if (role !== 'user') continue; // Skip welcome message or leading bot messages
+          startedWithUser = true;
         }
+
+        // Avoid consecutive duplicate roles
+        const lastTurn = contents[contents.length - 1];
+        if (lastTurn && lastTurn.role === role) {
+          continue;
+        }
+
+        contents.push({
+          role,
+          parts: [{ text: item.text.slice(0, 300) }],
+        });
       }
+    }
+
+    // The turn immediately preceding the new query must be 'model', otherwise pop invalid duplicate
+    if (contents.length > 0 && contents[contents.length - 1].role === 'user') {
+      contents.pop();
     }
 
     contents.push({
@@ -151,7 +170,8 @@ ${knowledgeBase}
       // Try candidate models in order for this key
       for (const model of candidateModels) {
         try {
-          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keyToUse}`;
+          const cleanModel = model.replace(/^models\//, '');
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${keyToUse}`;
 
           const geminiRes = await fetch(geminiUrl, {
             method: 'POST',
@@ -164,8 +184,11 @@ ${knowledgeBase}
                 parts: [{ text: systemInstruction }],
               },
               generationConfig: {
-                temperature: config.temperature ?? 0.2,
-                maxOutputTokens: config.max_tokens_per_reply ?? 400,
+                temperature: config.temperature ?? 0.3,
+                maxOutputTokens:
+                  config.max_tokens_per_response ??
+                  config.max_tokens_per_reply ??
+                  600,
                 topP: 0.8,
               },
             }),
