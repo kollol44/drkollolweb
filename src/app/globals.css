@@ -3242,3 +3242,26 @@ canvas#cv {
   #pl { display: none !important; }
   .tkr .trk, .hs-card *, .v-doc img, .doc-img img { animation: none !important; }
 }
+
+/* Sleek custom horizontal scrollbar for Chat Assistant quick FAQ chips */
+.custom-chat-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(43, 179, 177, 0.45) rgba(11, 110, 115, 0.06);
+}
+.custom-chat-scroll::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+.custom-chat-scroll::-webkit-scrollbar-track {
+  background: rgba(11, 110, 115, 0.06);
+  border-radius: 9999px;
+}
+.custom-chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(43, 179, 177, 0.45);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+.custom-chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: #0B6E73;
+}
+
