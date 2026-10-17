@@ -123,61 +123,85 @@ ${knowledgeBase}
       parts: [{ text: userMessage }],
     });
 
-    // 7. Multi-Key Rotation Execution
+    // 7. Multi-Key and Multi-Model Auto-Discovery Execution
     let lastError: Error | null = null;
     let botReply = '';
     const totalKeys = apiKeys.length;
 
-    for (let attempt = 0; attempt < totalKeys; attempt++) {
+    // Candidate models prioritized from user preferred -> newest flash -> legacy
+    const candidateModels = Array.from(
+      new Set(
+        [
+          config.gemini_model,
+          'gemini-2.5-flash',
+          'gemini-2.0-flash',
+          'gemini-2.0-flash-lite',
+          'gemini-1.5-flash',
+          'gemini-1.5-flash-latest',
+          'gemini-1.5-flash-8b',
+          'gemini-1.5-pro',
+        ].filter(Boolean) as string[]
+      )
+    );
+
+    keyLoop: for (let attempt = 0; attempt < totalKeys; attempt++) {
       const activeIndex = (currentKeyIndex + attempt) % totalKeys;
       const keyToUse = apiKeys[activeIndex];
 
-      try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${keyToUse}`;
+      // Try candidate models in order for this key
+      for (const model of candidateModels) {
+        try {
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keyToUse}`;
 
-        const geminiRes = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents,
-            systemInstruction: {
-              parts: [{ text: systemInstruction }],
+          const geminiRes = await fetch(geminiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-            generationConfig: {
-              temperature: config.temperature ?? 0.2,
-              maxOutputTokens: config.max_tokens_per_reply ?? 400,
-              topP: 0.8,
-            },
-          }),
-        });
+            body: JSON.stringify({
+              contents,
+              systemInstruction: {
+                parts: [{ text: systemInstruction }],
+              },
+              generationConfig: {
+                temperature: config.temperature ?? 0.2,
+                maxOutputTokens: config.max_tokens_per_reply ?? 400,
+                topP: 0.8,
+              },
+            }),
+          });
 
-        if (geminiRes.status === 429 || geminiRes.status === 403) {
-          // Rate limit or quota hit, rotate to next key immediately
-          console.warn(`Gemini key index ${activeIndex} quota hit (${geminiRes.status}), rotating...`);
-          currentKeyIndex = (activeIndex + 1) % totalKeys;
-          continue;
+          if (geminiRes.status === 429 || geminiRes.status === 403) {
+            // Quota hit on this key, rotate to next key immediately
+            console.warn(`Gemini key index ${activeIndex} quota hit (${geminiRes.status}), rotating key...`);
+            currentKeyIndex = (activeIndex + 1) % totalKeys;
+            continue keyLoop;
+          }
+
+          if (geminiRes.status === 404) {
+            // Model not available for this key/region, try next candidate model
+            continue;
+          }
+
+          if (!geminiRes.ok) {
+            const errText = await geminiRes.text();
+            console.error(`Gemini API error on model ${model} (Status ${geminiRes.status}):`, errText);
+            continue;
+          }
+
+          const data = await geminiRes.json();
+          const candidateText =
+            data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+          if (candidateText) {
+            botReply = candidateText;
+            currentKeyIndex = activeIndex; // Keep working key
+            break keyLoop;
+          }
+        } catch (callErr) {
+          lastError = callErr instanceof Error ? callErr : new Error(String(callErr));
+          console.error(`Gemini call error on key ${activeIndex} / model ${model}:`, callErr);
         }
-
-        if (!geminiRes.ok) {
-          const errText = await geminiRes.text();
-          console.error(`Gemini API error (Status ${geminiRes.status}):`, errText);
-          continue;
-        }
-
-        const data = await geminiRes.json();
-        const candidateText =
-          data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-        if (candidateText) {
-          botReply = candidateText;
-          currentKeyIndex = activeIndex; // Keep working key
-          break;
-        }
-      } catch (callErr) {
-        lastError = callErr instanceof Error ? callErr : new Error(String(callErr));
-        console.error(`Gemini call error on key ${activeIndex}:`, callErr);
       }
     }
 

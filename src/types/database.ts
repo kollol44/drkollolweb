@@ -223,6 +223,7 @@ export interface ChatbotConfig {
   is_enabled: boolean;
   gemini_api_keys: string[];
   active_key_index: number;
+  gemini_model?: string;
   welcome_message_en: string;
   welcome_message_bn: string;
   suggested_questions_en: string[];

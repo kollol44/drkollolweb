@@ -4,22 +4,22 @@ import React, { useState, useEffect } from 'react';
 import {
   Bot,
   Key,
-  ShieldCheck,
-  CheckCircle2,
-  AlertCircle,
   Plus,
   Trash2,
-  ExternalLink,
+  CheckCircle2,
+  AlertCircle,
   Sparkles,
-  Zap,
+  ExternalLink,
+  ShieldCheck,
   Lock,
-  RefreshCw,
+  Zap,
   MessageSquare,
+  Cpu,
 } from 'lucide-react';
 import type { ChatbotConfig } from '@/types/database';
 
 interface AdminChatbotProps {
-  onShowToast: (message: string, type?: 'success' | 'error') => void;
+  onShowToast: (msg: string, type?: 'success' | 'error') => void;
 }
 
 export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
@@ -30,7 +30,13 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
   // New key input state
   const [newKeyInput, setNewKeyInput] = useState('');
   const [testingKey, setTestingKey] = useState(false);
-  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [testResult, setTestResult] = useState<{
+    success: boolean;
+    message: string;
+    workingModel?: string;
+    details?: string;
+    availableModels?: string[];
+  } | null>(null);
 
   // Fetch current config from admin endpoint
   const fetchConfig = async () => {
@@ -102,7 +108,7 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
     handleSave({ gemini_api_keys: updatedKeys });
   };
 
-  // Test an API Key validity
+  // Test an API Key validity with intelligent model auto-discovery
   const handleTestKey = async (keyToTest: string) => {
     setTestingKey(true);
     setTestResult(null);
@@ -110,15 +116,27 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
       const res = await fetch('/api/admin/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: keyToTest }),
+        body: JSON.stringify({
+          key: keyToTest,
+          preferredModel: config?.gemini_model || 'auto',
+        }),
       });
       const data = await res.json();
       setTestResult({
         success: data.success,
         message: data.message || (data.success ? 'Key verified!' : 'Key test failed'),
+        workingModel: data.workingModel,
+        details: data.details,
+        availableModels: data.availableModels,
       });
+
       if (data.success) {
-        onShowToast('Gemini API key verified successfully!');
+        onShowToast(data.message || 'Gemini API key verified successfully!');
+        if (data.workingModel && config && data.workingModel !== config.gemini_model) {
+          // Auto update config model to discovered working model
+          setConfig((prev) => (prev ? { ...prev, gemini_model: data.workingModel } : prev));
+          handleSave({ gemini_model: data.workingModel });
+        }
       } else {
         onShowToast(data.message || 'Key test failed', 'error');
       }
@@ -153,11 +171,11 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
                 AI Medical Assistant (চ্যাটবট কনসোল)
               </h2>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#EEF7F6] text-[#0B6E73] border border-[#2BB3B1]/40">
-                Hybrid AI + Real-time Knowledge
+                Universal Multi-Model Engine
               </span>
             </div>
             <p className="text-xs text-[#3F6668] mt-1 leading-relaxed">
-              Google Gemini 1.5 Flash এবং ওয়েবসাইটের লাইভ চেম্বার-সার্জারি ডেটাবেজ দ্বারা চালিত স্মার্ট ভার্চুয়াল রিসেপশনিস্ট।
+              Google Gemini (2.5 Flash, 2.0 Flash, 1.5 Flash) এবং ওয়েবসাইটের লাইভ ডাটাবেজ দ্বারা চালিত ভার্চুয়াল সহকারী।
             </p>
           </div>
         </div>
@@ -199,7 +217,7 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
               <div className="flex items-center gap-2">
                 <Key className="w-5 h-5 text-[#0B6E73]" />
                 <h3 className="font-bold text-sm text-[#062F31]">
-                  Google Gemini 1.5 Flash API Keys
+                  Google Gemini Free API Keys (মাল্টি-কী রোটেশন)
                 </h3>
               </div>
               <a
@@ -217,7 +235,7 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
             <div className="p-3.5 rounded-2xl bg-[#EEF7F6]/50 border border-[#2BB3B1]/30 text-xs text-[#062F31] flex items-start gap-2.5">
               <Sparkles className="w-4 h-4 text-[#0B6E73] shrink-0 mt-0.5" />
               <p className="leading-relaxed text-[11px]">
-                <strong>মাল্টি-কী অটোমেশন:</strong> গুগল এআই স্টুডিও সম্পূর্ণ বিনামূল্যে (কোনো ক্রেডিট কার্ড ছাড়াই) প্রতিদিন ১,৫০০ রিকোয়েস্ট দেয়। আপনি চাইলে একাধিক জিমেইল অ্যাকাউন্ট থেকে ২-৩টি ফ্রি কী যুক্ত করতে পারেন। সিস্টেম স্বয়ংক্রিয়ভাবে একটি কী ব্যস্ত বা লিমিট শেষ হলে অন্য কী দিয়ে সেবা অব্যাহত রাখবে ($0 চিরতরে ফ্রি)।
+                <strong>স্মার্ট মাল্টি-কী ও অটো মডেল ডিটেকশন:</strong> গুগল এআই স্টুডিওতে প্রতিদিন সম্পূর্ণ বিনামূল্যে রিকোয়েস্ট কোটা পাওয়া যায়। সিস্টেমটি যেকোনো ভার্সনের (Gemini 2.5 Flash, 2.0 Flash, 1.5 Flash ইত্যাদি) সচল মডেল স্বয়ংক্রিয়ভাবে খুঁজে নিয়ে কানেক্ট করবে। একটি কীতে লিমিট শেষ হলে অন্য কী দিয়ে নিরবচ্ছিন্নভাবে সেবা চলবে।
               </p>
             </div>
 
@@ -238,9 +256,9 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
                   type="button"
                   disabled={!newKeyInput.trim() || testingKey}
                   onClick={() => handleTestKey(newKeyInput.trim())}
-                  className="px-3.5 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#062F31] text-xs font-semibold transition-colors shrink-0"
+                  className="px-3.5 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#062F31] text-xs font-semibold transition-colors shrink-0 cursor-pointer"
                 >
-                  {testingKey ? 'Testing...' : 'Test Key'}
+                  {testingKey ? 'Verifying...' : 'Ping Test'}
                 </button>
                 <button
                   type="button"
@@ -255,18 +273,33 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
 
               {testResult && (
                 <div
-                  className={`p-2.5 rounded-xl text-[11px] font-semibold flex items-center gap-2 ${
+                  className={`p-3 rounded-2xl text-[11px] space-y-1.5 transition-all ${
                     testResult.success
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : 'bg-rose-50 text-rose-700 border border-rose-200'
+                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                      : 'bg-rose-50 text-rose-800 border border-rose-200'
                   }`}
                 >
-                  {testResult.success ? (
-                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                  <div className="flex items-center gap-2 font-semibold">
+                    {testResult.success ? (
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                    )}
+                    <span>{testResult.message}</span>
+                  </div>
+
+                  {testResult.workingModel && (
+                    <div className="flex items-center gap-1.5 text-[10px] text-emerald-800 bg-white/80 p-1 px-2 rounded-md border border-emerald-200/60 w-fit">
+                      <Sparkles className="w-3 h-3 text-emerald-600" />
+                      <span>কানেক্টেড এআই মডেল: <strong>{testResult.workingModel}</strong></span>
+                    </div>
                   )}
-                  <span>{testResult.message}</span>
+
+                  {!testResult.success && testResult.details && (
+                    <div className="text-[10px] text-rose-700 bg-white/80 p-2 rounded-lg border border-rose-200 font-mono break-all leading-tight">
+                      Google Response: {testResult.details}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -308,14 +341,14 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
                         <button
                           type="button"
                           onClick={() => handleTestKey(k)}
-                          className="px-2.5 py-1 text-[10px] font-bold text-[#0B6E73] hover:bg-white rounded-lg transition-colors border border-gray-200"
+                          className="px-2.5 py-1 text-[10px] font-bold text-[#0B6E73] hover:bg-white rounded-lg transition-colors border border-gray-200 cursor-pointer"
                         >
                           Ping Test
                         </button>
                         <button
                           type="button"
                           onClick={() => handleRemoveKey(idx)}
-                          className="p-1 text-gray-400 hover:text-rose-600 rounded-md transition-colors"
+                          className="p-1 text-gray-400 hover:text-rose-600 rounded-md transition-colors cursor-pointer"
                           title="Remove key"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -325,6 +358,82 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* AI Model Selection / Engine Selector */}
+            <div className="pt-4 border-t border-gray-100 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Cpu className="w-4 h-4 text-[#0B6E73]" />
+                  <label className="text-xs font-bold text-[#062F31]">
+                    Preferred AI Engine (মডেল অগ্রাধিকার):
+                  </label>
+                </div>
+                <span className="text-[10px] font-semibold text-[#0B6E73] bg-[#EEF7F6] px-2 py-0.5 rounded-full border border-[#2BB3B1]/30">
+                  Auto-Fallback Active
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  {
+                    id: 'gemini-2.5-flash',
+                    name: 'Gemini 2.5 Flash',
+                    badge: 'Latest 2026 Recommended',
+                    desc: 'সর্বাধুনিক দ্রুতগতির রিজনিং মডেল',
+                  },
+                  {
+                    id: 'gemini-2.0-flash',
+                    name: 'Gemini 2.0 Flash',
+                    badge: 'High Speed',
+                    desc: 'পরবর্তী প্রজন্মের লাইটনিং স্পিড রেসপন্স',
+                  },
+                  {
+                    id: 'gemini-2.0-flash-lite',
+                    name: 'Gemini 2.0 Flash Lite',
+                    badge: 'Ultra Fast',
+                    desc: 'সবচেয়ে দ্রুত ও মসৃণ রেসপন্স',
+                  },
+                  {
+                    id: 'gemini-1.5-flash',
+                    name: 'Gemini 1.5 Flash',
+                    badge: 'Standard',
+                    desc: 'স্ট্যান্ডার্ড মাল্টি-মডেল হাই কনটেক্সট',
+                  },
+                ].map((m) => {
+                  const isSelected = (config.gemini_model || 'gemini-2.5-flash') === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        setConfig({ ...config, gemini_model: m.id });
+                        handleSave({ gemini_model: m.id });
+                      }}
+                      className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? 'border-[#0B6E73] bg-[#EEF7F6]/60 shadow-xs ring-1 ring-[#0B6E73]/20'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold text-[#062F31]">{m.name}</span>
+                        <span
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
+                            isSelected ? 'bg-[#0B6E73] text-white' : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          {m.badge}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-[#3F6668]">{m.desc}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-gray-400 italic">
+                * আপনি যে মডেলই নির্বাচন করুন না কেন, আপনার প্রদত্ত এপিআই কীতে সেটি কোনো কারণে অনুপলব্ধ হলে সিস্টেম স্বয়ংক্রিয়ভাবে পরবর্তী সচল মডেলে ফলব্যাক করে উত্তর দেবে।
+              </p>
             </div>
           </div>
 
@@ -421,31 +530,15 @@ export function AdminChatbot({ onShowToast }: AdminChatbotProps) {
               </li>
 
               <li className="flex items-start gap-2.5">
-                <Sparkles className="w-4 h-4 text-emerald-300 shrink-0 mt-0.5" />
+                <Sparkles className="w-4 h-4 text-teal-300 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="block text-[11px] text-emerald-200">Medical Hallucination Shield:</strong>
+                  <strong className="block text-[11px] text-teal-200">Dynamic Clinical Grounding:</strong>
                   <span className="text-[10px] text-teal-100/80 leading-relaxed">
-                    এআই কোনো প্রেসক্রিপশন দিবে না; রোগীকে সরাসরি ফিজিক্যাল চেম্বারে ডাক্তার দেখানোর নির্দেশ দিবে।
+                    ডাটাবেজে যুক্ত ডা. কল্লোলের চেম্বার ও ২৬টি সার্জারির লাইভ ডেটার বাইরে এআই কোনো মনগড়া তথ্য দিতে পারবে না।
                   </span>
                 </div>
               </li>
             </ul>
-
-            <div className="pt-3 border-t border-white/10 text-[10px] text-teal-200 flex items-center justify-between">
-              <span>Security Level: Enterprise Grade</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            </div>
-          </div>
-
-          {/* Real-time Knowledge Sync Card */}
-          <div className="p-6 rounded-3xl bg-white border border-[#0B6E73]/15 shadow-xs space-y-3">
-            <h4 className="font-bold text-xs text-[#062F31] flex items-center gap-1.5">
-              <RefreshCw className="w-3.5 h-3.5 text-[#0B6E73]" />
-              <span>Real-Time Knowledge Sync</span>
-            </h4>
-            <p className="text-[11px] text-[#3F6668] leading-relaxed">
-              চ্যাটবটটি কোনো পুরনো বা স্ট্যাটিক ডেটা ব্যবহার করে না। আপনি যখনই অ্যাডমিন প্যানেল থেকে কোনো চেম্বারের সময়সূচী, নতুন ফোন নম্বর বা সার্জারির তথ্য পরিবর্তন করবেন, চ্যাটবট সাথে সাথে নতুন তথ্য ব্যবহার করে উত্তর দেওয়া শুরু করবে। কোনো রি-ট্রেনিংয়ের প্রয়োজন নেই।
-            </p>
           </div>
         </div>
       </div>

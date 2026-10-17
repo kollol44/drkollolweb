@@ -1604,6 +1604,7 @@ export const DEFAULT_CHATBOT_CONFIG: ChatbotConfig = {
   is_enabled: true,
   gemini_api_keys: [],
   active_key_index: 0,
+  gemini_model: 'gemini-2.5-flash',
   welcome_message_en: "Hello! I am Dr. Fahim Foysal Kollol's digital assistant. How may I assist you regarding chamber locations, visiting hours, serial booking, or surgical procedures today?",
   welcome_message_bn: 'আসসালামু আলাইকুম। আমি ডাঃ ফাহিম ফয়সাল কল্লোলের ডিজিটাল ক্লিনিক্যাল অ্যাসিস্ট্যান্ট। চেম্বার, সময়সূচী, সিরিয়াল বুকিং বা সার্জারি চিকিৎসার তথ্যে কীভাবে সাহায্য করতে পারি?',
   suggested_questions_en: [
