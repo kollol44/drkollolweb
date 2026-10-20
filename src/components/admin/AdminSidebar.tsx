@@ -180,7 +180,7 @@ export function AdminSidebar({
               <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#0B6E73] to-[#2BB3B1] p-0.5 shadow-sm">
                 <div className="w-full h-full rounded-[10px] bg-white flex items-center justify-center overflow-hidden">
                   <Image
-                    src="/img/doctor.webp"
+                    src="/img/doctor-v3.webp"
                     alt="Dr. Kollol"
                     width={44}
                     height={44}

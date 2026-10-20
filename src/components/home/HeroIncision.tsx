@@ -51,7 +51,7 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
   const heroRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const emergeRef = useRef<HTMLDivElement>(null);
-  const cueRef = useRef<HTMLDivElement>(null);
+  const cueRef = useRef<HTMLButtonElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
 
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -385,7 +385,11 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
         }
 
         if (cueRef.current) {
-          cueRef.current.style.opacity = String(1 - seg(pS, 0, 0.04));
+          // ring fills with hero progress; fades out as the incision story ends
+          cueRef.current.style.setProperty('--p', pS.toFixed(4));
+          const fade = 1 - seg(pS, 0.9, 1);
+          cueRef.current.style.opacity = String(fade);
+          cueRef.current.style.pointerEvents = fade > 0.1 ? 'auto' : 'none';
         }
       }
 
@@ -445,10 +449,26 @@ export function HeroIncision({ heroData }: HeroIncisionProps) {
         </div>
 
         {/* Scroll cue indicator */}
-        <div ref={cueRef} className="cue" id="cue">
-          <b />
-          <span>{isBn ? heroData.scroll_cue_bn : heroData.scroll_cue_en}</span>
-        </div>
+        <button
+          ref={cueRef}
+          type="button"
+          className="cue-ring"
+          id="cue"
+          aria-label={isBn ? heroData.scroll_cue_bn : heroData.scroll_cue_en}
+          onClick={() => window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' })}
+        >
+          <span className="cue-ring__dial" aria-hidden="true">
+            <svg viewBox="0 0 52 52">
+              <circle className="bg" cx="26" cy="26" r="22" />
+              <circle className="fg" cx="26" cy="26" r="22" />
+            </svg>
+            <i>↓</i>
+          </span>
+          <span className="cue-ring__tx">
+            <b>{isBn ? heroData.scroll_cue_bn : heroData.scroll_cue_en}</b>
+            <small>{isBn ? 'অথবা এখানে চাপুন' : 'or tap here'}</small>
+          </span>
+        </button>
 
         {/* Preloader progress bar */}
         {loadingProgress < 100 && (

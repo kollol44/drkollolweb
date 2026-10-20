@@ -537,7 +537,7 @@ export const DEFAULT_CONDITIONS: Condition[] = [
     treat_bn: ['ল্যাপারোস্কপিক পদ্ধতিতে পেটের ভেতর থেকে টেকসই মেশ স্থাপন।', 'দ্রুত আরোগ্য এবং পুনরায় হওয়ার ঝুঁকি সর্বনিম্ন।'],
     when_en: 'Seek surgical consultation early before the abdominal wall defect expands.',
     when_bn: 'ফোলা আরও বড় হয়ে নাড়ি আটকে যাওয়ার আগেই বিশেষজ্ঞ সার্জনকে দেখান।',
-    image_url: '/img/conditions/umbilical-hernia.webp',
+    image_url: '/img/conditions/incisional-hernia.webp',
   },
 
   // 4. Additional Breast Conditions

@@ -131,7 +131,7 @@ export function MeetYourSurgeonHero({
       {/* Center Doctor Image with Gentle Floating Animation */}
       <div className="doc-img">
         <Image
-          src="/img/doctor.webp"
+          src="/img/doctor-v3.webp"
           alt="Dr. Fahim Foysal Kollol, surgeon, in green scrubs"
           width={624}
           height={1126}

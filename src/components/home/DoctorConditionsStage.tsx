@@ -496,7 +496,7 @@ export function DoctorConditionsStage({
         {/* --- SINGLE DOCTOR IMAGE (Transitions smoothly from Intro to Treatments) --- */}
         <div ref={docImgRef} className="doc-img">
           <Image
-            src="/img/doctor.webp"
+            src="/img/doctor-v3.webp"
             alt="Dr. Fahim Foysal Kollol, surgeon, in green scrubs"
             width={624}
             height={1126}

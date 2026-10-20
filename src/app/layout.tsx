@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     siteName: 'Dr. Kollol Surgery Practice',
     images: [
       {
-        url: '/img/doctor.webp',
+        url: '/img/doctor-v3.webp',
         width: 624,
         height: 1126,
         alt: 'Dr. Fahim Foysal Kollol',

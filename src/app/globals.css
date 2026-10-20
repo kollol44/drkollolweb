@@ -3265,3 +3265,31 @@ canvas#cv {
   background: #0B6E73;
 }
 
+
+/* Hero scroll cue — "ring button" (approved 2026-10-20): ring fills with hero scroll progress (--p set in HeroIncision tick),
+   bouncing arrow, tap = scroll down. Replaces the small mouse cue; fades out at the end of the incision story. */
+.cue-ring {
+  position: absolute; left: 50%; bottom: max(22px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 6;
+  display: flex; align-items: center; gap: 12px; padding: 7px 18px 7px 7px; border-radius: 9999px; white-space: nowrap;
+  background: rgba(255,255,255,.92); border: 1px solid rgba(43,179,177,.3); box-shadow: 0 14px 30px -14px rgba(6,47,49,.5);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); cursor: pointer; transition: opacity .3s;
+}
+.cue-ring__dial { position: relative; width: 50px; height: 50px; flex: none; display: block; }
+.cue-ring__dial svg { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
+.cue-ring__dial circle { fill: none; stroke-width: 5; }
+.cue-ring__dial .bg { stroke: rgba(11,110,115,.15); }
+.cue-ring__dial .fg { stroke: var(--teal, #0B6E73); stroke-linecap: round; stroke-dasharray: 138.2; stroke-dashoffset: calc(138.2 - var(--p, 0) * 138.2); }
+.cue-ring__dial i { position: absolute; inset: 0; display: grid; place-items: center; font: 700 20px var(--fb, Inter, sans-serif); font-style: normal; color: var(--teal, #0B6E73); animation: cueBob 1.2s ease-in-out infinite; }
+.cue-ring__tx { display: grid; text-align: left; line-height: 1.25; }
+.cue-ring__tx b { font: 700 15px var(--fb, Inter, sans-serif); color: #062F31; }
+.cue-ring__tx small { font: 500 12.5px var(--fb, Inter, sans-serif); color: #4d6b6c; }
+@keyframes cueBob { 50% { transform: translateY(4px); } }
+/* below lg the MobileStickyBar (Call / WhatsApp / Serial) sits at the bottom — keep the ring just above it */
+/* …and on the right, because on tall screens the incision runs across the LEFT half at this height */
+@media (max-width: 1023px) { .cue-ring { bottom: calc(96px + env(safe-area-inset-bottom)); left: auto; right: 16px; transform: none; } }
+@media (max-width: 640px) {
+  .cue-ring { padding: 6px 16px 6px 6px; gap: 10px; }
+  .cue-ring__dial { width: 44px; height: 44px; }
+  .cue-ring__tx b { font-size: 14px; } .cue-ring__tx small { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .cue-ring__dial i { animation: none; } }
