@@ -92,12 +92,11 @@ export function HomePageClient({
       {/* 5. Patient Reviews & Google Box */}
       <ReviewsSection reviews={reviews} />
 
-      {/* 6. Medical Explanation Videos */}
-      <VideosSection videos={galleryVideos} />
-
-      {/* 7. Clinical Practice Gallery */}
+      {/* 6. Clinical Practice Gallery */}
       <GallerySection photos={galleryPhotos} />
 
+      {/* 7. Medical Explanation Videos */}
+      <VideosSection videos={galleryVideos} />
 
       {/* 8. Common FAQ Accordion */}
       <FaqSection faqs={faqs} />

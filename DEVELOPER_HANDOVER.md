@@ -370,3 +370,27 @@ Order: hero → Meet Your Surgeon/conditions (pinned stage) → **How to get a s
 - Chat widget on the HOMEPAGE is hidden during the hero video and fades in once #doctor (Meet Your Surgeon) reaches 60% of the viewport; the 14 s bubble timer starts only then. All other pages: always visible. Scroll-hint concepts for the hero: `3. Demos/scroll-hint/index.html` (not applied yet).
 - Hero scroll cue → approved "ring button" (HeroIncision.tsx + .cue-ring in globals.css): ring fills with hero progress (--p from the existing tick), bouncing ↓, tap scrolls 0.8 screen, fades out over the last 10% of the hero. Text = admin scroll_cue_en/bn + 'or tap here'. Below lg it sits above the MobileStickyBar and on the right (the incision runs across the left half on tall screens). Hero sizes/animation untouched.
 - Chat launcher revised: no auto-popping questions / badge / timer. Laptop (hover devices): hovering the doctor avatar shows a label ("Dr. Kollol's Assistant · Click to chat") + the 3 question bubbles; click = open chat. Phone/touch: one tap opens the chat directly. Inside the chat the 3 questions show as chips under the welcome message until the conversation starts (main path on phones).
+
+### 2026-10-24 — Homepage Gallery Full-Bleed Carousel & Pro UI/UX Redesign
+- Rebuilt `src/components/home/GallerySection.tsx` from static grid into a full-screen bleed horizontal carousel.
+- Edge-to-edge bleed layout across the viewport with soft lateral translucent edge masks on laptop and mobile viewports.
+- Medium-sized cards (`16:11` ratio, `280px-410px` wide) keeping focus on crisp clinical details without vertical bloat.
+- Smooth right-to-left auto-slide every 3.6s with seamless infinite looping and hover-pause capability.
+- Play/Pause toggle button with active glowing status dot and bilingual labels.
+- Left and Right glassmorphic arrow buttons for manual step-by-step navigation.
+- Interactive drag/clickable scrub track reflecting real-time carousel scroll progress.
+- Touch swiping on mobile and drag scrolling on desktop.
+- Fullscreen Lightbox modal with internal Previous/Next navigation, keyboard controls (`Esc`, `ArrowLeft`, `ArrowRight`), category badges, and clinical descriptions.
+- **Section Reordering & Videos Carousel Redesign (`HomePageClient.tsx`, `VideosSection.tsx`):**
+  - Reordered homepage sections: Clinical Gallery (`#gallery`) now precedes Videos (`#videos`), placing Videos directly before Common FAQs (`#faq`).
+  - Redesigned `VideosSection.tsx` to mirror the full-screen bleed carousel architecture:
+    - Infinite looping track with soft lateral edge vignettes.
+    - Medium-sized video cards with video thumbnails, red pulsing play indicators, bilingual category tags, and Fraunces/Anek Bangla typography.
+    - Smooth right-to-left auto-slide every 3.8s with hover-pause and touch pause.
+    - Play/Pause toggle with glowing status indicator.
+    - Left/Right tactile glassmorphic navigation buttons.
+    - Interactive scrub track with real-time progress bar.
+    - Touch swipe gestures for mobile and mouse drag for desktop.
+    - High-resolution video modal player with responsive YouTube embed, internal Prev/Next video navigation, and bilingual clinical descriptions.
+
+
