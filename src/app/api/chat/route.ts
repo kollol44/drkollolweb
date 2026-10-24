@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       // Graceful local fallback if no Gemini key is configured yet
       return NextResponse.json({
         success: true,
-        reply: `ডাঃ কল্লোলের চেম্বার ও সিরিয়াল তথ্যের জন্য সরাসরি কল করুন: ${siteSettings.phone_serial}। চেম্বার: আনোয়ার মেমোরিয়াল হাসপাতাল (শেরপুর) ও ডেল্টা হেলথ কেয়ার (ময়মনসিংহ)।`,
+        reply: `ডাঃ কল্লোলের চেম্বার ও সিরিয়াল তথ্যের জন্য কল করুন: ${siteSettings.phone_serial} অথবা সহকারী মিলন: 01671-869026। চেম্বার: ময়মনসিংহ নিউ মেডিকেয়ার প্যাথলজি ল্যাব, শেরপুর হেলথ কেয়ার হাসপাতাল ও আমজাদ ডায়াগনস্টিক। জরুরি WhatsApp: 01670879100।`,
       });
     }
 

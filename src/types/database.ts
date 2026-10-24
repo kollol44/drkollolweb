@@ -126,6 +126,11 @@ export interface Chamber {
   is_highlighted: boolean;
   is_map_verified: boolean;
   sort_order: number;
+  phone?: string;
+  assistant_name_en?: string;
+  assistant_name_bn?: string;
+  map_url?: string;
+  whatsapp_number?: string;
 }
 
 export interface Review {

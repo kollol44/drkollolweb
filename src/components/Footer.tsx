@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
 import { Category, Chamber, SiteSettings } from '@/types/database';
 import { DEFAULT_CATEGORIES } from '@/lib/content/default-data';
+import { formatDigits } from '@/lib/format-utils';
 
 interface FooterProps {
   settings: SiteSettings;
@@ -112,7 +113,7 @@ export function Footer({ settings, categories, chambers }: FooterProps) {
                 href={`tel:${settings.phone_serial}`}
                 className="btn btn-p text-xs py-2 px-4 shadow-sm"
               >
-                {content.serial}: {settings.phone_serial}
+                {content.serial}: {formatDigits(settings.phone_serial, isBn)}
               </a>
               <a
                 href={settings.whatsapp_url}

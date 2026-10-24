@@ -22,6 +22,7 @@ import { Footer } from '@/components/Footer';
 import { AppointmentModal } from '@/components/AppointmentModal';
 import { useLanguage } from '@/context/LanguageContext';
 import { parseVideoUrl } from '@/lib/video-utils';
+import { formatDigits } from '@/lib/format-utils';
 import type {
   GalleryPhoto,
   GalleryVideo,
@@ -659,7 +660,7 @@ export function GalleryPageClient({
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm border border-white/20 backdrop-blur-xs transition-colors"
                 >
                   <PhoneCall className="w-4 h-4" />
-                  <span>{t.callSurgeon}: {settings.phone_serial}</span>
+                  <span>{t.callSurgeon}: {formatDigits(settings.phone_serial, isBn)}</span>
                 </a>
               </div>
             </div>

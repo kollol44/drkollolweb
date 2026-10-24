@@ -58,6 +58,13 @@ export function AdminAppointments({ appointments, onUpdateStatus }: AdminAppoint
         </div>
       </div>
 
+      <div className="p-4 rounded-2xl bg-[#EEF7F6] border border-[#2BB3B1]/30 flex items-start gap-3 text-xs text-[#062F31]">
+        <CheckCircle2 className="w-4 h-4 text-[#0B6E73] shrink-0 mt-0.5" />
+        <p className="leading-relaxed">
+          <strong>Direct WhatsApp & Assistant Serial Active:</strong> Patient serials are now routed directly through WhatsApp & Phone calls to <strong>Mymensingh New Medicare (01750-529252)</strong>, <strong>Sherpur Chambers (Assistant Milon: 01671-869026)</strong>, and <strong>Doctor Emergency WhatsApp (01670879100)</strong>. Past archived web form submissions appear below.
+        </p>
+      </div>
+
       {/* Filter and Search Bar */}
       <div className="bg-white p-4 rounded-2xl border border-[#0B6E73]/15 flex flex-col md:flex-row gap-3 items-center justify-between">
         <div className="relative w-full md:w-80">

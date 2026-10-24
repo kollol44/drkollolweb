@@ -9,6 +9,7 @@ import { AppointmentModal } from '@/components/AppointmentModal';
 import { PinnedShowcase, ShowcaseStep } from '@/components/common/PinnedShowcase';
 import { useLanguage } from '@/context/LanguageContext';
 import { Category, Condition, SiteSettings, Chamber } from '@/types/database';
+import { formatDigits } from '@/lib/format-utils';
 
 interface ConditionsHubClientProps {
   categories: Category[];
@@ -334,7 +335,7 @@ export function ConditionsHubClient({
               onClick={() => setModalOpen(true)}
               className="btn btn-p"
             >
-              {t.book}: {settings.phone_serial}
+              {t.book}: {formatDigits(settings.phone_serial, isBn)}
             </button>
             <a className="btn btn-g" href={`tel:${settings.phone_call}`}>
               {t.call}

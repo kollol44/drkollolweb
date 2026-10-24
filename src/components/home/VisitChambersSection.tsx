@@ -16,77 +16,81 @@ export function VisitChambersSection({ settings, chambers, onBookClick }: VisitC
   const [selectedChamberIdx, setSelectedChamberIdx] = useState(0);
 
   const SERIAL_NO = '01750529252';
-  const CALL_NO = '01670879100';
+  const EMERGENCY_CALL = '01670879100';
   const WA_URL = 'https://wa.me/8801670879100';
 
   const t = {
     en: {
       brand: 'Dr. Kollol',
       vH: 'Don’t wait. Talk to your surgeon.',
-      vP: 'Call for a serial or come to the chamber — Dr. Kollol will explain your problem and the right treatment.',
+      vP: 'Call for a serial or message on WhatsApp — Dr. Kollol will carefully assess your condition and guide you toward the right surgical treatment.',
       book: 'Book a serial',
-      call: 'Call now',
-      wa: 'WhatsApp',
-      dir: 'Directions →',
-      mapH: 'Find the chamber',
-      mapS: 'Tap a chamber to see it on the map.',
-      mapNote: 'Map location for Asia Diagnostic Center (Sherpur) is approximate — it is not listed on Google Maps yet.',
+      call: 'Emergency Call',
+      wa: 'WhatsApp Doctor',
+      dir: 'Directions on Google Maps →',
+      mapH: 'Find the consultation chamber',
+      mapS: 'Tap any chamber above to view live map location & GPS directions.',
       ch: [
         {
-          t: 'Sherpur · Thursday',
-          n: 'Asia Diagnostic Center',
-          a: 'Zila Hospital Road, Narayanpur · 3 PM – 9 PM',
-          q: 'Sadar Hospital Road, Narayanpur, Sherpur',
-          ok: false,
+          t: 'Sherpur Chamber 1 · Thursday',
+          n: 'Health Care (Pvt) Hospital',
+          a: 'Zila Hospital Road, Narayanpur, Sherpur · 4:00 PM – 9:00 PM',
+          q: 'Health Care Pvt Hospital, Hospital Road, Sherpur',
+          link: 'https://www.google.com/maps/search/?api=1&query=Health+Care+Pvt+Hospital%2C+Hospital+Road%2C+Sherpur&query_place_id=ChIJO6EZbULXVzcRKDpZy_ERMTI',
+          embed: 'https://maps.google.com/maps?q=Health%20Care%20Pvt%20Hospital%2C%20Hospital%20Road%2C%20Sherpur&z=16&output=embed',
         },
         {
-          t: 'Sherpur · Friday',
+          t: 'Sherpur Chamber 2 · Friday',
           n: 'Amjad Diagnostic Center',
-          a: 'Zila Hospital Road, Narayanpur · 11 AM – 9 PM',
-          q: 'Amzad diagnostic center, Sherpur',
-          ok: true,
+          a: 'Zila Hospital Road, Narayanpur, Sherpur · 11:00 AM – 9:00 PM',
+          q: '25.01915,90.02275',
+          link: 'https://www.google.com/maps?q=25.01915%2C90.02275',
+          embed: 'https://maps.google.com/maps?q=25.01915%2C90.02275&z=16&output=embed',
         },
         {
-          t: 'Mymensingh · Sat – Tue',
+          t: 'Mymensingh · Saturday to Tuesday',
           n: 'New Medicare Pathology Lab',
-          a: '204 Charpara (opp. Hospital Gate 1, 5th floor) · 3:30 PM – 8 PM',
-          q: 'New medicare Path. Lab, Charpara, Mymensingh',
-          ok: true,
+          a: '208 Charpara (opp. Hospital Gate 1, 5th floor) · 3:30 PM – 8:00 PM',
+          q: 'New Medicare Pathology Lab, Charpara, Mymensingh',
+          link: 'https://www.google.com/maps/search/?api=1&query=New+Medicare+Pathology+Lab%2C+Charpara%2C+Mymensingh&query_place_id=ChIJEZk4RglPVjcR9KoUp46judc',
+          embed: 'https://maps.google.com/maps?q=New%20Medicare%20Pathology%20Lab%2C%20Charpara%2C%20Mymensingh&z=16&output=embed',
         },
       ],
     },
     bn: {
       brand: 'ডাঃ কল্লোল',
       vH: 'দেরি নয়। আপনার সার্জনের সাথে কথা বলুন।',
-      vP: 'সিরিয়ালের জন্য কল করুন বা চেম্বারে আসুন — ডাঃ কল্লোল আপনার সমস্যা ও সঠিক চিকিৎসা বুঝিয়ে বলবেন।',
+      vP: 'সিরিয়ালের জন্য কল করুন বা WhatsApp-এ মেসেজ দিন — ডাঃ কল্লোল আপনার সমস্যা ও সঠিক চিকিৎসা বুঝিয়ে বলবেন।',
       book: 'সিরিয়াল নিন',
-      call: 'কল করুন',
-      wa: 'WhatsApp',
-      dir: 'দিকনির্দেশনা →',
+      call: 'জরুরি কল',
+      wa: 'WhatsApp ডক্টর',
+      dir: 'গুগল ম্যাপে দিকনির্দেশনা →',
       mapH: 'চেম্বার খুঁজে নিন',
-      mapS: 'ম্যাপে দেখতে একটা চেম্বারে চাপ দিন।',
-      mapNote: 'শেরপুরের এশিয়া ডায়াগনস্টিক সেন্টারের লোকেশন আনুমানিক — Google Maps-এ এখনো তালিকাভুক্ত নয়।',
+      mapS: 'ম্যাপে দেখতে যেকোনো চেম্বারে চাপ দিন।',
       ch: [
         {
-          t: 'শেরপুর · বৃহস্পতিবার',
-          n: 'এশিয়া ডায়াগনস্টিক সেন্টার',
-          a: 'জেলা হাসপাতাল রোড, নারায়ণপুর · দুপুর ৩টা – রাত ৯টা',
-          q: 'Sadar Hospital Road, Narayanpur, Sherpur',
-          ok: false,
+          t: 'শেরপুর চেম্বার ১ · বৃহস্পতিবার',
+          n: 'হেলথ কেয়ার (প্রাঃ) হাসপাতাল',
+          a: 'জেলা হাসপাতাল রোড, নারায়ণপুর, শেরপুর · বিকাল ৪.০০টা – রাত ৯.০০টা',
+          q: 'Health Care Pvt Hospital, Hospital Road, Sherpur',
+          link: 'https://www.google.com/maps/search/?api=1&query=Health+Care+Pvt+Hospital%2C+Hospital+Road%2C+Sherpur&query_place_id=ChIJO6EZbULXVzcRKDpZy_ERMTI',
+          embed: 'https://maps.google.com/maps?q=Health%20Care%20Pvt%20Hospital%2C%20Hospital%20Road%2C%20Sherpur&z=16&output=embed',
         },
         {
-          t: 'শেরপুর · শুক্রবার',
+          t: 'শেরপুর চেম্বার ২ · শুক্রবার',
           n: 'আমজাদ ডায়াগনস্টিক সেন্টার',
-          a: 'জেলা হাসপাতাল রোড, নারায়ণপুর · সকাল ১১টা – রাত ৯টা',
-          q: 'Amzad diagnostic center, Sherpur',
-          ok: true,
+          a: 'জেলা হাসপাতাল রোড, নারায়ণপুর, শেরপুর · সকাল ১১.০০টা – রাত ৯.০০টা',
+          q: '25.01915,90.02275',
+          link: 'https://www.google.com/maps?q=25.01915%2C90.02275',
+          embed: 'https://maps.google.com/maps?q=25.01915%2C90.02275&z=16&output=embed',
         },
         {
-          t: 'ময়মনসিংহ · শনি – মঙ্গল',
+          t: 'ময়মনসিংহ · শনি থেকে মঙ্গলবার',
           n: 'নিউ মেডিকেয়ার প্যাথলজি ল্যাব',
-          a: '২০৪ চরপাড়া (১নং হাসপাতাল গেটের বিপরীতে, ৫ম তলা) · বিকাল ৩:৩০টা – রাত ৮টা',
-          q: 'New medicare Path. Lab, Charpara, Mymensingh',
-          ok: true,
+          a: '২০৮ চরপাড়া (১নং হাসপাতাল গেইটের বিপরীতে ৫ম তলা) · বিকাল ৩.৩০টা – রাত ৮.০০টা',
+          q: 'New Medicare Pathology Lab, Charpara, Mymensingh',
+          link: 'https://www.google.com/maps/search/?api=1&query=New+Medicare+Pathology+Lab%2C+Charpara%2C+Mymensingh&query_place_id=ChIJEZk4RglPVjcR9KoUp46judc',
+          embed: 'https://maps.google.com/maps?q=New%20Medicare%20Pathology%20Lab%2C%20Charpara%2C%20Mymensingh&z=16&output=embed',
         },
       ],
     },
@@ -96,11 +100,7 @@ export function VisitChambersSection({ settings, chambers, onBookClick }: VisitC
 
   const handleChamberClick = (idx: number) => {
     if (selectedChamberIdx === idx) {
-      window.open(
-        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.ch[idx].q)}`,
-        '_blank',
-        'noopener'
-      );
+      window.open(t.ch[idx].link, '_blank', 'noopener');
     } else {
       setSelectedChamberIdx(idx);
     }
@@ -128,7 +128,7 @@ export function VisitChambersSection({ settings, chambers, onBookClick }: VisitC
           <p>{t.vP}</p>
           <div className="row">
             {onBookClick ? (
-              <button type="button" onClick={onBookClick} className="btn btn-p">
+              <button type="button" onClick={onBookClick} className="btn btn-p cursor-pointer">
                 {t.book}
               </button>
             ) : (
@@ -136,7 +136,7 @@ export function VisitChambersSection({ settings, chambers, onBookClick }: VisitC
                 {t.book}
               </a>
             )}
-            <a href={`tel:${CALL_NO}`} className="btn btn-g">
+            <a href={`tel:${EMERGENCY_CALL}`} className="btn btn-g">
               {t.call}
             </a>
             <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="btn btn-g">
@@ -151,7 +151,7 @@ export function VisitChambersSection({ settings, chambers, onBookClick }: VisitC
               key={idx}
               type="button"
               onClick={() => handleChamberClick(idx)}
-              className={`v-ch glass ${selectedChamberIdx === idx ? 'on' : ''}`}
+              className={`v-ch glass ${selectedChamberIdx === idx ? 'on' : ''} cursor-pointer text-left`}
             >
               <small>{x.t}</small>
               <b>{x.n}</b>
@@ -175,9 +175,8 @@ export function VisitChambersSection({ settings, chambers, onBookClick }: VisitC
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen
-          src={`https://maps.google.com/maps?q=${encodeURIComponent(currentCh.q)}&z=16&output=embed`}
+          src={currentCh.embed}
         />
-        {!currentCh.ok && <p className="note">{t.mapNote}</p>}
       </div>
     </section>
   );

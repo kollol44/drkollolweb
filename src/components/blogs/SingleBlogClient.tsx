@@ -8,6 +8,7 @@ import { MobileStickyBar } from '@/components/MobileStickyBar';
 import { AppointmentModal } from '@/components/AppointmentModal';
 import { useLanguage } from '@/context/LanguageContext';
 import { BlogPost, Category, Chamber, Condition, SiteSettings } from '@/types/database';
+import { formatDigits } from '@/lib/format-utils';
 
 interface SingleBlogClientProps {
   blog: BlogPost;
@@ -124,29 +125,91 @@ export function SingleBlogClient({
           {/* Body Content */}
           <div className="prose prose-teal max-w-none text-sm sm:text-base text-[var(--ink)] leading-relaxed flex flex-col gap-5">
             {content.split('\n\n').map((paragraph, idx) => {
-              if (paragraph.startsWith('### ')) {
+              const trimmed = paragraph.trim();
+              if (!trimmed) return null;
+
+              // Helper for bold and italic
+              const renderInline = (str: string) =>
+                str
+                  .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-[#062F31]">$1</strong>')
+                  .replace(/\*(.+?)\*/g, '<em class="italic">$1</em>')
+                  .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-gray-100 text-xs font-mono text-[var(--teal)]">$1</code>');
+
+              // Section Heading H2
+              if (trimmed.startsWith('## ')) {
+                return (
+                  <h2
+                    key={idx}
+                    className="font-heading font-extrabold text-2xl sm:text-3xl text-[#062F31] mt-8 mb-2 border-l-4 border-[var(--teal)] pl-3.5 leading-snug"
+                    dangerouslySetInnerHTML={{ __html: renderInline(trimmed.replace('## ', '')) }}
+                  />
+                );
+              }
+
+              // Subsection Heading H3
+              if (trimmed.startsWith('### ')) {
                 return (
                   <h3
                     key={idx}
-                    className="font-heading font-extrabold text-2xl text-[var(--teal)] mt-4 mb-1 border-b border-[rgba(43,179,177,0.2)] pb-2"
-                  >
-                    {paragraph.replace('### ', '')}
-                  </h3>
+                    className="font-heading font-extrabold text-xl sm:text-2xl text-[var(--teal)] mt-6 mb-1 border-b border-[rgba(43,179,177,0.2)] pb-2 leading-snug"
+                    dangerouslySetInnerHTML={{ __html: renderInline(trimmed.replace('### ', '')) }}
+                  />
                 );
               }
-              if (paragraph.startsWith('|')) {
-                // Table rendering
-                const rows = paragraph.split('\n').filter(r => !r.includes('---'));
+
+              // Minor Heading H4
+              if (trimmed.startsWith('#### ')) {
                 return (
-                  <div key={idx} className="overflow-x-auto my-4">
-                    <table className="w-full text-xs sm:text-sm text-left border border-[rgba(43,179,177,0.3)] rounded-xl overflow-hidden">
+                  <h4
+                    key={idx}
+                    className="font-heading font-bold text-lg text-[#062F31] mt-4 mb-0.5"
+                    dangerouslySetInnerHTML={{ __html: renderInline(trimmed.replace('#### ', '')) }}
+                  />
+                );
+              }
+
+              // Blockquote / Surgeon Callout Tip
+              if (trimmed.startsWith('> ')) {
+                return (
+                  <blockquote
+                    key={idx}
+                    className="my-5 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[var(--tint)] to-white border-l-4 border-[var(--aqua)] text-sm sm:text-base text-[#062F31] shadow-2xs italic flex items-start gap-3"
+                  >
+                    <span className="text-xl text-[var(--teal)] font-serif leading-none mt-0.5">❝</span>
+                    <div
+                      className="leading-relaxed flex-1"
+                      dangerouslySetInnerHTML={{
+                        __html: renderInline(trimmed.replace(/^>\s*/gm, '').trim()),
+                      }}
+                    />
+                  </blockquote>
+                );
+              }
+
+              // Markdown Table
+              if (trimmed.startsWith('|')) {
+                const rows = trimmed.split('\n').filter((r) => !r.includes('---'));
+                return (
+                  <div key={idx} className="overflow-x-auto my-5">
+                    <table className="w-full text-xs sm:text-sm text-left border border-[rgba(43,179,177,0.3)] rounded-2xl overflow-hidden shadow-2xs">
                       <tbody>
                         {rows.map((row, rIdx) => {
-                          const cells = row.split('|').filter(Boolean).map(c => c.trim());
+                          const cells = row.split('|').filter(Boolean).map((c) => c.trim());
                           return (
-                            <tr key={rIdx} className={rIdx === 0 ? 'bg-[var(--tint)] font-bold text-[var(--teal)]' : 'border-t border-gray-100'}>
+                            <tr
+                              key={rIdx}
+                              className={
+                                rIdx === 0
+                                  ? 'bg-[var(--tint)] font-bold text-[#062F31] border-b border-[rgba(43,179,177,0.25)]'
+                                  : 'border-t border-gray-100 hover:bg-gray-50/70 transition-colors'
+                              }
+                            >
                               {cells.map((cell, cIdx) => (
-                                <td key={cIdx} className="p-3" dangerouslySetInnerHTML={{ __html: cell }} />
+                                <td
+                                  key={cIdx}
+                                  className="p-3 sm:p-3.5 leading-relaxed"
+                                  dangerouslySetInnerHTML={{ __html: renderInline(cell) }}
+                                />
                               ))}
                             </tr>
                           );
@@ -156,21 +219,34 @@ export function SingleBlogClient({
                   </div>
                 );
               }
-              if (paragraph.startsWith('- ') || paragraph.startsWith('1. ')) {
-                const items = paragraph.split('\n');
+
+              // Unordered / Ordered List
+              if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.startsWith('1. ')) {
+                const items = trimmed.split('\n');
                 return (
-                  <ul key={idx} className="flex flex-col gap-2 my-2 pl-2">
+                  <ul key={idx} className="flex flex-col gap-2.5 my-3 pl-1 sm:pl-2">
                     {items.map((it, iIdx) => (
-                      <li key={iIdx} className="flex items-start gap-2.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--aqua)] mt-2 flex-shrink-0" />
-                        <span dangerouslySetInnerHTML={{ __html: it.replace(/^[-*]|\d+\.\s*/, '') }} />
+                      <li key={iIdx} className="flex items-start gap-3 text-sm sm:text-base leading-relaxed text-[#062F31]/90">
+                        <span className="w-2 h-2 rounded-full bg-[var(--aqua)] mt-2 shrink-0 shadow-2xs" />
+                        <span
+                          className="flex-1"
+                          dangerouslySetInnerHTML={{
+                            __html: renderInline(it.replace(/^[-*]|\d+\.\s*/, '').trim()),
+                          }}
+                        />
                       </li>
                     ))}
                   </ul>
                 );
               }
+
+              // Standard Paragraph
               return (
-                <p key={idx} className="leading-relaxed" dangerouslySetInnerHTML={{ __html: paragraph }} />
+                <p
+                  key={idx}
+                  className="leading-relaxed text-[#062F31]/85 text-sm sm:text-base"
+                  dangerouslySetInnerHTML={{ __html: renderInline(trimmed) }}
+                />
               );
             })}
           </div>
@@ -201,7 +277,7 @@ export function SingleBlogClient({
                 onClick={() => setModalOpen(true)}
                 className="btn btn-p text-xs sm:text-sm py-3 px-6 shadow-md"
               >
-                {t.bookBtn}: {settings.phone_serial}
+                {t.bookBtn}: {formatDigits(settings.phone_serial, isBn)}
               </button>
               <a
                 href={settings.whatsapp_url}

@@ -1,13 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Chamber } from '@/types/database';
+import { toBengaliDigits } from '@/lib/format-utils';
+import {
+  X,
+  PhoneCall,
+  PhoneForwarded,
+  MessageCircle,
+  MapPinned,
+  Building2,
+  Clock3,
+  CalendarDays,
+  UserCheck,
+  Navigation2,
+  ArrowUpRight,
+  HeartPulse,
+  Stethoscope,
+  Sparkles,
+  CheckCircle2,
+} from 'lucide-react';
 
 interface AppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  chambers: Chamber[];
+  chambers?: Chamber[];
   whatsappUrl?: string;
 }
 
@@ -18,251 +36,421 @@ export function AppointmentModal({
   whatsappUrl = 'https://wa.me/8801670879100',
 }: AppointmentModalProps) {
   const { lang, isBn } = useLanguage();
-  const [patientName, setPatientName] = useState('');
-  const [patientPhone, setPatientPhone] = useState('');
-  const [chamberName, setChamberName] = useState(
-    chambers[0] ? (isBn ? chambers[0].name_bn : chambers[0].name_en) : 'Sherpur - Asia Diagnostic Center'
-  );
-  const [preferredDate, setPreferredDate] = useState('');
-  const [problemSummary, setProblemSummary] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+
+  // Close on Escape key press
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const t = {
     en: {
-      title: 'Book a Surgical Serial',
-      subtitle: 'Leave your details and our assistant will confirm your serial number promptly.',
-      nameLabel: 'Patient Full Name',
-      phoneLabel: 'Mobile Phone Number',
-      chamberLabel: 'Select Chamber',
-      dateLabel: 'Preferred Consultation Date',
-      problemLabel: 'Problem Summary (Optional)',
-      problemPlaceholder: 'e.g. Piles, gallbladder pain, hernia, breast lump, fistula...',
-      submitBtn: 'Submit Appointment Request',
-      submitting: 'Submitting...',
-      successTitle: 'Appointment Request Submitted!',
-      successMsg: 'Our serial coordinator will call or WhatsApp you shortly with your serial number.',
-      waDirect: 'Send to WhatsApp Directly',
+      badge: 'Dr. Fahim Foysal Kollol · Serial & Consultation',
+      title: 'Book Serial & Direct Contact',
+      subtitle:
+        'Select your preferred chamber below to call directly or message on WhatsApp to confirm your patient serial promptly.',
       close: 'Close',
+      callBtn: 'Call Now',
+      whatsappBtn: 'WhatsApp Serial',
+      viewMap: 'View on Google Maps',
+      emergencyTitle: 'Direct Contact with Doctor (Emergency Purpose)',
+      emergencySubtitle:
+        'For urgent medical concerns or direct emergency consultation with Dr. Fahim Foysal Kollol.',
+      emergencyWaBtn: 'Direct WhatsApp to Doctor',
+      emergencyCallBtn: 'Direct Emergency Call',
+      serialInfo: 'Info & Serial:',
+      assistantLabel: 'Personal Assistant:',
+      scheduleLabel: 'Visiting Hours:',
+      addressLabel: 'Address:',
+      doctorDirectLabel: "Doctor's Direct Mobile:",
+      statusActive: 'Active',
+      hours247: '24/7 WhatsApp',
+      chamberIndexPrefix: '#',
+      tipTitle: 'Quick Serial Tip:',
+      tipText:
+        'When messaging on WhatsApp, simply provide the Patient Name, Age, Problem summary, and preferred Date. Our assistant will confirm the serial number promptly.',
+      emergencyBadge: 'Emergency Contact',
     },
     bn: {
-      title: 'ডাক্তারের সিরিয়াল নিন',
-      subtitle: 'আপনার তথ্য দিন — আমাদের সহকারী দ্রুত সিরিয়াল নম্বর নিশ্চিত করে জানিয়ে দেবেন।',
-      nameLabel: 'রোগীর পূর্ণ নাম',
-      phoneLabel: 'মোবাইল নম্বর',
-      chamberLabel: 'চেম্বার নির্বাচন করুন',
-      dateLabel: 'যে তারিখে দেখাতে চান',
-      problemLabel: 'সমস্যার বিবরণ (ঐচ্ছিক)',
-      problemPlaceholder: 'যেমন: পাইলস, পিত্তথলির পাথর, হার্নিয়া, স্তনে চাকা, ফিস্টুলা...',
-      submitBtn: 'সিরিয়ালের জন্য অনুরোধ পাঠান',
-      submitting: 'পাঠানো হচ্ছে...',
-      successTitle: 'সিরিয়াল রিকোয়েস্ট জমা হয়েছে!',
-      successMsg: 'আমাদের সিরিয়াল সহকারী দ্রুত আপনার নম্বরে কল বা WhatsApp-এ সিরিয়াল জানিয়ে দেবেন।',
-      waDirect: 'সরাসরি WhatsApp-এ পাঠান',
+      badge: 'ডাঃ ফাহিম ফয়সাল কল্লোল · সিরিয়াল ও কনসালটেশন',
+      title: 'সিরিয়াল বুকিং ও সরাসরি যোগাযোগ',
+      subtitle:
+        'আপনার সুবিধাজনক চেম্বার নির্বাচন করে সরাসরি ফোন করুন অথবা WhatsApp-এ মেসেজ দিয়ে সহজেই সিরিয়াল নিশ্চিত করুন।',
       close: 'বন্ধ করুন',
+      callBtn: 'কল করুন',
+      whatsappBtn: 'WhatsApp-এ সিরিয়াল নিন',
+      viewMap: 'গুগল ম্যাপে লোকেশন দেখুন',
+      emergencyTitle: 'সরাসরি ডাক্তারের সাথে যোগাযোগ (জরুরি প্রয়োজনে)',
+      emergencySubtitle:
+        'যেকোনো জরুরি চিকিৎসাজনিত প্রয়োজনে সরাসরি ডাঃ ফাহিম ফয়সাল কল্লোল স্যারের সাথে WhatsApp বা ফোনে কথা বলুন।',
+      emergencyWaBtn: 'ডাক্তারকে সরাসরি WhatsApp',
+      emergencyCallBtn: 'জরুরি সরাসরি কল',
+      serialInfo: 'তথ্য ও সিরিয়াল:',
+      assistantLabel: 'ব্যক্তিগত সহকারী:',
+      scheduleLabel: 'সময়সূচি:',
+      addressLabel: 'ঠিকানা:',
+      doctorDirectLabel: 'ডাক্তারের সরাসরি নম্বর:',
+      statusActive: 'সক্রিয়',
+      hours247: '২৪/৭ WhatsApp',
+      chamberIndexPrefix: '#',
+      tipTitle: 'সহজে সিরিয়াল পাওয়ার উপায়:',
+      tipText:
+        'WhatsApp-এ মেসেজ দেওয়ার সময় রোগীর নাম, বয়স, সমস্যার বিবরণ ও যে তারিখে দেখাতে চান তা লিখে পাঠালে দ্রুত সিরিয়াল নম্বর নিশ্চিত করা হবে।',
+      emergencyBadge: 'জরুরি সেবা',
     },
   }[lang];
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMessage('');
+  // Specific data for the 3 chambers: Sherpur 1, Sherpur 2, Mymensingh
+  const chamberCards = [
+    {
+      id: 'sherpur-healthcare',
+      badge_en: 'Sherpur Chamber 1 · Thursday',
+      badge_bn: 'শেরপুর চেম্বার ১ · প্রতি বৃহস্পতিবার',
+      name_en: 'Chamber 1: Health Care (Pvt) Hospital',
+      name_bn: 'চেম্বার ১: হেলথ কেয়ার (প্রাঃ) হাসপাতাল',
+      address_en: 'Zila Hospital Road, Narayanpur, Sherpur',
+      address_bn: 'জেলা হাসপাতাল রোড, নারায়ণপুর, শেরপুর।',
+      schedule_en: 'Every Thursday 4:00 PM – 9:00 PM',
+      schedule_bn: 'প্রতি বৃহস্পতিবার বিকাল ৪.০০টা – রাত ৯.০০টা',
+      phone_display_en: '01671-869026',
+      phone_display_bn: '০১৬৭১-৮৬৯০২৬',
+      phone_raw: '01671869026',
+      assistant_en: 'Milon',
+      assistant_bn: 'মিলন',
+      map_url:
+        'https://www.google.com/maps/search/?api=1&query=Health+Care+Pvt+Hospital%2C+Hospital+Road%2C+Sherpur&query_place_id=ChIJO6EZbULXVzcRKDpZy_ERMTI',
+      wa_url: `https://wa.me/8801671869026?text=${encodeURIComponent(
+        isBn
+          ? 'আসসালামু আলাইকুম মিলন ভাই। আমি শেরপুর হেলথ কেয়ার হাসপাতালে ডাঃ কল্লোল স্যারের বৃহস্পতিবারের সিরিয়াল নিতে চাই।\nরোগীর নাম:\nবয়স:\nসমস্যা:'
+          : 'Hello Milon, I want to book a Thursday serial for Dr. Kollol at Health Care Hospital, Sherpur.\nPatient Name:\nAge:\nProblem:'
+      )}`,
+      tagColor: 'from-[#0B6E73] to-[#148388]',
+    },
+    {
+      id: 'sherpur-amjad',
+      badge_en: 'Sherpur Chamber 2 · Friday',
+      badge_bn: 'শেরপুর চেম্বার ২ · প্রতি শুক্রবার',
+      name_en: 'Chamber 2: Amjad Diagnostic Center',
+      name_bn: 'চেম্বার ২: আমজাদ ডায়াগনস্টিক সেন্টার',
+      address_en: 'Zila Hospital Road, Narayanpur, Sherpur',
+      address_bn: 'জেলা হাসপাতাল রোড, নারায়ণপুর, শেরপুর।',
+      schedule_en: 'Every Friday 11:00 AM – 9:00 PM',
+      schedule_bn: 'প্রতি শুক্রবার সকাল ১১.০০টা – রাত ৯.০০টা',
+      phone_display_en: '01671-869026',
+      phone_display_bn: '০১৬৭১-৮৬৯০২৬',
+      phone_raw: '01671869026',
+      assistant_en: 'Milon',
+      assistant_bn: 'মিলন',
+      map_url: 'https://www.google.com/maps?q=25.01915%2C90.02275',
+      wa_url: `https://wa.me/8801671869026?text=${encodeURIComponent(
+        isBn
+          ? 'আসসালামু আলাইকুম মিলন ভাই। আমি শেরপুর আমজাদ ডায়াগনস্টিক সেন্টারে ডাঃ কল্লোল স্যারের শুক্রবারের সিরিয়াল নিতে চাই।\nরোগীর নাম:\nবয়স:\nসমস্যা:'
+          : 'Hello Milon, I want to book a Friday serial for Dr. Kollol at Amjad Diagnostic Center, Sherpur.\nPatient Name:\nAge:\nProblem:'
+      )}`,
+      tagColor: 'from-[#0B6E73] to-[#1a9399]',
+    },
+    {
+      id: 'mymensingh-medicare',
+      badge_en: 'Mymensingh · Saturday to Tuesday',
+      badge_bn: 'ময়মনসিংহ · প্রতি শনি থেকে মঙ্গলবার',
+      name_en: 'Chamber: New Medicare Pathology Lab, Mymensingh',
+      name_bn: 'চেম্বার: নিউ মেডিকেয়ার প্যাথলজি ল্যাব, ময়মনসিংহ',
+      address_en: '208 Charpara (Opposite Hospital Gate 1, 5th Floor), Mymensingh',
+      address_bn: '২০৮ চরপাড়া (১নং হাসপাতাল গেইটের বিপরীতে ৫ম তলা), ময়মনসিংহ',
+      schedule_en: 'Every Saturday to Tuesday 3:30 PM – 8:00 PM',
+      schedule_bn: 'প্রতি শনি থেকে মঙ্গলবার বিকাল ৩.৩০টা – রাত ৮.০০টা',
+      phone_display_en: '01750-529252',
+      phone_display_bn: '০১৭৫০-৫২৯২৫২',
+      phone_raw: '01750529252',
+      assistant_en: null,
+      assistant_bn: null,
+      map_url:
+        'https://www.google.com/maps/search/?api=1&query=New+Medicare+Pathology+Lab%2C+Charpara%2C+Mymensingh&query_place_id=ChIJEZk4RglPVjcR9KoUp46judc',
+      wa_url: `https://wa.me/8801750529252?text=${encodeURIComponent(
+        isBn
+          ? 'আসসালামু আলাইকুম। আমি ময়মনসিংহ নিউ মেডিকেয়ার প্যাথলজি ল্যাব চেম্বারে ডাঃ কল্লোল স্যারের সিরিয়াল নিতে চাই।\nরোগীর নাম:\nবয়স:\nসমস্যা:\nতারিখ:'
+          : 'Hello, I would like to book an appointment with Dr. Kollol at New Medicare Pathology Lab, Mymensingh.\nPatient Name:\nAge:\nProblem:\nPreferred Date:'
+      )}`,
+      tagColor: 'from-[#0B6E73] to-[#2BB3B1]',
+    },
+  ];
 
-    try {
-      const res = await fetch('/api/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          patient_name: patientName,
-          patient_phone: patientPhone,
-          chamber_name: chamberName,
-          preferred_date: preferredDate,
-          problem_summary: problemSummary,
-        }),
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setSuccess(true);
-      } else {
-        setErrorMessage(data.message || 'Please check your inputs and try again.');
-      }
-    } catch {
-      setErrorMessage('Network error occurred. Please try again or call directly.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getWhatsAppPrefilledUrl = () => {
-    const text = isBn
-      ? `আসসালামু আলাইকুম। আমি ডাঃ কল্লোল স্যারের সিরিয়াল নিতে চাই।\nরোগীর নাম: ${patientName || '...'}\nমোবাইল: ${patientPhone || '...'}\nচেম্বার: ${chamberName}\nতারিখ: ${preferredDate || '...'}\nসমস্যা: ${problemSummary || '...'}`
-      : `Hello, I would like to book an appointment with Dr. Kollol.\nPatient: ${patientName || '...'}\nPhone: ${patientPhone || '...'}\nChamber: ${chamberName}\nDate: ${preferredDate || '...'}\nProblem: ${problemSummary || '...'}`;
-    return `${whatsappUrl}?text=${encodeURIComponent(text)}`;
+  const emergencyDoctorCard = {
+    phone_display_en: '01670-879100',
+    phone_display_bn: '০১৬৭০-৮৭৯১০০',
+    phone_raw: '01670879100',
+    wa_url: `https://wa.me/8801670879100?text=${encodeURIComponent(
+      isBn
+        ? 'আসসালামু আলাইকুম ডাঃ ফাহিম ফয়সাল কল্লোল স্যার। জরুরি চিকিৎসাজনিত প্রয়োজনে আপনার সাথে WhatsApp-এ যোগাযোগ করছি।\nরোগীর নাম:\nসমস্যা:'
+        : 'Hello Dr. Fahim Foysal Kollol, contacting you for urgent surgical consultation/emergency.\nPatient Name:\nProblem:'
+    )}`,
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center p-4 bg-[var(--ink)]/60 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-white shadow-2xl border border-[var(--aqua)]/30 max-h-[90vh] overflow-y-auto">
-        {/* Close Button */}
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[var(--tint)] hover:bg-[var(--teal)] hover:text-white grid place-items-center text-[var(--muted)] font-bold transition-colors"
-          aria-label="Close"
-        >
-          ✕
-        </button>
-
-        {success ? (
-          <div className="text-center py-6 flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 grid place-items-center text-3xl font-extrabold shadow-inner">
-              ✓
-            </div>
-            <h3 className="font-heading font-extrabold text-2xl text-[var(--teal)]">
-              {t.successTitle}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/65 backdrop-blur-md animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-4xl max-h-[92vh] flex flex-col rounded-3xl bg-white shadow-2xl border border-[var(--aqua)]/30 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Modal Top Header */}
+        <div className="relative px-6 py-5 sm:px-8 sm:py-6 bg-gradient-to-r from-[#062F31] via-[#0B6E73] to-[#135A5E] text-white flex items-start justify-between gap-4">
+          <div className="pr-8">
+            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/15 text-[11px] font-semibold text-[#8AE1DF] backdrop-blur-sm mb-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#2BB3B1]" />
+              {t.badge}
+            </span>
+            <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-white tracking-tight">
+              {t.title}
             </h3>
-            <p className="text-sm text-[var(--muted)] max-w-sm">
-              {t.successMsg}
+            <p className="text-xs sm:text-sm text-[#D4EEEE] mt-1 max-w-2xl leading-relaxed">
+              {t.subtitle}
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-3 mt-4 w-full">
-              <a
-                href={getWhatsAppPrefilledUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-g flex-1 py-3 border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100"
-              >
-                {t.waDirect}
-              </a>
-              <button
-                type="button"
-                onClick={onClose}
-                className="btn btn-p flex-1 py-3"
-              >
-                {t.close}
-              </button>
-            </div>
           </div>
-        ) : (
-          <div>
-            <div className="mb-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--aqua)] block">
-                Dr. Fahim Foysal Kollol
-              </span>
-              <h3 className="font-heading font-extrabold text-2xl text-[var(--teal)] mt-1">
-                {t.title}
-              </h3>
-              <p className="text-xs text-[var(--muted)] mt-1">
-                {t.subtitle}
-              </p>
-            </div>
 
-            {errorMessage && (
-              <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
-                {errorMessage}
-              </div>
-            )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-9 h-9 shrink-0 rounded-full bg-white/10 hover:bg-white/25 text-white grid place-items-center transition-all cursor-pointer border border-white/20"
+            aria-label={t.close}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-xs font-bold text-[var(--ink)] mb-1">
-                  {t.nameLabel} *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={patientName}
-                  onChange={(e) => setPatientName(e.target.value)}
-                  placeholder="e.g. Md. Rahim / Rashida Begum"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[rgba(43,179,177,0.3)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[var(--ink)] mb-1">
-                  {t.phoneLabel} *
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={patientPhone}
-                  onChange={(e) => setPatientPhone(e.target.value)}
-                  placeholder="017XXXXXXXX"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[rgba(43,179,177,0.3)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-[var(--ink)] mb-1">
-                    {t.chamberLabel} *
-                  </label>
-                  <select
-                    value={chamberName}
-                    onChange={(e) => setChamberName(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-[rgba(43,179,177,0.3)] bg-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                  >
-                    {chambers.map((ch) => (
-                      <option key={ch.id} value={isBn ? ch.name_bn : ch.name_en}>
-                        {isBn ? ch.schedule_bn : ch.schedule_en} ({isBn ? ch.name_bn : ch.name_en})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-[var(--ink)] mb-1">
-                    {t.dateLabel} *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={preferredDate}
-                    onChange={(e) => setPreferredDate(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl border border-[rgba(43,179,177,0.3)] bg-white text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[var(--ink)] mb-1">
-                  {t.problemLabel}
-                </label>
-                <textarea
-                  rows={2}
-                  value={problemSummary}
-                  onChange={(e) => setProblemSummary(e.target.value)}
-                  placeholder={t.problemPlaceholder}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[rgba(43,179,177,0.3)] bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[var(--teal)]"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn btn-p w-full py-3.5 mt-2 font-bold shadow-md"
+        {/* Modal Scrollable Body: 4 Cards */}
+        <div className="p-4 sm:p-6 lg:p-7 overflow-y-auto space-y-5 bg-[#F8FCFC]">
+          {/* Grid of 4 Cards: 3 Chambers + 1 Direct Doctor Emergency */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+            {/* Cards 1, 2, 3: Physical Chambers */}
+            {chamberCards.map((ch, idx) => (
+              <div
+                key={ch.id}
+                className="group relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-white border border-[#0B6E73]/15 shadow-sm hover:shadow-md hover:border-[#2BB3B1] transition-all duration-300"
               >
-                {loading ? t.submitting : t.submitBtn}
-              </button>
+                <div>
+                  {/* Top Badge */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#EEF7F6] text-[#0B6E73] border border-[#2BB3B1]/25">
+                      <CalendarDays className="w-3.5 h-3.5 text-[#2BB3B1]" />
+                      {isBn ? ch.badge_bn : ch.badge_en}
+                    </span>
+                    <span className="text-[10px] font-bold text-[#0B6E73]/70 px-2 py-0.5 rounded-md bg-gray-50 border border-gray-200/60 uppercase tracking-wider">
+                      {t.chamberIndexPrefix}
+                      {isBn ? toBengaliDigits(idx + 1) : idx + 1}
+                    </span>
+                  </div>
 
-              <div className="flex items-center justify-center gap-2 pt-2 text-xs text-[var(--muted)]">
-                <span>or</span>
+                  {/* Chamber Name Header */}
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-teal-50 border border-teal-200/60 flex items-center justify-center shrink-0 mt-0.5 text-[#0B6E73]">
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                    <h4 className="font-heading font-extrabold text-base sm:text-lg text-[#062F31] leading-snug">
+                      {isBn ? ch.name_bn : ch.name_en}
+                    </h4>
+                  </div>
+
+                  {/* Details List with modern icon micro-containers */}
+                  <div className="mt-3.5 space-y-2.5 text-xs text-[#062F31]/80">
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-6 h-6 rounded-md bg-[#EEF7F6] text-[#0B6E73] flex items-center justify-center shrink-0 mt-0.5">
+                        <MapPinned className="w-3.5 h-3.5 text-[#2BB3B1]" />
+                      </div>
+                      <span className="leading-relaxed">
+                        <strong className="text-[#062F31]">{t.addressLabel}</strong>{' '}
+                        {isBn ? ch.address_bn : ch.address_en}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-6 h-6 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                        <Clock3 className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="leading-relaxed">
+                        <strong className="text-[#062F31]">{t.scheduleLabel}</strong>{' '}
+                        {isBn ? ch.schedule_bn : ch.schedule_en}
+                      </span>
+                    </div>
+
+                    {(isBn ? ch.assistant_bn : ch.assistant_en) && (
+                      <div className="flex items-start gap-2.5">
+                        <div className="w-6 h-6 rounded-md bg-sky-50 text-sky-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <UserCheck className="w-3.5 h-3.5" />
+                        </div>
+                        <span className="leading-relaxed">
+                          <strong className="text-[#062F31]">{t.assistantLabel}</strong>{' '}
+                          {isBn ? ch.assistant_bn : ch.assistant_en}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-start gap-2.5 pt-0.5">
+                      <div className="w-6 h-6 rounded-md bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+                        <PhoneCall className="w-3.5 h-3.5 text-emerald-700" />
+                      </div>
+                      <span className="leading-relaxed">
+                        <strong className="text-[#062F31]">{t.serialInfo}</strong>{' '}
+                        <a
+                          href={`tel:${ch.phone_raw}`}
+                          className="font-bold text-base text-[#0B6E73] hover:underline tracking-tight"
+                        >
+                          {isBn ? ch.phone_display_bn : ch.phone_display_en}
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Action Buttons */}
+                <div className="mt-5 pt-4 border-t border-gray-100 flex flex-col gap-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <a
+                      href={`tel:${ch.phone_raw}`}
+                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#0B6E73] hover:bg-[#062F31] text-white text-xs font-bold transition-all shadow-sm active:scale-98"
+                    >
+                      <PhoneCall className="w-3.5 h-3.5" />
+                      <span>{t.callBtn}</span>
+                    </a>
+
+                    <a
+                      href={ch.wa_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-bold transition-all shadow-sm active:scale-98"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 fill-white" />
+                      <span>WhatsApp</span>
+                    </a>
+                  </div>
+
+                  <a
+                    href={ch.map_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1 text-[11px] font-semibold text-[#0B6E73] hover:text-[#062F31] py-1 transition-colors group/map"
+                  >
+                    <Navigation2 className="w-3 h-3 text-[#2BB3B1] group-hover/map:rotate-12 transition-transform" />
+                    <span>{t.viewMap}</span>
+                    <ArrowUpRight className="w-3 h-3 opacity-60" />
+                  </a>
+                </div>
+              </div>
+            ))}
+
+            {/* Card 4: Doctor Direct Emergency Contact (Special Emergency Styling) */}
+            <div className="relative flex flex-col justify-between p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-white via-emerald-50/40 to-teal-50/70 border-2 border-emerald-500/40 shadow-md hover:shadow-lg transition-all duration-300">
+              <div>
+                {/* Emergency Tag */}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold px-3 py-1 rounded-lg bg-rose-50 text-rose-700 border border-rose-200">
+                    <HeartPulse className="w-3.5 h-3.5 text-rose-600 animate-pulse" />
+                    {t.emergencyBadge}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    {t.hours247}
+                  </span>
+                </div>
+
+                {/* Emergency Heading Header */}
+                <div className="flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <Stethoscope className="w-4 h-4" />
+                  </div>
+                  <h4 className="font-heading font-extrabold text-base sm:text-lg text-[#062F31] leading-snug">
+                    {t.emergencyTitle}
+                  </h4>
+                </div>
+
+                <p className="text-xs text-[#062F31]/75 mt-2.5 leading-relaxed pl-9.5">
+                  {t.emergencySubtitle}
+                </p>
+
+                <div className="mt-4 p-3 rounded-xl bg-white/90 border border-emerald-200 shadow-inner flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white grid place-items-center shadow-xs">
+                      <PhoneCall className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold text-[#0B6E73] uppercase tracking-wider block">
+                        {t.doctorDirectLabel}
+                      </span>
+                      <a
+                        href={`tel:${emergencyDoctorCard.phone_raw}`}
+                        className="font-heading font-extrabold text-base sm:text-lg text-emerald-900 tracking-tight hover:underline"
+                      >
+                        {isBn
+                          ? emergencyDoctorCard.phone_display_bn
+                          : emergencyDoctorCard.phone_display_en}
+                      </a>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                    {t.statusActive}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons for Doctor Card */}
+              <div className="mt-5 pt-4 border-t border-emerald-100 flex flex-col gap-2">
                 <a
-                  href={getWhatsAppPrefilledUrl()}
+                  href={emergencyDoctorCard.wa_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-700 font-bold hover:underline flex items-center gap-1"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:opacity-95 text-white text-xs sm:text-sm font-bold transition-all shadow-md active:scale-98"
                 >
-                  {t.waDirect} →
+                  <MessageCircle className="w-4 h-4 fill-white" />
+                  <span>{t.emergencyWaBtn}</span>
+                </a>
+
+                <a
+                  href={`tel:${emergencyDoctorCard.phone_raw}`}
+                  className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-white hover:bg-gray-50 text-[#062F31] border border-gray-200 text-xs font-semibold transition-all active:scale-98 text-center"
+                >
+                  <PhoneForwarded className="w-3.5 h-3.5 text-[#0B6E73]" />
+                  <span>
+                    {t.emergencyCallBtn} (
+                    {isBn
+                      ? emergencyDoctorCard.phone_display_bn
+                      : emergencyDoctorCard.phone_display_en}
+                    )
+                  </span>
                 </a>
               </div>
-            </form>
+            </div>
           </div>
-        )}
+
+          {/* Bottom Helpful Note */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white border border-[#2BB3B1]/20 flex items-start gap-3 text-xs text-[#062F31]/80">
+            <CheckCircle2 className="w-4 h-4 text-[#0B6E73] shrink-0 mt-0.5" />
+            <div>
+              <strong className="text-[#062F31] font-bold mr-1">{t.tipTitle}</strong>
+              <span>{t.tipText}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
