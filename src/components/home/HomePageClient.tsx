@@ -90,7 +90,7 @@ export function HomePageClient({
       />
 
       {/* 5. Patient Reviews & Google Box */}
-      <ReviewsSection reviews={reviews} />
+      <ReviewsSection reviews={reviews} siteSettings={siteSettings} />
 
       {/* 6. Clinical Practice Gallery */}
       <GallerySection photos={galleryPhotos} />

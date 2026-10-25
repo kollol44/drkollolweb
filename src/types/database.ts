@@ -15,6 +15,9 @@ export interface SiteSettings {
   notice_banner_bn?: string;
   disclaimer_en: string;
   disclaimer_bn: string;
+  google_review_url?: string;
+  google_rating?: number;
+  google_review_count?: number;
   updated_at?: string;
 }
 
@@ -145,6 +148,7 @@ export interface Review {
   is_sample: boolean;
   is_featured: boolean;
   sort_order: number;
+  google_review_url?: string;
 }
 
 export interface FAQ {

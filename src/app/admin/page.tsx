@@ -227,6 +227,44 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleDeleteReview = async (id: number) => {
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section: 'review', id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setReviews((prev) => prev.filter((r) => r.id !== id));
+        showToast('Review deleted successfully.');
+      } else {
+        showToast(data.message || 'Failed to delete review.', 'error');
+      }
+    } catch {
+      showToast('Network error while deleting review.', 'error');
+    }
+  };
+
+  const handleDeleteFaq = async (id: number) => {
+    try {
+      const res = await fetch('/api/admin/content', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ section: 'faq', id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setFaqs((prev) => prev.filter((f) => f.id !== id));
+        showToast('FAQ deleted successfully.');
+      } else {
+        showToast(data.message || 'Failed to delete FAQ.', 'error');
+      }
+    } catch {
+      showToast('Network error while deleting FAQ.', 'error');
+    }
+  };
+
   const handleUpdateAppointmentStatus = async (
     id: string,
     status: 'pending' | 'confirmed' | 'cancelled'
@@ -451,8 +489,12 @@ export default function AdminDashboardPage() {
               <AdminFaqsReviews
                 faqs={faqs}
                 reviews={reviews}
+                siteSettings={siteSettings}
                 onSaveFaq={handleSaveFaq}
+                onDeleteFaq={handleDeleteFaq}
                 onSaveReview={handleSaveReview}
+                onDeleteReview={handleDeleteReview}
+                onSaveSiteSettings={handleSaveSiteSettings}
               />
             )}
 

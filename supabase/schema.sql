@@ -49,6 +49,9 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     notice_banner_bn TEXT DEFAULT '',
     disclaimer_en TEXT NOT NULL DEFAULT 'Information on this site is not a substitute for professional medical consultation or examination.',
     disclaimer_bn TEXT NOT NULL DEFAULT 'এই সাইটের তথ্য কোনোভাবেই সরাসরি ডাক্তার দেখানোর বা চিকিৎসার বিকল্প নয়।',
+    google_review_url TEXT DEFAULT 'https://maps.google.com/?cid=drkollol',
+    google_rating NUMERIC DEFAULT 4.9,
+    google_review_count INT DEFAULT 54,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -175,6 +178,7 @@ CREATE TABLE IF NOT EXISTS public.reviews (
     is_sample BOOLEAN NOT NULL DEFAULT TRUE,
     is_featured BOOLEAN NOT NULL DEFAULT TRUE,
     sort_order INT NOT NULL DEFAULT 0,
+    google_review_url TEXT DEFAULT '',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

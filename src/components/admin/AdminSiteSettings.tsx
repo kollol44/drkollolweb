@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Save, CheckCircle, Settings, ShieldAlert, Phone, Mail } from 'lucide-react';
+import { Save, CheckCircle, Settings, ShieldAlert, Phone, Mail, Star } from 'lucide-react';
 import type { SiteSettings } from '@/types/database';
 
 interface AdminSiteSettingsProps {
@@ -151,6 +151,54 @@ export function AdminSiteSettings({ siteSettings, onSave }: AdminSiteSettingsPro
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full p-2.5 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2BB3B1]"
             />
+          </div>
+        </div>
+
+        {/* Google Business & Reviews Settings */}
+        <div className="pt-4 border-t border-gray-100">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#062F31] mb-4 flex items-center gap-2">
+            <Star className="w-4 h-4 text-amber-500 fill-current" /> Google Reviews & Business Profile
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Google Business Review / Profile URL
+              </label>
+              <input
+                type="url"
+                value={form.google_review_url || ''}
+                onChange={(e) => setForm({ ...form, google_review_url: e.target.value })}
+                placeholder="https://maps.app.goo.gl/... or https://g.page/r/.../review"
+                className="w-full p-2.5 text-xs font-mono rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2BB3B1]"
+              />
+              <span className="text-[11px] text-gray-500 mt-1 block">
+                This URL powers the &quot;See reviews on Google&quot;, &quot;Write a review&quot; button, and generates the dynamic QR Code.
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Average Rating</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="1"
+                  max="5"
+                  value={form.google_rating ?? 5.0}
+                  onChange={(e) => setForm({ ...form, google_rating: parseFloat(e.target.value) || 5.0 })}
+                  className="w-full p-2.5 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2BB3B1]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Reviews Count</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.google_review_count ?? 48}
+                  onChange={(e) => setForm({ ...form, google_review_count: parseInt(e.target.value) || 0 })}
+                  className="w-full p-2.5 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#2BB3B1]"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
