@@ -186,27 +186,64 @@ function FormattedMessageText({ text, isUser }: { text: string; isUser?: boolean
 // Every answer ends in "book a serial / call". Approved wording 2026-10-20.
 // ----------------------------------------------------------------------------------
 
-const QUICK_CHIPS = [
+interface QuickChipItem {
+  id: string;
+  isHoverFeatured?: boolean;
+  label_en: string;
+  label_bn: string;
+  answer_en: string;
+  answer_bn: string;
+  actions: Array<{
+    label: string;
+    url: string;
+    type: 'call' | 'link' | 'booking';
+  }>;
+}
+
+const QUICK_CHIPS: QuickChipItem[] = [
   {
     id: 'serial',
+    isHoverFeatured: true,
     label_en: 'How do I book a serial?',
     label_bn: 'সিরিয়াল কীভাবে নেব?',
-    answer_en: 'For a serial, call or message **01750529252**.',
-    answer_bn: 'সিরিয়ালের জন্য **01750529252** নম্বরে কল করুন অথবা মেসেজ দিন।',
+    answer_en:
+      'To book a serial, please contact:\n• Personal Assistant Milon: 01671-869026 (Sherpur Chamber 1: Health Care Hospital / Chamber 2: Amjad Diagnostic)\n• Serial Hotline: 01750-529252 (Mymensingh Chamber: New Medicare Pathology Lab)\n• Doctor Direct WhatsApp (emergency): 01670-879100',
+    answer_bn:
+      'সিরিয়ালের জন্য সরাসরি যোগাযোগ করুন:\n• **ব্যক্তিগত সহকারী মিলন:** 01671-869026 (শেরপুর চেম্বার ১: হেলথ কেয়ার হাসপাতাল / শেরপুর চেম্বার ২: আমজাদ ডায়াগনস্টিক)\n• **সিরিয়াল ও তথ্য হটলাইন:** 01750-529252 (ময়মনসিংহ চেম্বার: নিউ মেডিকেয়ার প্যাথলজি ল্যাব)\n• **ডাক্তারকে সরাসরি WhatsApp (জরুরি প্রয়োজনে):** 01670-879100',
     actions: [
-      { label: 'কল করুন · Call', url: 'tel:01750529252', type: 'call' as const },
-      { label: 'মেসেজ দিন · SMS', url: 'sms:01750529252', type: 'link' as const },
+      { label: 'ব্যক্তিগত সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'ডাক্তারকে সরাসরি WhatsApp', url: 'https://wa.me/8801670879100', type: 'link' },
+    ],
+  },
+  {
+    id: 'chambers',
+    isHoverFeatured: true,
+    label_en: 'Chambers & Schedule',
+    label_bn: 'চেম্বারের স্থান ও সময়সূচী',
+    answer_en:
+      'Dr. Kollol consults regularly at:\n1. **Sherpur Chamber 1 (Health Care Hospital):** Every Thursday 4:00 PM – 9:00 PM (Assistant Milon: 01671-869026)\n2. **Sherpur Chamber 2 (Amjad Diagnostic Center):** Every Friday 11:00 AM – 9:00 PM (Assistant Milon: 01671-869026)\n3. **Mymensingh Chamber (New Medicare Pathology Lab):** Every Saturday to Tuesday 3:30 PM – 8:00 PM (Hotline: 01750-529252)',
+    answer_bn:
+      'ডাঃ কল্লোল নিয়মিত চেম্বার করেন:\n\n1. **শেরপুর চেম্বার ১ (হেলথ কেয়ার হাসপাতাল):** প্রতি বৃহস্পতিবার বিকাল ৪.০০টা – রাত ৯.০০টা (সহকারী মিলন: 01671-869026)\n2. **শেরপুর চেম্বার ২ (আমজাদ ডায়াগনস্টিক সেন্টার):** প্রতি শুক্রবার সকাল ১১.০০টা – রাত ৯.০০টা (সহকারী মিলন: 01671-869026)\n3. **ময়মনসিংহ চেম্বার (নিউ মেডিকেয়ার প্যাথলজি ল্যাব):** প্রতি শনি থেকে মঙ্গলবার বিকাল ৩.৩০টা – রাত ৮.০০টা (সিরিয়াল: 01750-529252)',
+    actions: [
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'চেম্বারের বিস্তারিত · Details', url: '/#chambers', type: 'link' },
     ],
   },
   {
     id: 'treats',
-    label_en: 'What does Dr. Kollol treat?',
+    isHoverFeatured: true,
+    label_en: 'What conditions are treated?',
     label_bn: 'কোন কোন রোগের চিকিৎসা করেন?',
     answer_en:
       'Dr. Kollol is a General, Laparoscopic, Breast & Colorectal Surgeon — piles, fistula, fissure, gallstones, appendicitis, hernia, breast lumps, kidney stones, varicocele and other surgical problems. Book a visit for your problem.',
     answer_bn:
       'ডাঃ কল্লোল জেনারেল, ল্যাপারোস্কপিক, ব্রেস্ট ও কলোরেক্টাল সার্জন। পাইলস, ফিস্টুলা, ফিশার, পিত্তথলির পাথর, অ্যাপেন্ডিসাইটিস, হার্নিয়া, স্তনের চাকা, কিডনির পাথর, ভ্যারিকোসিলসহ নানা সার্জিক্যাল সমস্যার চিকিৎসা করেন। আপনার সমস্যার জন্য সরাসরি দেখিয়ে নিন।',
-    actions: [{ label: 'সিরিয়াল নিন · Book a serial', url: 'tel:01750529252', type: 'call' as const }],
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
   },
   {
     id: 'piles',
@@ -216,7 +253,114 @@ const QUICK_CHIPS = [
       'Whether surgery is needed is hard to say without examining you. The most important step is to meet the doctor in person. Book a serial — Dr. Kollol will do his best to solve your problem.',
     answer_bn:
       'অপারেশন লাগবে কি না, তা রোগীকে সরাসরি না দেখে বলা খুবই মুশকিল। সবচেয়ে জরুরি হলো ডাক্তারের সাথে সামনাসামনি দেখা করে আপনার সমস্যা বলা। সিরিয়াল নিয়ে দেখা করুন, ডাঃ কল্লোল আপনার সমস্যার সমাধানের সর্বোচ্চ চেষ্টা করবেন।',
-    actions: [{ label: 'সিরিয়াল নিন · Book a serial', url: 'tel:01750529252', type: 'call' as const }],
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'bleeding',
+    label_en: 'Bleeding with stool',
+    label_bn: 'পায়খানার সাথে রক্ত যায়',
+    answer_en:
+      'Bleeding can have many causes — hard to say without seeing you. Don’t delay; book a serial and meet the doctor in person.',
+    answer_bn:
+      'রক্ত যাওয়ার কারণ অনেক রকম হতে পারে, রোগী না দেখে বলা মুশকিল। দেরি না করে সিরিয়াল নিয়ে ডাক্তারের সাথে সরাসরি দেখা করুন এবং আপনার সমস্যার কথা বলুন।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'fistula',
+    label_en: 'Can fistula recur?',
+    label_bn: 'ফিস্টুলা কি আবার হতে পারে?',
+    answer_en:
+      'It’s not possible to say for your case without an examination. Book a serial and meet Dr. Kollol — he’ll do his best for you.',
+    answer_bn:
+      'আপনার ক্ষেত্রে কী হবে, তা পরীক্ষা না করে বলা সম্ভব নয়। সিরিয়াল নিয়ে ডাঃ কল্লোলের সাথে সরাসরি দেখা করুন, তিনি আপনার সমস্যার সমাধানের সর্বোচ্চ চেষ্টা করবেন।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'anal_pain',
+    label_en: 'Anal burning & pain',
+    label_bn: 'মলদ্বারে জ্বালাপোড়া ও ব্যথা',
+    answer_en:
+      'The cause of this pain is hard to tell without seeing you. Book a serial and tell the doctor in person.',
+    answer_bn:
+      'এমন ব্যথার কারণ রোগী না দেখে বোঝা মুশকিল। সিরিয়াল নিয়ে ডাক্তারের সাথে সামনাসামনি দেখা করে সমস্যাটা বলুন, তিনি সমাধানের সর্বোচ্চ চেষ্টা করবেন।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'gallstones',
+    label_en: 'Gallstones treatment',
+    label_bn: 'পিত্তথলিতে পাথর',
+    answer_en:
+      'The right treatment depends on examining you and your reports. Book a serial and meet the doctor.',
+    answer_bn:
+      'কোন চিকিৎসা আপনার জন্য ঠিক, তা আপনাকে দেখে আর রিপোর্ট দেখে বলতে হবে। সিরিয়াল নিয়ে ডাক্তারের সাথে সরাসরি দেখা করুন।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'laparoscopy',
+    label_en: 'What is laparoscopy?',
+    label_bn: 'ল্যাপারোস্কপি কী?',
+    answer_en:
+      'Laparoscopy is keyhole surgery with a camera — but whether it suits you, the doctor will decide after seeing you. Book a serial.',
+    answer_bn:
+      'ল্যাপারোস্কপি হলো ছোট ছিদ্রে ক্যামেরার সাহায্যে অপারেশন। তবে আপনার জন্য এটা উপযুক্ত কি না, তা ডাক্তার সরাসরি দেখে বলবেন। সিরিয়াল নিয়ে দেখা করুন।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'hernia',
+    label_en: 'Hernia (groin/navel swelling)',
+    label_bn: 'হার্নিয়া (কুঁচকি বা নাভিতে ফোলা)',
+    answer_en:
+      'The cause of a bulge can’t be confirmed without seeing you — book a serial. If it suddenly becomes hard or very painful, go to hospital at once.',
+    answer_bn:
+      'ফোলার কারণ রোগী না দেখে নিশ্চিত বলা যায় না। সিরিয়াল নিয়ে ডাক্তারের সাথে সরাসরি দেখা করুন। ফোলা হঠাৎ শক্ত বা খুব ব্যথা হলে দেরি না করে হাসপাতালে যান।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'breast_lump',
+    label_en: 'Breast lump',
+    label_bn: 'স্তনে চাকা',
+    answer_en:
+      'What kind of lump it is can’t be said without an examination. Book a serial and see the doctor as soon as possible.',
+    answer_bn:
+      'চাকা কী ধরনের, তা রোগী না দেখে বলা সম্ভব নয়। যত দ্রুত সম্ভব সিরিয়াল নিয়ে ডাক্তারের সাথে সরাসরি দেখা করুন।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
+  },
+  {
+    id: 'chamber_prep',
+    label_en: 'What to bring to chamber?',
+    label_bn: 'চেম্বারে কী নিয়ে আসব?',
+    answer_en:
+      'Bring your old prescriptions, any test reports and the list of medicines you take — if you have them. Call for a serial.',
+    answer_bn:
+      'আগের প্রেসক্রিপশন, বিভিন্ন পরীক্ষার রিপোর্ট আর যে ওষুধ খাচ্ছেন তার তালিকা, যদি থাকে, সাথে আনুন। সিরিয়ালের জন্য কল করুন।',
+    actions: [
+      { label: 'সিরিয়াল হটলাইন (ময়মনসিংহ)', url: 'tel:01750529252', type: 'call' },
+      { label: 'সহকারী মিলন (শেরপুর)', url: 'tel:01671869026', type: 'call' },
+    ],
   },
 ];
 
@@ -236,8 +380,8 @@ export function ChatWidget() {
   // Initialize Welcome Message
   useEffect(() => {
     const welcomeText = isBn
-      ? 'আসসালামু আলাইকুম। আমি **ডাঃ ফাহিম ফয়সাল কল্লোলের** ডিজিটাল ক্লিনিক্যাল অ্যাসিস্ট্যান্ট।\n\nচেম্বারের স্থান, সময়সূচী, সিরিয়াল বুকিং বা যেকোনো সার্জারি চিকিৎসার তথ্যের জন্য নিচে বিষয় বেছে নিন অথবা সরাসরি টাইপ করুন।'
-      : "Hello! I am **Dr. Fahim Foysal Kollol's** digital clinical assistant.\n\nHow may I assist you regarding chamber locations, visiting hours, serial booking, or surgical procedures today?";
+      ? 'আসসালামু আলাইকুম। আমি **ডাঃ ফাহিম ফয়সাল কল্লোলের** সহকারী।\n\nআসলে রোগী সরাসরি না দেখে তো অনুমান করে সঠিক কারণ বা চিকিৎসার পরামর্শ দেওয়া যায় না। তাই ডক্টর নিজে পরীক্ষা করে দেখলে সবচেয়ে ভালো ও নিরাপদ হয়। আপনার যেকোনো তথ্যের জন্য নিচে বিষয় বেছে নিন অথবা সরাসরি মেসেজ দিন।'
+      : "Hello! I am **Dr. Fahim Foysal Kollol's** assistant.\n\nAn in-person consultation is always best for safe medical care. Please choose a topic below or type your message.";
 
     setMessages([
       {
@@ -346,9 +490,12 @@ export function ChatWidget() {
           sender: 'bot',
           text: replyText,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          actions: [
-            { label: isBn ? 'সিরিয়াল হটলাইন (কল)' : 'Serial Hotline', url: 'tel:01750529252', type: 'call' },
-          ],
+          actions:
+            data.actions && data.actions.length > 0
+              ? data.actions
+              : [
+                  { label: isBn ? 'সিরিয়াল হটলাইন (কল)' : 'Serial Hotline', url: 'tel:01750529252', type: 'call' },
+                ],
         },
       ]);
     } catch {
@@ -370,8 +517,8 @@ export function ChatWidget() {
 
   const handleResetChat = () => {
     const welcomeText = isBn
-      ? 'আসসালামু আলাইকুম। আমি **ডাঃ ফাহিম ফয়সাল কল্লোলের** ডিজিটাল ক্লিনিক্যাল অ্যাসিস্ট্যান্ট। কীভাবে সহায়তা করতে পারি?'
-      : "Hello! I am **Dr. Fahim Foysal Kollol's** digital assistant. How may I help you today?";
+      ? 'আসসালামু আলাইকুম। আমি **ডাঃ ফাহিম ফয়সাল কল্লোলের** সহকারী। আসলে রোগী না দেখে তো অনুমান করে চিকিৎসা বা উত্তর দেওয়া যায় না। আপনার যেকোনো তথ্য বা সিরিয়ালের জন্য আমি কীভাবে সহায়তা করতে পারি?'
+      : "Hello! I am **Dr. Fahim Foysal Kollol's** assistant. How may I help you today?";
 
     setMessages([
       {
@@ -435,7 +582,7 @@ export function ChatWidget() {
       >
         {!isOpen && (
           <div className="hidden group-hover:flex flex-col items-end gap-2 max-w-[78vw]">
-            {QUICK_CHIPS.map((chip, i) => (
+            {QUICK_CHIPS.filter((c) => c.isHoverFeatured).map((chip, i) => (
               <button
                 key={chip.id}
                 type="button"
@@ -568,9 +715,9 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* The 3 questions inside the chat (main way on phones) — shown until the conversation starts */}
+          {/* Quick questions inside the chat — shown until the conversation starts */}
           {messages.length <= 1 && !isTyping && (
-            <div className="px-3 pt-2 pb-1 bg-white flex flex-wrap gap-1.5 shrink-0">
+            <div className="px-3 pt-2 pb-1 bg-white flex flex-wrap gap-1.5 shrink-0 max-h-32 overflow-y-auto">
               {QUICK_CHIPS.map((chip) => (
                 <button
                   key={chip.id}
@@ -609,7 +756,7 @@ export function ChatWidget() {
             </button>
           </form>
           <p className="pb-2.5 text-center text-[10.5px] text-[#3F6668] bg-white shrink-0">
-            {isBn ? 'এটা রোগ নির্ণয় নয় — সঠিক চিকিৎসার জন্য ডাক্তার দেখান।' : 'Not a diagnosis — please see the doctor for treatment.'}
+            {isBn ? '⚠️ এটা তথ্যমূলক এআই সহকারী — সঠিক চিকিৎসার জন্য ডাক্তার দেখান।' : '⚠️ Informational AI assistant — please consult the doctor for treatment.'}
           </p>
         </div>
       )}

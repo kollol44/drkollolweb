@@ -58,14 +58,14 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-// Model preference candidates from newest to legacy
+// Model preference candidates from lowest cost / highest speed to standard flash
 const PREFERRED_FLASH_MODELS = [
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash-8b',
   'gemini-2.5-flash',
   'gemini-2.0-flash',
-  'gemini-2.0-flash-lite',
   'gemini-1.5-flash',
   'gemini-1.5-flash-latest',
-  'gemini-1.5-flash-8b',
   'gemini-1.5-pro',
 ];
 

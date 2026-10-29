@@ -75,15 +75,19 @@ export function checkRateLimit(
 
 /**
  * Extracts client IP from standard Next.js request headers
+ * Prioritizes trusted edge headers (Cloudflare, Vercel) over standard forwarded headers.
  */
 export function getClientIp(req: Request): string {
+  const cfIp = req.headers.get('cf-connecting-ip');
+  if (cfIp) return cfIp.trim();
+
+  const realIp = req.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+
   const forwarded = req.headers.get('x-forwarded-for');
   if (forwarded) {
     return forwarded.split(',')[0].trim();
   }
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp) return realIp.trim();
-  const cfIp = req.headers.get('cf-connecting-ip');
-  if (cfIp) return cfIp.trim();
+
   return 'anonymous-client';
 }
