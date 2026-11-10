@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { PhoneCall, MessageCircle } from 'lucide-react';
 
 interface MobileStickyBarProps {
   phoneCall?: string;
@@ -22,17 +23,19 @@ export function MobileStickyBar({
     <div className="lg:hidden fixed bottom-3 inset-x-3 z-40 p-2 rounded-2xl bg-white/90 backdrop-blur-xl border border-[rgba(43,179,177,0.3)] shadow-[0_14px_30px_-10px_rgba(6,47,49,0.35)] flex items-center gap-2">
       <a
         href={`tel:${phoneCall}`}
-        className="btn btn-g flex-1 py-2.5 px-2 text-xs font-bold text-center justify-center"
+        className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-[var(--teal)] hover:bg-[#062F31] !text-white text-white text-xs font-bold transition-all shadow-sm active:scale-98"
       >
-        {isBn ? 'কল করুন' : 'Call'}
+        <PhoneCall className="w-3.5 h-3.5 text-white stroke-[2.2] shrink-0" />
+        <span className="!text-white text-white">{isBn ? 'কল করুন' : 'Call'}</span>
       </a>
       <a
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="btn btn-g flex-1 py-2.5 px-2 text-xs font-bold text-center justify-center text-emerald-700 border-emerald-300 bg-emerald-50/50"
+        className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl bg-[#0A6E73] hover:bg-[#062F31] !text-white text-white text-xs font-bold transition-all shadow-sm active:scale-98"
       >
-        WhatsApp
+        <MessageCircle className="w-3.5 h-3.5 text-white stroke-[2.2] shrink-0" />
+        <span className="!text-white text-white">WhatsApp</span>
       </a>
       {onBookClick ? (
         <button

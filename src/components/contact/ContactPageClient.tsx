@@ -320,20 +320,20 @@ export function ContactPageClient({
                   <div className="grid grid-cols-2 gap-2.5">
                     <a
                       href={`tel:${ch.phone_raw}`}
-                      className="inline-flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[var(--teal)] hover:bg-[#062F31] text-white text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-98"
+                      className="inline-flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[var(--teal)] hover:bg-[#062F31] !text-white text-white text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-98"
                     >
-                      <PhoneCall className="w-4 h-4" />
-                      <span>{t.callNow}</span>
+                      <PhoneCall className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+                      <span className="!text-white text-white">{t.callNow}</span>
                     </a>
 
                     <a
                       href={ch.wa_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-98"
+                      className="inline-flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#0A6E73] hover:bg-[#062F31] !text-white text-white text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-98"
                     >
-                      <MessageCircle className="w-4 h-4 fill-white" />
-                      <span>WhatsApp</span>
+                      <MessageCircle className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+                      <span className="!text-white text-white">WhatsApp</span>
                     </a>
                   </div>
 
@@ -410,18 +410,18 @@ export function ContactPageClient({
                   href={emergencyDoctor.wa_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:opacity-95 text-white text-sm font-bold transition-all shadow-md active:scale-98"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-[#0A6E73] hover:bg-[#062F31] !text-white text-white text-sm font-bold transition-all shadow-md active:scale-98"
                 >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>{t.emergencyWaBtn}</span>
+                  <MessageCircle className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+                  <span className="!text-white text-white">{t.emergencyWaBtn}</span>
                 </a>
 
                 <a
                   href={`tel:${emergencyDoctor.phone_raw}`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-gray-50 text-[#062F31] border border-gray-200 text-xs font-semibold transition-all active:scale-98"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-[var(--teal)] to-[#062F31] hover:brightness-110 !text-white text-white text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-98"
                 >
-                  <PhoneForwarded className="w-3.5 h-3.5 text-[var(--teal)]" />
-                  <span>
+                  <PhoneCall className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+                  <span className="!text-white text-white">
                     {t.emergencyCallBtn} (
                     {isBn
                       ? emergencyDoctor.phone_display_bn
@@ -541,25 +541,35 @@ export function ContactPageClient({
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row gap-2.5">
+              <div className="pt-4 border-t border-gray-100 flex flex-col gap-2.5">
+                <div className="grid grid-cols-2 gap-2.5">
+                  <a
+                    href={`tel:${currentMapChamber.phone_raw}`}
+                    className="inline-flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#0A6E73] hover:bg-[#062F31] !text-white text-white text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-98"
+                  >
+                    <PhoneCall className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+                    <span className="!text-white text-white">{t.callNow}</span>
+                  </a>
+                  <a
+                    href={currentMapChamber.wa_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#0A6E73] hover:bg-[#062F31] !text-white text-white text-xs sm:text-sm font-bold transition-all shadow-sm active:scale-98"
+                  >
+                    <MessageCircle className="w-4 h-4 text-white stroke-[2.2] shrink-0" />
+                    <span className="!text-white text-white">WhatsApp</span>
+                  </a>
+                </div>
+
                 <a
                   href={currentMapChamber.map_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn-p flex-1 py-3 text-xs font-bold text-center justify-center flex items-center gap-1.5 group/mapbtn"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gray-50 hover:bg-[var(--tint)] text-[#0A6E73] hover:text-[#062F31] border border-[#0A6E73]/30 text-xs sm:text-sm font-bold transition-all group/mapbtn active:scale-98"
                 >
-                  <Navigation2 className="w-3.5 h-3.5 group-hover/mapbtn:rotate-12 transition-transform" />
+                  <Navigation2 className="w-4 h-4 text-[var(--aqua)] group-hover/mapbtn:rotate-12 transition-transform shrink-0" />
                   <span>{t.openMaps}</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 opacity-60" />
-                </a>
-                <a
-                  href={currentMapChamber.wa_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-g flex-1 py-3 text-xs font-bold text-center justify-center flex items-center gap-1.5"
-                >
-                  <MessageCircle className="w-3.5 h-3.5 fill-white" />
-                  <span>WhatsApp</span>
+                  <ArrowUpRight className="w-4 h-4 opacity-60 shrink-0" />
                 </a>
               </div>
             </div>
