@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: 'Surgical Health Blogs — Dr. Fahim Foysal Kollol',
   description:
     'Evidence-based surgical guides, recovery timelines, and symptom awareness on piles, fistula, gallstones, hernia, and breast lumps written by Dr. Fahim Foysal Kollol.',
+  alternates: {
+    canonical: 'https://drkollol.com/blogs',
+  },
 };
 
 export const revalidate = 60;

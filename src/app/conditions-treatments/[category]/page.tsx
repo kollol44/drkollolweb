@@ -23,6 +23,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   return {
     title: `${cat.name_en} / ${cat.name_bn} — Dr. Fahim Foysal Kollol`,
     description: `${cat.desc_en} — Surgical consultation and procedures by Dr. Fahim Foysal Kollol in Sherpur and Mymensingh.`,
+    alternates: {
+      canonical: `https://drkollol.com/conditions-treatments/${slug}`,
+    },
   };
 }
 

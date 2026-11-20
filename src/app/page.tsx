@@ -46,21 +46,40 @@ export default async function HomePage() {
     getGalleryVideos(),
   ]);
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question_en,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer_en,
+      },
+    })),
+  };
+
   return (
-    <HomePageClient
-      siteSettings={siteSettings}
-      heroSection={heroSection}
-      surgeonProfile={surgeonProfile}
-      categories={categories}
-      conditions={conditions}
-      serialSteps={serialSteps}
-      chambers={chambers}
-      reviews={reviews}
-      faqs={faqs}
-      blogs={blogs}
-      galleryPhotos={galleryPhotos}
-      galleryVideos={galleryVideos}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <HomePageClient
+        siteSettings={siteSettings}
+        heroSection={heroSection}
+        surgeonProfile={surgeonProfile}
+        categories={categories}
+        conditions={conditions}
+        serialSteps={serialSteps}
+        chambers={chambers}
+        reviews={reviews}
+        faqs={faqs}
+        blogs={blogs}
+        galleryPhotos={galleryPhotos}
+        galleryVideos={galleryVideos}
+      />
+    </>
   );
 }
 

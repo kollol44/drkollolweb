@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: 'About Dr. Fahim Foysal Kollol — Surgeon Qualifications & Career',
   description:
     'Learn about Dr. Fahim Foysal Kollol — MBBS, BCS (Health), FCPS (Surgery), MACS (USA). Assistant Professor of Surgery, MMCH. Over 10,000 surgeries, 11 research publications, and specialized laparoscopic & colorectal surgical training.',
+  alternates: {
+    canonical: 'https://drkollol.com/about',
+  },
 };
 
 export const revalidate = 60;

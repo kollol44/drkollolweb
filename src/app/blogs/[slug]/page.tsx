@@ -35,6 +35,9 @@ export async function generateMetadata({ params }: SingleBlogPageProps): Promise
   return {
     title: `${blog.title_en} — Dr. Fahim Foysal Kollol`,
     description: blog.excerpt_en,
+    alternates: {
+      canonical: `https://drkollol.com/blogs/${slug}`,
+    },
     openGraph: {
       title: blog.title_en,
       description: blog.excerpt_en,

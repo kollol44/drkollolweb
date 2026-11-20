@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: 'Conditions & Treatments — Dr. Fahim Foysal Kollol',
   description:
     'Piles, fistula, fissure, gallstones, hernia, breast lumps, kidney stones and more — complete surgical conditions and treatments by Dr. Fahim Foysal Kollol in Sherpur and Mymensingh.',
+  alternates: {
+    canonical: 'https://drkollol.com/conditions-treatments',
+  },
 };
 
 export const revalidate = 60;
